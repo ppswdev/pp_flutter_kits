@@ -1,6 +1,6 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.0.1
+version: 1.0.3
 homepage: https://github.com/ppswdev/pp_kits
 
 environment:
@@ -21,8 +21,9 @@ dependencies:
   audioplayers: ^6.1.0  #音频播放
   url_launcher: ^6.3.0 #打开网页、电话、短信、邮件
   connectivity_plus: ^6.0.5 #网络检测
+  #device_info_plus: ^11.1.1 #获取设备信息
   package_info_plus: ^8.0.2 #获取应用信息
-  open_settings_plus: ^0.4.0 #打开系统设置
+  #open_settings_plus: ^0.4.0 #打开系统设置
   shared_preferences: ^2.3.2 #本地轻量数据存储
   flutter_screenutil: ^5.9.3 #屏幕适配
   flutter_secure_storage: ^9.2.2  #本地加密存储

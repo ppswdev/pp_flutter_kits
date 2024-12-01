@@ -97,3 +97,8 @@ Future<T?> localJsonToModel<T>(
   return JsonUtil.localJsonToModel(assetPath, fromJson,
       fromSandbox: fromSandbox);
 }
+
+/// 打开链接
+void openLink(String url) {
+  CommonUtil.openLink(url);
+}
