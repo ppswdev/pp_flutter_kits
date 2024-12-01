@@ -1,5 +1,5 @@
-import 'dart:math';
-
+import 'package:flutter/material.dart';
+import 'package:pp_kits/utils/common_util.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils/json_util.dart';
@@ -47,8 +47,19 @@ String uuid() {
 /// @param min 最小值
 /// @param max 最大值
 int randomInt(int min, int max) {
-  final random = Random();
-  return min + random.nextInt(max - min + 1);
+  return CommonUtil.randomInt(min, max);
+}
+
+//生成随机色
+Color randomColor() {
+  return CommonUtil.randomColor();
+}
+
+// 生成特定色系的随机颜色
+/// [baseColor] 基础颜色
+/// [variation] 变化范围 0.0-1.0
+Color randomColorInRange(Color baseColor, {double variation = 0.2}) {
+  return CommonUtil.randomColorInRange(baseColor, variation: variation);
 }
 
 ///

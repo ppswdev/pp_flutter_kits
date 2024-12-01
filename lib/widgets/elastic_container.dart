@@ -20,16 +20,16 @@ Get.dialog(
 );
 */
 /// 弹性动画对话框
-class ElasticDialog extends StatefulWidget {
+class ElasticContainer extends StatefulWidget {
   final Widget child;
 
-  const ElasticDialog({super.key, required this.child});
+  const ElasticContainer({super.key, required this.child});
 
   @override
-  ElasticDialogState createState() => ElasticDialogState();
+  ElasticContainerState createState() => ElasticContainerState();
 }
 
-class ElasticDialogState extends State<ElasticDialog>
+class ElasticContainerState extends State<ElasticContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;

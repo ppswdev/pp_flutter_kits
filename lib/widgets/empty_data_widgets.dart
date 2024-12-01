@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// 空数据视图
 class EmptyDataView extends StatelessWidget {
   final String icon;
   final String text;

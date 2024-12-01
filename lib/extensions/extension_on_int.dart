@@ -6,4 +6,18 @@ extension IntExtension on int {
     final dateTime = DateTime.fromMillisecondsSinceEpoch(this);
     return DateFormat(format).format(dateTime);
   }
+
+  /// 是否是闰年
+  bool isLeapYear() {
+    bool leapYear = false;
+
+    bool leap = ((this % 100 == 0) && (this % 400 != 0));
+    if (leap == true) {
+      leapYear = false;
+    } else if (this % 4 == 0) {
+      leapYear = true;
+    }
+
+    return leapYear;
+  }
 }

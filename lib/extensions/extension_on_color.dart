@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+/// 16进制颜色
 class HexColor extends Color {
   /// 从十六进制字符串和透明度创建颜色
   /// hexColor: 十六进制字符串，如：#CCCCCC
@@ -18,22 +19,16 @@ class HexColor extends Color {
   }
 }
 
-extension HexColorString on String {
-  /// 将十六进制颜色字符串转换为 Color 对象。
+extension ColorExtension on Color {
+  /// 返回十六进制字符串表示的颜色。
   ///
-  /// 可选的 [alpha] 参数表示透明度，范围从 0.0（完全透明）到 1.0（完全不透明）。
-  /// 返回一个新的 Color 对象。
-  Color toColor({double alpha = 1.0}) {
-    // 确保透明度在0.0到1.0之间
-    alpha = alpha.clamp(0.0, 1.0);
-    // 将透明度从0.0-1.0转换为0-255
-    int alphaValue = (alpha * 255).round();
-    // 转换为十六进制字符串
-    String alphaHex = alphaValue.toRadixString(16).padLeft(2, '0');
-
-    final buffer = StringBuffer();
-    buffer.write(alphaHex); // 使用计算得到的透明度值
-    buffer.write(replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
+  /// 可选的 [leadingHashSign] 参数表示是否添加 "#" 前缀。
+  /// 可选的 [includeAlpha] 参数表示是否包含透明度值。
+  /// 返回一个十六进制字符串。
+  String toHex({bool leadingHashSign = true, bool includeAlpha = false}) =>
+      '${leadingHashSign ? '#' : ''}'
+      '${includeAlpha ? alpha.toRadixString(16).padLeft(2, '0') : ''}'
+      '${red.toRadixString(16).padLeft(2, '0')}'
+      '${green.toRadixString(16).padLeft(2, '0')}'
+      '${blue.toRadixString(16).padLeft(2, '0')}';
 }
