@@ -1,6 +1,6 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/ppswdev/pp_kits
 
 environment:
@@ -11,75 +11,27 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # 必装功能组件
-  intl: ^0.19.0 #国际化
-  dio: ^5.7.0 #网络请求
   get: ^4.6.6 #状态管理、依赖管理、路由管理、国际化、主题、中间件等
+  intl: ^0.19.0 #国际化
   uuid: ^4.5.0 #UUID生成
   path: ^1.9.0 #文件目录处理库
-  sqflite: ^2.3.3+1 #db数据库
-  archive: ^3.6.1 #解压缩
   share_plus: ^10.0.0 #分享
-  file_picker: ^8.0.7 #文件选择器
-  image_picker: ^1.1.2 #媒体文件选择器
-  image_cropper: ^8.0.2 #图片裁剪
   path_provider: ^2.1.4 #沙盒存储
+  audioplayers: ^6.1.0  #音频播放
   url_launcher: ^6.3.0 #打开网页、电话、短信、邮件
   connectivity_plus: ^6.0.5 #网络检测
   network_info_plus: ^6.0.0 #网络信息
   package_info_plus: ^8.0.2 #获取应用信息
-  device_info_plus: ^11.1.1 #获取设备信息
   open_settings_plus: ^0.4.0 #打开系统设置
   shared_preferences: ^2.3.2 #本地轻量数据存储
-  permission_handler: ^11.3.1 #权限处理
-  cached_network_image: ^3.4.1 #图片加载缓存
-  webview_flutter: ^4.8.0 #网页加载
-  webview_flutter_android: ^3.16.7
-  webview_flutter_wkwebview: ^3.14.0
-  in_app_review: ^2.0.9 #应用内评论
-  in_app_purchase: ^3.2.0 #订阅内购
-  in_app_purchase_storekit: ^0.3.18+1
-  in_app_purchase_platform_interface: ^1.4.0
-  flutter_animate: ^4.5.0 #动画
-  flutter_launcher_icons: ^0.14.1 #自动生成图标
   flutter_screenutil: ^5.9.3 #屏幕适配
   flutter_secure_storage: ^9.2.2  #本地加密存储
-  flutter_keyboard_visibility: ^6.0.0 #键盘显示隐藏
-  dynamic_icon_flutter: ^0.0.7 #动态图标
-  json_annotation: ^4.9.0 #json对象处理
-  audioplayers: ^6.1.0  #声音播放
-  synchronized: ^3.3.0+3  #原子性操作
-  executor: ^2.2.4  #并发执行器
-  local_auth: ^2.3.0  #生物识别
-  camera: ^0.11.0+2  #相机
-
-  #UI组件
-  lottie: ^3.1.3
-  google_fonts: ^6.2.1
-  flutter_spinkit: ^5.2.1 #加载效果
   flutter_easyloading: ^3.0.5 #加载效果，提示框
-  flutter_carousel_widget: ^3.1.0 #图库轮播
-  flutter_xlider: ^3.5.0 #进度条
-  flutter_rating_bar: ^4.0.1 #评分
-  loading_animation_widget: ^1.2.1 #加载效果
-  dotted_border: ^2.1.0 #虚线边框
-  animated_text_kit: ^4.2.2 #动画文本
-  easy_rich_text: ^2.2.0  #富文本
-  modal_bottom_sheet: ^3.0.0  #底部弹出窗
-  syncfusion_flutter_sliders: ^27.2.4  #滑块
-  gradient_borders: ^1.0.1  #渐变色边框
-  skeletonizer: ^1.4.2  #骨架屏
-  timeago: ^3.7.0 #时间
-  bordered_text: ^2.0.0 #文字描边
-  auto_size_text: ^3.0.0  #文字自适应
-  confetti: ^0.8.0  #礼花特效
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0 #代码规范
-  build_runner: ^2.4.12  #json对象生成工具
-  json_serializable: ^6.8.0 #json对象序列化代码生成
+  flutter_lints: ^5.0.0 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
