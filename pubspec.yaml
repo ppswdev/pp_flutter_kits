@@ -1,6 +1,6 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/ppswdev/pp_kits
 
 environment:

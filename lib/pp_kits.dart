@@ -27,7 +27,7 @@ export 'extensions/extension_on_string.dart';
 
 // PP Widgets
 export 'widgets/blur_container.dart';
-export 'widgets/elastic_container.dart';
-export 'widgets/empty_data_widgets.dart';
+export 'widgets/elastic_dialog.dart';
+export 'widgets/page_center_tip.dart';
 export 'widgets/pp_scaffold.dart';
 export 'widgets/pp_textfield.dart';

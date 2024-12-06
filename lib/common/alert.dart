@@ -59,8 +59,11 @@ class PPAlert {
     EasyLoading.showProgress(progress, status: status);
   }
 
-  static void showSysAlert(String title, String text, String okButtonText,
-      {Function? onOK}) async {
+  static void showSysAlert(
+      {String title = '提示',
+      String text = '提示内容',
+      String okButtonText = '确定',
+      Function? onOK}) async {
     if (isAlerted) {
       return;
     }
@@ -96,8 +99,12 @@ class PPAlert {
   }
 
   static void showSysConfirm(
-      String title, String text, String cancelButtonText, String okButtonText,
-      {Function? onCancel, required Function onConfirm}) async {
+      {String title = '确认',
+      String text = '你确定要继续吗？',
+      String cancelButtonText = '取消',
+      String okButtonText = '确定',
+      Function? onCancel,
+      required Function onConfirm}) async {
     if (isAlerted) {
       return;
     }
@@ -109,11 +116,11 @@ class PPAlert {
         return CupertinoAlertDialog(
           title: Text(
             title,
-            style: TextStyle(fontSize: 20.w),
+            style: const TextStyle(fontSize: 20),
           ),
           content: Text(
             text,
-            style: TextStyle(fontSize: 15.w),
+            style: const TextStyle(fontSize: 15),
           ),
           actions: <Widget>[
             TextButton(
@@ -126,7 +133,7 @@ class PPAlert {
               },
               child: Text(
                 cancelButtonText,
-                style: TextStyle(fontSize: 18.w),
+                style: const TextStyle(fontSize: 18),
               ),
             ),
             TextButton(
@@ -137,7 +144,7 @@ class PPAlert {
               },
               child: Text(
                 okButtonText,
-                style: TextStyle(fontSize: 18.w),
+                style: const TextStyle(fontSize: 18),
               ),
             ),
           ],

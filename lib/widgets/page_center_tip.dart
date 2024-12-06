@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// 空数据视图
-class EmptyDataView extends StatelessWidget {
-  final String icon;
-  final String text;
-  final Widget? button;
-
-  const EmptyDataView({
+/// 页面中心提示
+/// 一般用于空页面显示占位，无网络，错误信息等
+class PageCenterTip extends StatelessWidget {
+  const PageCenterTip({
     super.key,
-    this.icon = '',
-    this.text = 'No data available~',
+    required this.image,
+    required this.text,
+    this.textStyle,
     this.button,
   });
+
+  final Widget image;
+  final String text;
+  final TextStyle? textStyle;
+  final Widget? button;
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +22,10 @@ class EmptyDataView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            icon,
-            color: Colors.grey,
+          SizedBox(
+            width: 120,
+            height: 120,
+            child: image,
           ),
           const SizedBox(height: 16),
           Padding(
@@ -29,7 +33,8 @@ class EmptyDataView extends StatelessWidget {
             child: Text(
               text,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey, fontSize: 18),
+              style: textStyle ??
+                  const TextStyle(color: Colors.grey, fontSize: 18),
             ),
           ),
           if (button != null) ...[
