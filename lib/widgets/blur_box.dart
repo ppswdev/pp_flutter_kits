@@ -11,13 +11,13 @@ import 'package:flutter/material.dart';
   )
  */
 /// 毛玻璃透明背景
-class BlurContainer extends StatelessWidget {
+class BlurBox extends StatelessWidget {
   final double? radius;
   final Color? color;
   final Color? borderColor;
   final double? opacity;
 
-  const BlurContainer({
+  const BlurBox({
     super.key,
     this.radius = 30.0, // 默认圆角半径
     this.color = Colors.white, // 默认背景颜色

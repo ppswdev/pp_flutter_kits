@@ -29,3 +29,10 @@ class ProductChangedEvent {
 
   ProductChangedEvent(this.message);
 }
+
+/// 语言改变事件
+class LanguageChangedEvent {
+  final String message;
+
+  LanguageChangedEvent(this.message);
+}

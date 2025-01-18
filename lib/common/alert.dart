@@ -33,6 +33,11 @@ class PPAlert {
     EasyLoading.dismiss();
   }
 
+  // 显示提示
+  static void showToast(String message) {
+    EasyLoading.showToast(message);
+  }
+
   // 显示成功提示
   static void showSuccess(String message) {
     EasyLoading.showSuccess(message);

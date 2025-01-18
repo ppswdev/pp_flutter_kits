@@ -1,4 +1,15 @@
+import 'dart:math';
 import 'dart:ui';
+
+Color randomColor() {
+  final Random random = Random();
+  return Color.fromARGB(
+    255, // 不透明度
+    random.nextInt(256), // 红色
+    random.nextInt(256), // 绿色
+    random.nextInt(256), // 蓝色
+  );
+}
 
 /// 16进制颜色
 class HexColor extends Color {

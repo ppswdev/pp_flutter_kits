@@ -16,6 +16,7 @@ export 'utils/device_util.dart';
 export 'utils/effect_util.dart';
 export 'utils/json_util.dart';
 export 'utils/path_util.dart';
+export 'utils/zip_util.dart';
 
 // PP Extensions
 export 'extensions/extension_on_button.dart';
@@ -26,8 +27,8 @@ export 'extensions/extension_on_list.dart';
 export 'extensions/extension_on_string.dart';
 
 // PP Widgets
-export 'widgets/blur_container.dart';
+export 'widgets/blur_box.dart';
 export 'widgets/elastic_dialog.dart';
-export 'widgets/page_center_tip.dart';
+export 'widgets/placeholder_tip.dart';
 export 'widgets/pp_scaffold.dart';
 export 'widgets/pp_textfield.dart';

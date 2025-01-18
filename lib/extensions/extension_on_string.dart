@@ -41,7 +41,7 @@ extension StringExtension on String {
     }
   }
 
-  // 复制文本内容
+  /// 将文本内容复制到剪贴板
   Future<void> copyToClipboard() async {
     await Clipboard.setData(ClipboardData(text: this));
   }

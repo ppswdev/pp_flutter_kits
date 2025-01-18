@@ -29,10 +29,10 @@ class ElasticDialog extends StatefulWidget {
   });
 
   @override
-  _ElasticDialogState createState() => _ElasticDialogState();
+  ElasticDialogState createState() => ElasticDialogState();
 }
 
-class _ElasticDialogState extends State<ElasticDialog>
+class ElasticDialogState extends State<ElasticDialog>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;

@@ -1,8 +1,7 @@
 import 'dart:async';
 
-/*
-
-*/
+/// 自定义事件总线
+/// 相当于iOS的NotificationCenter
 class EventBus {
   // 单例模式
   static final EventBus _instance = EventBus._internal();

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 /// 页面中心提示
 /// 一般用于空页面显示占位，无网络，错误信息等
-class PageCenterTip extends StatelessWidget {
-  const PageCenterTip({
+class PlaceholderTip extends StatelessWidget {
+  const PlaceholderTip({
     super.key,
     required this.image,
     required this.text,

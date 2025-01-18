@@ -1,19 +1,23 @@
+## 1.0.5
+
+* Supplementary optimization and improvement
+
 ## 1.0.4
 
-* 补充优化完善
+* Supplementary optimization and improvement
   
 ## 1.0.3
 
-* 补充优化完善
+* Supplementary optimization and improvement
 
 ## 1.0.2
 
-* 补充优化完善
+* Supplementary optimization and improvement
 
 ## 1.0.1
 
-* 补充优化完善
+* Supplementary optimization and improvement
 
 ## 1.0.0
 
-* 环境要求：Flutter 2.19.0+， Dart 3.3.0+
+* Requirements: Flutter 2.19.0+, Dart 3.3.0+

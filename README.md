@@ -15,9 +15,7 @@ pp_kits是一个Flutter快速开发应用程序工具库，包含了日常开发
 
 ### 运行环境
 
-Flutter 2.19.0+
-
-Dart 3.3.0+
+推荐环境：Flutter 3.22.0+ & Dart 3.4.0+
 
 ## Features
 

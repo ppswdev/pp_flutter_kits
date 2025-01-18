@@ -16,6 +16,7 @@ class AudioPool {
   }
 }
 
+/// 特效工具类
 class EffectUtil {
   static final EffectUtil _instance = EffectUtil._internal();
   factory EffectUtil() => _instance;
@@ -60,7 +61,7 @@ class EffectUtil {
     }
   }
 
-  // 触感反馈
+  /// 触感反馈
   void hapticFeedbackImpact({int level = 1}) {
     switch (level) {
       case 1:

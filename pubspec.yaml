@@ -28,6 +28,7 @@ dependencies:
   flutter_screenutil: ^5.9.3 #屏幕适配
   flutter_secure_storage: ^9.2.2  #本地加密存储
   flutter_easyloading: ^3.0.5 #加载效果，提示框
+  archive: ^4.0.1
 
 dev_dependencies:
   flutter_test:
