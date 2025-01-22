@@ -9,7 +9,7 @@ Easy and highly customizable style progress bar
 
 ## Example effect
 
-<img src="screenshots/sample1.png" alt="示例" style="width: 300px; height: 534px;">
+![Sample1](screenshots/sample1.png)
 
 ## Usage
 
