@@ -1,7 +1,7 @@
 name: pp_spin_wheel
 description: "Custom spin wheel. Makes it easier for code to implement wheel effects."
 version: 1.0.7
-homepage: https://github.com/ppswdev/pp_spin_wheel
+homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_spin_wheel
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

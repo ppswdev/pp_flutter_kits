@@ -1,8 +1,8 @@
 name: audio_engine_player
 description: "This is an audio player based on iOS AVAudioEngine. Current audio file playback, pause, add playlist, previous, next, loop mode, additional support for real-time equalizer, reverb. The future will continue to optimize the update."
 version: 1.0.0
-homepage: https://github.com/xiaopindev/audio_engine_player
-repository: https://github.com/xiaopindev/audio_engine_player
+homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/audio_engine_player
+repository: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/audio_engine_player
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
