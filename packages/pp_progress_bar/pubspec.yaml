@@ -1,6 +1,6 @@
 name: pp_progress_bar
 description: "Easy and highly customizable style progress bar"
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_progress_bar
 
 environment:
