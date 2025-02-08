@@ -24,10 +24,15 @@ struct TrackModel {
 
 class AudioEnginePlayer {
     //MARK: Public Property
+    /// 播放状态改变
     var onPlayingStatusChanged: ((Bool) -> ())?
+    /// 播放索引改变
     var onPlayingIndexChanged: ((Int) -> ())?
+    /// 播放完成
     var onPlayCompleted: (() -> ())?
+    /// 播放进度更新
     var onPlaybackProgressUpdate: ((Int) -> ())?
+    /// 频谱数据
     var onSpectrumDataAvailable: (([Float]) -> Void)?
     
     /// 播放总时长，单位毫秒
@@ -55,18 +60,27 @@ class AudioEnginePlayer {
     }
     
     //MARK: Private Property
+    /// 音频回话
     private var audioSession: AVAudioSession
+    /// 音频文件
     private var audioFile: AVAudioFile?
+    /// 音频引擎
     private var audioEngine: AVAudioEngine
+    /// 播放节点
     private var playerNode: AVAudioPlayerNode
+    /// 播放速度
     private var varispeed: AVAudioUnitVarispeed
-    private var volumeBooster: AVAudioUnitEQ // 新增音量放大器
+    /// 新增音量放大器
+    private var volumeBooster: AVAudioUnitEQ
+    /// 均衡器
     private var equalizer: AVAudioUnitEQ
+    /// 混响
     private var reverb: AVAudioUnitReverb
-    
+    /// 频谱分析对象
     private var spectrumAnalyzer: SpectrumAnalyzer
-    
+    /// 是否进行中
     private var isProcessing: Bool = false
+    /// 是否暂停
     private var isPaused: Bool = false
     /// 单位：毫秒
     private var seekPosition: Int = 0
@@ -75,8 +89,9 @@ class AudioEnginePlayer {
     private var playbackProgress: Int = 0
     private var progressUpdateTimer: DispatchSourceTimer?
     
+    /// 播放列表
     private var playlist: [TrackModel] = []
-    
+    /// 循环模式
     private var loopMode: LoopMode = .all
     
     init() {
