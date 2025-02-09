@@ -13,7 +13,9 @@ flutter create --template=package 插件名
 ``` bash
 flutter create --template=plugin --platforms=android,ios 插件名
 #--org 指定组织
-flutter create --org com.example --template=plugin --platforms=android,ios 插件名
+flutter create --org com.ppsw --template=plugin --platforms=android,ios 插件名
+
+flutter create --org com.ppsw --template=plugin --platforms=android,ios,web,macos,windows,linux 插件名
 ```
 
 ### 创建示例工程
@@ -25,6 +27,7 @@ flutter create example
 ## 插件说明
 
 pp_kits: 我的工具箱
+pp_fan_menu: 高度自定义的扇形菜单
 pp_progress_bar: 高度自定义进度条
 pp_spin_wheel: 高度自定义旋转轮盘
 pp_purchase: 内购订阅
