@@ -47,7 +47,10 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
                let title = args["title"] as? String,
                let artist = args["artist"] as? String,
                let album = args["album"] as? String {
-                let track = TrackModel(source: filePath, title: title, artist: artist, album: album, albumArt: nil)
+                var track = TrackModel(source: filePath, title: title, artist: artist, album: album, albumArt: nil)
+                if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                    track.albumArt = image
+                }
                 audioEnginePlayer.play(with: track)
                 result(nil)
             } else {
@@ -80,9 +83,7 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
             audioEnginePlayer.stop()
             result(nil)
         case "setPlaylist":
-            if let args = call.arguments as? [String: Any],
-               let tracks = args["tracks"] as? [[String: Any]],
-               let autoPlay = args["autoPlay"] as? Bool {
+            if let args = call.arguments as? [String: Any], let tracks = args["tracks"] as? [[String: Any]], let autoPlay = args["autoPlay"] as? Bool {
                 let trackModels = tracks.compactMap { trackDict -> TrackModel? in
                     guard let source = trackDict["source"] as? String,
                           let title = trackDict["title"] as? String,
@@ -90,7 +91,11 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
                           let album = trackDict["album"] as? String else {
                         return nil
                     }
-                    return TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
+                    var track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
+                    if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                        track.albumArt = image
+                    }
+                    return track
                 }
                 audioEnginePlayer.setPlaylist(trackModels, autoPlay: autoPlay)
                 result(nil)
@@ -104,7 +109,10 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
                let artist = args["artist"] as? String,
                let album = args["album"] as? String,
                let autoPlay = args["autoPlay"] as? Bool {
-                let track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
+                var track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
+                if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                    track.albumArt = image
+                }
                 audioEnginePlayer.appendToPlaylist(track, autoPlay: autoPlay)
                 result(nil)
             } else {

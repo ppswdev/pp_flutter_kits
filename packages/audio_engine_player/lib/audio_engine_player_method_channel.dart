@@ -57,13 +57,14 @@ class MethodChannelAudioEnginePlayer extends AudioEnginePlayerPlatform {
   }
 
   @override
-  Future<void> playWith(
-      String filePath, String title, String artist, String album) async {
+  Future<void> playWith(String filePath, String title, String artist,
+      String album, String albumArt) async {
     await _channel.invokeMethod<void>('playWith', {
       'filePath': filePath,
       'title': title,
       'artist': artist,
       'album': album,
+      'albumArt': albumArt,
     });
   }
 
@@ -108,12 +109,13 @@ class MethodChannelAudioEnginePlayer extends AudioEnginePlayerPlatform {
 
   @override
   Future<void> appendToPlaylist(String source, String title, String artist,
-      String album, bool autoPlay) async {
+      String album, String albumArt, bool autoPlay) async {
     await _channel.invokeMethod<void>('appendToPlaylist', {
       'source': source,
       'title': title,
       'artist': artist,
       'album': album,
+      'albumArt': albumArt,
       'autoPlay': autoPlay,
     });
   }

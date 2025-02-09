@@ -116,7 +116,7 @@ class EqualizerViewController: UIViewController {
                        title: "海阔天空",
                        artist: "BEYOND",
                        album: "乐与怒",
-                       albumArt: nil),
+                       albumArt: UIImage(named: "albumArt")),
             TrackModel(source: "http://192.168.1.225/musics/%E9%99%88%E4%B9%90%E5%9F%BA%20-%20%E6%9C%88%E5%8D%8A%E5%B0%8F%E5%A4%9C%E6%9B%B2.mp3",
                        title: "月半小夜曲",
                        artist: "陈乐基",
