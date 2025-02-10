@@ -8,27 +8,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -46,14 +30,14 @@ class FanMenuExample extends StatelessWidget {
       appBar: AppBar(title: const Text('Fan Menu Example')),
       body: SafeArea(
         child: Container(
-          color: Colors.transparent,
+          color: Colors.amber,
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           child: Stack(
             children: [
               // Start
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.topStart,
+                  alignment: AlignmentDirectional.topStart, //左上角建议：2-4个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -63,13 +47,13 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
-                    Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.centerStart,
+                  alignment: AlignmentDirectional.centerStart, //左中建议：1-6个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -79,12 +63,15 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
+                    Icon(Icons.message, size: 40),
+                    Icon(Icons.favorite, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.bottomStart,
+                  alignment: AlignmentDirectional.bottomStart, //左下角建议：2-4个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -94,13 +81,14 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
                   ],
                 ),
               ),
               // Center
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.topCenter,
+                  alignment: AlignmentDirectional.topCenter, //上中建议：1-6个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -110,12 +98,15 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
+                    Icon(Icons.message, size: 40),
+                    Icon(Icons.favorite, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.center,
+                  alignment: AlignmentDirectional.center, //中心建议：1-12个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -125,17 +116,21 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
-                    Icon(Icons.star, size: 40),
-                    Icon(Icons.camera, size: 40),
-                    Icon(Icons.mail, size: 40),
-                    Icon(Icons.star, size: 40),
-                    Icon(Icons.camera, size: 40),
+                    Icon(Icons.commute, size: 40),
+                    Icon(Icons.face, size: 40),
+                    Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
+                    // Icon(Icons.message, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.bottomCenter,
+                  alignment: AlignmentDirectional.bottomCenter, //下中建议：1-6个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -145,13 +140,16 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
+                    Icon(Icons.message, size: 40),
+                    Icon(Icons.favorite, size: 40),
                   ],
                 ),
               ),
               // End
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.topEnd,
+                  alignment: AlignmentDirectional.topEnd, //右上角建议：2-4个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -161,12 +159,13 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
+                    Icon(Icons.call, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.centerEnd,
+                  alignment: AlignmentDirectional.centerEnd, //右中建议：1-6个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
@@ -177,12 +176,14 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
                     Icon(Icons.camera, size: 40),
+                    Icon(Icons.camera, size: 40),
+                    Icon(Icons.camera, size: 40),
                   ],
                 ),
               ),
               Positioned.fill(
                 child: PPFanMenu(
-                  alignment: AlignmentDirectional.bottomEnd, //右下角建议：3-4个选项最佳
+                  alignment: AlignmentDirectional.bottomEnd, //右下角建议：2-4个选项最佳
                   radius: 100,
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
@@ -196,7 +197,7 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
-                    Icon(Icons.camera, size: 40),
+                    Icon(Icons.call, size: 40),
                   ],
                 ),
               ),

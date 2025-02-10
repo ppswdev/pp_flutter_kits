@@ -44,17 +44,26 @@ class PPFanMenu extends StatefulWidget {
 class _PPFanMenuState extends State<PPFanMenu>
     with SingleTickerProviderStateMixin {
   bool isOpen = false;
+  var startAngle = 0.0;
+  var singleAngle = 40.0;
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
+    initData();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void didUpdateWidget(covariant PPFanMenu oldWidget) {
+    initData();
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -75,28 +84,105 @@ class _PPFanMenuState extends State<PPFanMenu>
     });
   }
 
-  double _calcStartAngle() {
+  void initData() {
+    final count = widget.children.length;
     switch (widget.alignment) {
       case AlignmentDirectional.topStart:
-        return -120;
+        startAngle = -35.0;
+        if (count == 2) {
+          singleAngle = 50.0;
+        } else if (count == 3) {
+          singleAngle = 40.0;
+        } else if (count == 4) {
+          singleAngle = 32.0;
+        }
       case AlignmentDirectional.topCenter:
-        return 0;
+        startAngle = count * 270;
+        if (count == 2) {
+          startAngle = count * 337.5;
+        } else if (count == 3) {
+          startAngle = count * 350.0;
+        } else if (count == 4) {
+          startAngle = count * 354.0;
+        } else if (count == 5) {
+          startAngle = count * 356.5;
+        } else if (count == 6) {
+          startAngle = count * 357.5;
+        }
+        singleAngle = 180 / count;
       case AlignmentDirectional.topEnd:
-        return 120;
+        startAngle = 55.0;
+        if (count == 2) {
+          singleAngle = 50.0;
+        } else if (count == 3) {
+          singleAngle = 40.0;
+        } else if (count == 4) {
+          singleAngle = 32.0;
+        }
       case AlignmentDirectional.centerStart:
-        return 135;
+        startAngle = count * 180;
+        if (count == 2) {
+          startAngle = count * 292.5;
+        } else if (count == 3) {
+          startAngle = count * 320.0;
+        } else if (count == 4) {
+          startAngle = count * 332.0;
+        } else if (count == 5) {
+          startAngle = count * 338.0;
+        } else if (count == 6) {
+          startAngle = count * 342.5;
+        }
+        singleAngle = 180 / count;
       case AlignmentDirectional.center:
-        return 180;
+        startAngle = 0;
+        singleAngle = 360 / count;
       case AlignmentDirectional.centerEnd:
-        return 15;
+        startAngle = count * 0;
+        if (count == 2) {
+          startAngle = count * 23.0;
+        } else if (count == 3) {
+          startAngle = count * 20.0;
+        } else if (count == 4) {
+          startAngle = count * 17.0;
+        } else if (count == 5) {
+          startAngle = count * 14.5;
+        } else if (count == 6) {
+          startAngle = count * 12.5;
+        }
+        singleAngle = 180 / count;
       case AlignmentDirectional.bottomStart:
-        return -15;
+        startAngle = -125.0;
+        if (count == 2) {
+          singleAngle = 50.0;
+        } else if (count == 3) {
+          singleAngle = 40.0;
+        } else if (count == 4) {
+          singleAngle = 32.0;
+        }
       case AlignmentDirectional.bottomCenter:
-        return 270;
+        startAngle = count * 90.0;
+        if (count == 2) {
+          startAngle = count * 67.5;
+        } else if (count == 3) {
+          startAngle = count * 50.0;
+        } else if (count == 4) {
+          startAngle = count * 39.5;
+        } else if (count == 5) {
+          startAngle = count * 32.5;
+        } else if (count == 6) {
+          startAngle = count * 27.5;
+        }
+        singleAngle = 180 / count;
       case AlignmentDirectional.bottomEnd:
-        return 15;
+        startAngle = 145.0;
+        if (count == 2) {
+          singleAngle = 50.0;
+        } else if (count == 3) {
+          singleAngle = 40.0;
+        } else if (count == 4) {
+          singleAngle = 32.0;
+        }
     }
-    return 0;
   }
 
   @override
@@ -105,14 +191,13 @@ class _PPFanMenuState extends State<PPFanMenu>
       alignment: widget.alignment,
       children: [
         ...List.generate(widget.children.length, (index) {
-          final angle = (index + 1) * 32;
-          var startAngle = _calcStartAngle();
+          final angle = (index + 1) * singleAngle + startAngle;
           return AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
               return Transform.translate(
                 offset: Offset.fromDirection(
-                  angle * (pi / 180) + startAngle,
+                  angle * (pi / 180),
                   _animation.value * widget.radius,
                 ),
                 child: GestureDetector(
