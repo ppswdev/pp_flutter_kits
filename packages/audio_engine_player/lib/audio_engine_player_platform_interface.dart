@@ -48,6 +48,8 @@ abstract class AudioEnginePlayerPlatform extends PlatformInterface {
 
   Future<void> setPlaylist(List<Map<String, String>> tracks, bool autoPlay);
 
+  Future<void> updatePlaylistInfos(List<Map<String, String>> tracks);
+
   Future<void> appendToPlaylist(String source, String title, String artist,
       String album, String albumArt, bool autoPlay);
 

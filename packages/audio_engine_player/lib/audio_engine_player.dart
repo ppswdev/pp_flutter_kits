@@ -71,6 +71,10 @@ class AudioEnginePlayer {
     return AudioEnginePlayerPlatform.instance.setPlaylist(tracks, autoPlay);
   }
 
+  Future<void> updatePlaylistInfos(List<Map<String, String>> tracks) {
+    return AudioEnginePlayerPlatform.instance.updatePlaylistInfos(tracks);
+  }
+
   Future<void> appendToPlaylist(String source, String title, String artist,
       String album, String albumArt, bool autoPlay) {
     return AudioEnginePlayerPlatform.instance

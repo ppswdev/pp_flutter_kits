@@ -108,6 +108,13 @@ class MethodChannelAudioEnginePlayer extends AudioEnginePlayerPlatform {
   }
 
   @override
+  Future<void> updatePlaylistInfos(List<Map<String, String>> tracks) async {
+    await _channel.invokeMethod<void>('updatePlaylistInfos', {
+      'tracks': tracks,
+    });
+  }
+
+  @override
   Future<void> appendToPlaylist(String source, String title, String artist,
       String album, String albumArt, bool autoPlay) async {
     await _channel.invokeMethod<void>('appendToPlaylist', {

@@ -102,6 +102,26 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "tracks and autoPlay are required", details: nil))
             }
+        case "updatePlaylistInfos":
+            if let args = call.arguments as? [String: Any], let tracks = args["tracks"] as? [[String: Any]] {
+                let trackModels = tracks.compactMap { trackDict -> TrackModel? in
+                    guard let source = trackDict["source"] as? String,
+                          let title = trackDict["title"] as? String,
+                          let artist = trackDict["artist"] as? String,
+                          let album = trackDict["album"] as? String else {
+                        return nil
+                    }
+                    var track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
+                    if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                        track.albumArt = image
+                    }
+                    return track
+                }
+                audioEnginePlayer.updatePlaylistInfos(trackModels)
+                result(nil)
+            } else {
+                result(FlutterError(code: "INVALID_ARGUMENT", message: "tracks and autoPlay are required", details: nil))
+            }
         case "appendToPlaylist":
             if let args = call.arguments as? [String: Any],
                let source = args["source"] as? String,
