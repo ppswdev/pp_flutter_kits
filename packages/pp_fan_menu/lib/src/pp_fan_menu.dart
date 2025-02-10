@@ -26,6 +26,12 @@ class PPFanMenu extends StatefulWidget {
   /// 展开半径
   final double radius;
 
+  /// 自定义起始角度
+  final double? startAngle;
+
+  /// 自定义单个选项角度
+  final double? singleAngle;
+
   const PPFanMenu({
     super.key,
     required this.children,
@@ -35,6 +41,8 @@ class PPFanMenu extends StatefulWidget {
     this.hideIcon = const Icon(Icons.close),
     this.alignment = AlignmentDirectional.bottomEnd,
     this.radius = 100,
+    this.startAngle,
+    this.singleAngle,
   });
 
   @override
@@ -86,102 +94,116 @@ class _PPFanMenuState extends State<PPFanMenu>
 
   void initData() {
     final count = widget.children.length;
-    switch (widget.alignment) {
-      case AlignmentDirectional.topStart:
-        startAngle = -35.0;
-        if (count == 2) {
-          singleAngle = 50.0;
-        } else if (count == 3) {
-          singleAngle = 40.0;
-        } else if (count == 4) {
-          singleAngle = 32.0;
-        }
-      case AlignmentDirectional.topCenter:
-        startAngle = count * 270;
-        if (count == 2) {
-          startAngle = count * 337.5;
-        } else if (count == 3) {
-          startAngle = count * 350.0;
-        } else if (count == 4) {
-          startAngle = count * 354.0;
-        } else if (count == 5) {
-          startAngle = count * 356.5;
-        } else if (count == 6) {
-          startAngle = count * 357.5;
-        }
-        singleAngle = 180 / count;
-      case AlignmentDirectional.topEnd:
-        startAngle = 55.0;
-        if (count == 2) {
-          singleAngle = 50.0;
-        } else if (count == 3) {
-          singleAngle = 40.0;
-        } else if (count == 4) {
-          singleAngle = 32.0;
-        }
-      case AlignmentDirectional.centerStart:
-        startAngle = count * 180;
-        if (count == 2) {
-          startAngle = count * 292.5;
-        } else if (count == 3) {
-          startAngle = count * 320.0;
-        } else if (count == 4) {
-          startAngle = count * 332.0;
-        } else if (count == 5) {
-          startAngle = count * 338.0;
-        } else if (count == 6) {
-          startAngle = count * 342.5;
-        }
-        singleAngle = 180 / count;
-      case AlignmentDirectional.center:
-        startAngle = 0;
-        singleAngle = 360 / count;
-      case AlignmentDirectional.centerEnd:
-        startAngle = count * 0;
-        if (count == 2) {
-          startAngle = count * 23.0;
-        } else if (count == 3) {
-          startAngle = count * 20.0;
-        } else if (count == 4) {
-          startAngle = count * 17.0;
-        } else if (count == 5) {
-          startAngle = count * 14.5;
-        } else if (count == 6) {
-          startAngle = count * 12.5;
-        }
-        singleAngle = 180 / count;
-      case AlignmentDirectional.bottomStart:
-        startAngle = -125.0;
-        if (count == 2) {
-          singleAngle = 50.0;
-        } else if (count == 3) {
-          singleAngle = 40.0;
-        } else if (count == 4) {
-          singleAngle = 32.0;
-        }
-      case AlignmentDirectional.bottomCenter:
-        startAngle = count * 90.0;
-        if (count == 2) {
-          startAngle = count * 67.5;
-        } else if (count == 3) {
-          startAngle = count * 50.0;
-        } else if (count == 4) {
-          startAngle = count * 39.5;
-        } else if (count == 5) {
-          startAngle = count * 32.5;
-        } else if (count == 6) {
-          startAngle = count * 27.5;
-        }
-        singleAngle = 180 / count;
-      case AlignmentDirectional.bottomEnd:
-        startAngle = 145.0;
-        if (count == 2) {
-          singleAngle = 50.0;
-        } else if (count == 3) {
-          singleAngle = 40.0;
-        } else if (count == 4) {
-          singleAngle = 32.0;
-        }
+    if (widget.startAngle != null && widget.singleAngle != null) {
+      startAngle = widget.startAngle!;
+      singleAngle = widget.singleAngle!;
+    } else {
+      switch (widget.alignment) {
+        case AlignmentDirectional.topStart:
+          startAngle = -35.0;
+          if (count == 2) {
+            singleAngle = 50.0;
+          } else if (count == 3) {
+            singleAngle = 40.0;
+          } else if (count == 4) {
+            singleAngle = 32.0;
+          }
+          break;
+        case AlignmentDirectional.topCenter:
+          startAngle = count * 270;
+          if (count == 2) {
+            startAngle = count * 337.5;
+          } else if (count == 3) {
+            startAngle = count * 350.0;
+          } else if (count == 4) {
+            startAngle = count * 354.0;
+          } else if (count == 5) {
+            startAngle = count * 356.5;
+          } else if (count == 6) {
+            startAngle = count * 357.5;
+          }
+          singleAngle = 180 / count;
+          break;
+        case AlignmentDirectional.topEnd:
+          startAngle = 55.0;
+          if (count == 2) {
+            singleAngle = 50.0;
+          } else if (count == 3) {
+            singleAngle = 40.0;
+          } else if (count == 4) {
+            singleAngle = 32.0;
+          }
+          break;
+        case AlignmentDirectional.centerStart:
+          startAngle = count * 180;
+          if (count == 2) {
+            startAngle = count * 292.5;
+          } else if (count == 3) {
+            startAngle = count * 320.0;
+          } else if (count == 4) {
+            startAngle = count * 332.0;
+          } else if (count == 5) {
+            startAngle = count * 338.0;
+          } else if (count == 6) {
+            startAngle = count * 342.5;
+          }
+          singleAngle = 180 / count;
+          break;
+        case AlignmentDirectional.center:
+          startAngle = 0;
+          singleAngle = 360 / count;
+          break;
+        case AlignmentDirectional.centerEnd:
+          startAngle = count * 0;
+          if (count == 2) {
+            startAngle = count * 23.0;
+          } else if (count == 3) {
+            startAngle = count * 20.0;
+          } else if (count == 4) {
+            startAngle = count * 17.0;
+          } else if (count == 5) {
+            startAngle = count * 14.5;
+          } else if (count == 6) {
+            startAngle = count * 12.5;
+          }
+          singleAngle = 180 / count;
+          break;
+        case AlignmentDirectional.bottomStart:
+          startAngle = -125.0;
+          if (count == 2) {
+            singleAngle = 50.0;
+          } else if (count == 3) {
+            singleAngle = 40.0;
+          } else if (count == 4) {
+            singleAngle = 32.0;
+          }
+          break;
+        case AlignmentDirectional.bottomCenter:
+          startAngle = count * 90.0;
+          if (count == 2) {
+            startAngle = count * 67.5;
+          } else if (count == 3) {
+            startAngle = count * 50.0;
+          } else if (count == 4) {
+            startAngle = count * 39.5;
+          } else if (count == 5) {
+            startAngle = count * 32.5;
+          } else if (count == 6) {
+            startAngle = count * 27.5;
+          }
+          singleAngle = 180 / count;
+          break;
+        case AlignmentDirectional.bottomEnd:
+          startAngle = 145.0;
+          if (count == 2) {
+            singleAngle = 50.0;
+          } else if (count == 3) {
+            singleAngle = 40.0;
+          } else if (count == 4) {
+            singleAngle = 32.0;
+          }
+          break;
+      }
     }
   }
 

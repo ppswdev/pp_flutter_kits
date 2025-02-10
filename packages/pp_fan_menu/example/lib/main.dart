@@ -31,6 +31,8 @@ class FanMenuExample extends StatelessWidget {
       body: SafeArea(
         child: Container(
           color: Colors.amber,
+          // width: 300,
+          // height: 300,
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           child: Stack(
             children: [
@@ -174,7 +176,7 @@ class FanMenuExample extends StatelessWidget {
                   children: const [
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
-                    Icon(Icons.mail, size: 40),
+                    // Icon(Icons.mail, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.camera, size: 40),
@@ -185,6 +187,8 @@ class FanMenuExample extends StatelessWidget {
                 child: PPFanMenu(
                   alignment: AlignmentDirectional.bottomEnd, //右下角建议：2-4个选项最佳
                   radius: 100,
+                  // startAngle: 145,
+                  // singleAngle: 32,
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
                   onChildPressed: (index) {
