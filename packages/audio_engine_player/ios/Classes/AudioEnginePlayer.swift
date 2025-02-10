@@ -24,10 +24,15 @@ struct TrackModel {
 
 class AudioEnginePlayer {
     //MARK: Public Property
+    /// 播放状态改变
     var onPlayingStatusChanged: ((Bool) -> ())?
+    /// 播放索引改变
     var onPlayingIndexChanged: ((Int) -> ())?
+    /// 播放完成
     var onPlayCompleted: (() -> ())?
+    /// 播放进度更新
     var onPlaybackProgressUpdate: ((Int) -> ())?
+    /// 频谱数据
     var onSpectrumDataAvailable: (([Float]) -> Void)?
     
     /// 播放总时长，单位毫秒
@@ -55,18 +60,27 @@ class AudioEnginePlayer {
     }
     
     //MARK: Private Property
+    /// 音频回话
     private var audioSession: AVAudioSession
+    /// 音频文件
     private var audioFile: AVAudioFile?
+    /// 音频引擎
     private var audioEngine: AVAudioEngine
+    /// 播放节点
     private var playerNode: AVAudioPlayerNode
+    /// 播放速度
     private var varispeed: AVAudioUnitVarispeed
-    private var volumeBooster: AVAudioUnitEQ // 新增音量放大器
+    /// 新增音量放大器
+    private var volumeBooster: AVAudioUnitEQ
+    /// 均衡器
     private var equalizer: AVAudioUnitEQ
+    /// 混响
     private var reverb: AVAudioUnitReverb
-    
+    /// 频谱分析对象
     private var spectrumAnalyzer: SpectrumAnalyzer
-    
+    /// 是否进行中
     private var isProcessing: Bool = false
+    /// 是否暂停
     private var isPaused: Bool = false
     /// 单位：毫秒
     private var seekPosition: Int = 0
@@ -75,8 +89,9 @@ class AudioEnginePlayer {
     private var playbackProgress: Int = 0
     private var progressUpdateTimer: DispatchSourceTimer?
     
+    /// 播放列表
     private var playlist: [TrackModel] = []
-    
+    /// 循环模式
     private var loopMode: LoopMode = .all
     
     init() {
@@ -210,14 +225,16 @@ class AudioEnginePlayer {
     }
     
     // 更新锁屏和控制中心的播放信息
-    private func updateNowPlayingInfo() {
+    private func updateNowPlayingInfo(time: Int? = nil) {
         var nowPlayingInfo = [String: Any]()
         
         if let currentTrack = getCurrentTrack() {
+            // 设置标题、歌手和专辑
             nowPlayingInfo[MPMediaItemPropertyTitle] = currentTrack.title
             nowPlayingInfo[MPMediaItemPropertyArtist] = currentTrack.artist
             nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = currentTrack.album
             
+            // 设置专辑封面（Artwork）
             if let artwork = currentTrack.artwork {
                 nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: artwork.size) { size in
                     return artwork
@@ -225,8 +242,17 @@ class AudioEnginePlayer {
             }
         }
         
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playbackProgress / 1000
+        //print("当前进度：\(playbackProgress / 1000) newTime : \(time)")
+        // 设置当前播放进度
+        if let newTime = time {
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime / 1000
+        }else{
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playbackProgress / 1000
+        }
+        
+        // 设置音频总时长
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = totalDuration / 1000
+        // 设置播放速率（1.0 正常播放，0.0 暂停）
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
         
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
@@ -313,8 +339,9 @@ class AudioEnginePlayer {
             //print("self.playerNode.current :\(self.playerNode.current) + \(seekPosition/1000) = currentTime: \(currentTime)")
             //print("PlayerNode isPlayer = \(self.playerNode.isPlaying)")
             DispatchQueue.main.async {
+                self.updateNowPlayingInfo(time: progress)
                 self.playbackProgress = progress
-                //print("self.playbackProgress \(self.playbackProgress)")
+                //print("self.playbackProgress \(self.playbackProgress)/\(self.totalDuration)")
                 self.onPlaybackProgressUpdate?(self.playbackProgress)
                 if self.playbackProgress >= self.totalDuration {
                     self.stopProgressUpdateTimer()
@@ -541,8 +568,6 @@ class AudioEnginePlayer {
             
             // 开始更新播放进度的定时器
             startProgressUpdateTimer()
-            
-            updateNowPlayingInfo()
         } catch {
             print("Seek操作失败: \(error)")
         }
@@ -655,6 +680,11 @@ class AudioEnginePlayer {
             currentPlayIndex = playlist.count - 1
             play(with: playlist[currentPlayIndex])
         }
+    }
+    
+    public func updatePlaylistInfos(_ tracks: [TrackModel]) {
+        playlist = tracks
+        updateNowPlayingInfo()
     }
     
     public func removeFromPlaylist(_ index: Int) {

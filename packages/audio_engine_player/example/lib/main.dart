@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:audio_engine_player/audio_engine_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,6 +66,44 @@ class _AudioControlPanelState extends State<AudioControlPanel> {
   double _volume = 1.0;
   int _currentPosition = 0;
   int _duration = 0;
+
+  List<Map<String, String>> tracks = [
+    {
+      'source':
+          "http://192.168.1.225/musics/BEYOND%20-%20%E6%B5%B7%E9%98%94%E5%A4%A9%E7%A9%BA.mp3",
+      'title': "海阔天空",
+      'artist': "BEYOND",
+      'album': "乐与怒",
+    },
+    {
+      'source':
+          "http://192.168.1.225/musics/%E9%99%88%E4%B9%90%E5%9F%BA%20-%20%E6%9C%88%E5%8D%8A%E5%B0%8F%E5%A4%9C%E6%9B%B2.mp3",
+      'title': "月半小夜曲",
+      'artist': "陈乐基",
+      'album': "月半小夜曲",
+    },
+    {
+      'source':
+          "http://192.168.1.225/musics/%E5%A2%A8%E5%B0%94%E6%9C%AC%E7%9A%84%E7%A7%8B%E5%A4%A9.m4a",
+      'title': "墨尔本的秋天",
+      'artist': "未知艺术家",
+      'album': "未知专辑",
+    },
+    {
+      'source':
+          "http://192.168.1.225/musics/%E9%82%B5%E5%B8%85-%E6%9A%96%E4%B8%80%E6%9D%AF%E8%8C%B6.mp3",
+      'title': "暖一杯茶",
+      'artist': "邵帅",
+      'album': "暖一杯茶",
+    },
+    {
+      'source':
+          "http://192.168.1.225/musics/%E5%A5%A2%E9%A6%99%E5%A4%AB%E4%BA%BA.m4a",
+      'title': "奢香夫人",
+      'artist': "未知艺术家",
+      'album': "未知专辑",
+    }
+  ];
 
   @override
   void initState() {
@@ -208,6 +249,16 @@ class _AudioControlPanelState extends State<AudioControlPanel> {
           ],
         ),
         const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: _onUpdateMetadata,
+              child: const Text('Update Metadata'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
       ],
     );
   }
@@ -254,44 +305,19 @@ class _AudioControlPanelState extends State<AudioControlPanel> {
     );
   }
 
-  void _onSetPlaylist() {
-    List<Map<String, String>> tracks = [
-      {
-        'source':
-            "http://192.168.1.163/musics/BEYOND%20-%20%E6%B5%B7%E9%98%94%E5%A4%A9%E7%A9%BA.mp3",
-        'title': "海阔天空",
-        'artist': "BEYOND",
-        'album': "乐与怒",
-      },
-      {
-        'source':
-            "http://192.168.1.163/musics/%E9%99%88%E4%B9%90%E5%9F%BA%20-%20%E6%9C%88%E5%8D%8A%E5%B0%8F%E5%A4%9C%E6%9B%B2.mp3",
-        'title': "月半小夜曲",
-        'artist': "陈乐基",
-        'album': "月半小夜曲",
-      },
-      {
-        'source':
-            "http://192.168.1.163/musics/%E5%A2%A8%E5%B0%94%E6%9C%AC%E7%9A%84%E7%A7%8B%E5%A4%A9.m4a",
-        'title': "墨尔本的秋天",
-        'artist': "未知艺术家",
-        'album': "未知专辑",
-      },
-      {
-        'source':
-            "http://192.168.1.163/musics/%E9%82%B5%E5%B8%85-%E6%9A%96%E4%B8%80%E6%9D%AF%E8%8C%B6.mp3",
-        'title': "暖一杯茶",
-        'artist': "邵帅",
-        'album': "暖一杯茶",
-      },
-      {
-        'source':
-            "http://192.168.1.163/musics/%E5%A5%A2%E9%A6%99%E5%A4%AB%E4%BA%BA.m4a",
-        'title': "奢香夫人",
-        'artist': "未知艺术家",
-        'album': "未知专辑",
+  Future<String> loadAlbumArt(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    final Uint8List byteList = bytes.buffer.asUint8List();
+    return base64Encode(byteList);
+  }
+
+  void _onSetPlaylist() async {
+    for (var track in tracks) {
+      if (track['title'] == '海阔天空') {
+        String assetPath = 'assets/album_art.png';
+        track['albumArt'] = await loadAlbumArt(assetPath);
       }
-    ];
+    }
     _audioEnginePlayer.setPlaylist(tracks, true);
   }
 
@@ -329,5 +355,15 @@ class _AudioControlPanelState extends State<AudioControlPanel> {
 
   void _onShuffle() {
     _audioEnginePlayer.setLoopMode(2);
+  }
+
+  void _onUpdateMetadata() async {
+    for (var track in tracks) {
+      if (track['title'] == '海阔天空') {
+        String assetPath = 'assets/album_art2.png';
+        track['albumArt'] = await loadAlbumArt(assetPath);
+      }
+    }
+    _audioEnginePlayer.updatePlaylistInfos(tracks);
   }
 }

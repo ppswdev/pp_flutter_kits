@@ -31,8 +31,8 @@ abstract class AudioEnginePlayerPlatform extends PlatformInterface {
 
   Future<void> ensureEngineRunning();
 
-  Future<void> playWith(
-      String filePath, String title, String artist, String album);
+  Future<void> playWith(String filePath, String title, String artist,
+      String album, String albumArt);
 
   Future<void> seekTo(int milliseconds);
 
@@ -48,8 +48,10 @@ abstract class AudioEnginePlayerPlatform extends PlatformInterface {
 
   Future<void> setPlaylist(List<Map<String, String>> tracks, bool autoPlay);
 
-  Future<void> appendToPlaylist(
-      String source, String title, String artist, String album, bool autoPlay);
+  Future<void> updatePlaylistInfos(List<Map<String, String>> tracks);
+
+  Future<void> appendToPlaylist(String source, String title, String artist,
+      String album, String albumArt, bool autoPlay);
 
   Future<void> removeFromPlaylist(int index);
 
