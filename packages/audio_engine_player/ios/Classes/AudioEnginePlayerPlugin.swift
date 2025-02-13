@@ -92,7 +92,7 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
                         return nil
                     }
                     var track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
-                    if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                    if let base64String = trackDict["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
                         track.albumArt = image
                     }
                     return track
@@ -112,7 +112,7 @@ public class AudioEnginePlayerPlugin: NSObject, FlutterPlugin {
                         return nil
                     }
                     var track = TrackModel(source: source, title: title, artist: artist, album: album, albumArt: nil)
-                    if let base64String = args["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
+                    if let base64String = trackDict["albumArt"] as? String, base64String.count > 0, let imageData = Data(base64Encoded: base64String), let image = UIImage(data: imageData) {
                         track.albumArt = image
                     }
                     return track
