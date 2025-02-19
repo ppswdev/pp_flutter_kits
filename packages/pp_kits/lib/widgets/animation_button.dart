@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+/// 动画效果按钮
 class AnimationButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;

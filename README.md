@@ -24,6 +24,13 @@ flutter create --org com.ppsw --template=plugin --platforms=android,ios,web,maco
 flutter create example
 ```
 
+### 如何生成Doc文档
+
+``` bash
+dart pub global activate dartdoc
+dart pub global run dartdoc
+```
+
 ## 插件说明
 
 pp_kits: 我的工具箱
