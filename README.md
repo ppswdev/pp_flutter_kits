@@ -31,7 +31,7 @@ dart pub global activate dartdoc
 dart pub global run dartdoc
 ```
 
-## 插件说明
+## pp_kits插件说明
 
 pp_kits: 我的工具箱
 
@@ -52,6 +52,8 @@ pp_pay: 支付宝、微信支付、苹果支付等(规划中)
 pp_audio_player: 音频播放器(规划中)
 
 pp_video_player: 视频播放器(规划中)
+
+## 其他插件
 
 audio_engine_player: 音频引擎播放
 
