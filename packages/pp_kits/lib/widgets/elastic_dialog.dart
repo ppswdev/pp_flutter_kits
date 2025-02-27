@@ -14,10 +14,29 @@ Get.dialog(
 );
 */
 /// 弹性动画对话框
+/// 使用示例
+/// void example() {
+// Get.dialog(
+//   ElasticDialog(
+//     offset: const Offset(0, -100),
+//     backgroundColor: Colors.red,
+//     radius: 20,
+//     child: YourWidget(),
+//   ),
+//   barrierDismissible: false,
+//   barrierColor: Colors.black.withOpacity(0.3),
+// );
+/// }
 class ElasticDialog extends StatefulWidget {
   final Widget child;
+
+  /// 偏移量
   final Offset offset;
+
+  /// 背景颜色
   final Color backgroundColor;
+
+  /// 圆角
   final double radius;
 
   const ElasticDialog({

@@ -18,3 +18,21 @@ extension Color {
         )
     }
 }
+
+//extension View {
+//     func widgetBackground() -> some View {
+//         if #available(iOSApplicationExtension 17.0, *) {
+//             return containerBackground(for: .widget) {
+//                 Color(red: 0.988, green: 0.416, blue: 0.239, opacity: 1)
+//             }
+//         } else {
+//             if #available(iOSApplicationExtension 15.0, *) {
+//                 return background {
+//                     Color(red: 0.988, green: 0.416, blue: 0.239, opacity: 1)
+//                 }
+//             } else {
+//                 // Fallback on earlier versions
+//             }
+//         }
+//    }
+//}

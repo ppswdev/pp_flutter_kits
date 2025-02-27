@@ -4,11 +4,16 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-//（待开发）
+/// 提示框工具类
+/// 提供一些常用的提示框操作方法
 class PPAlert {
+  /// 是否显示加载中
   static var isLoading = false;
+
+  /// 是否显示提示框
   static var isAlerted = false;
-  // 显示加载中
+
+  /// 显示加载中
   static void showLoading(
       {String? text, int? timeoutSeconds, Function? onTimeout}) {
     isLoading = true;
@@ -27,43 +32,44 @@ class PPAlert {
     }
   }
 
-  // 隐藏加载
+  /// 隐藏加载
   static void hideLoading() {
     isLoading = false;
     EasyLoading.dismiss();
   }
 
-  // 显示提示
+  /// 显示提示
   static void showToast(String message) {
     EasyLoading.showToast(message);
   }
 
-  // 显示成功提示
+  /// 显示成功提示
   static void showSuccess(String message) {
     EasyLoading.showSuccess(message);
   }
 
-  // 显示错误提示
+  /// 显示错误提示
   static void showError(String message) {
     EasyLoading.showError(message);
   }
 
-  // 显示信息提示
+  /// 显示信息提示
   static void showInfo(String message) {
     EasyLoading.showInfo(message);
   }
 
-  // 显示警告提示
+  /// 显示警告提示
   static void showWarning(String message) {
     EasyLoading.showToast(message,
         toastPosition: EasyLoadingToastPosition.center);
   }
 
-  // 显示进度
+  /// 显示进度
   static void showProgress(double progress, {String? status}) {
     EasyLoading.showProgress(progress, status: status);
   }
 
+  /// 显示系统提示框
   static void showSysAlert(
       {String title = '提示',
       String text = '提示内容',
@@ -103,6 +109,7 @@ class PPAlert {
     );
   }
 
+  /// 显示系统确认框
   static void showSysConfirm(
       {String title = '确认',
       String text = '你确定要继续吗？',

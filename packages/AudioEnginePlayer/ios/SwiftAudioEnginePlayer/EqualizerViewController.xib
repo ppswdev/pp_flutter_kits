@@ -351,6 +351,16 @@
                                         <action selector="updateInfoAction:" destination="-1" eventType="touchUpInside" id="FN0-Qf-8vC"/>
                                     </connections>
                                 </button>
+                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ffb-I5-vqU">
+                                    <rect key="frame" x="137" y="547" width="118" height="35"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="AppleMusic"/>
+                                    <connections>
+                                        <action selector="openAppleMusic:" destination="-1" eventType="touchUpInside" id="KbW-ry-ltE"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1000" id="lI2-SM-GIS"/>

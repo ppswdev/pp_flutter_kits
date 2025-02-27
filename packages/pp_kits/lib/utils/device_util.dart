@@ -1,3 +1,8 @@
+import 'package:pp_kits/utils/keychain_util.dart';
+import 'package:uuid/uuid.dart';
+
+/// 设备工具类
+/// 提供一些常用的设备信息获取方法
 class DeviceUtil {
   /// 获取设备型号
   /// https://theapplewiki.com/wiki/Models#iPhone
@@ -167,5 +172,15 @@ class DeviceUtil {
       default:
         return "Unknown Device";
     }
+  }
+
+  /// 获取设备UUID
+  static Future<String> getDeviceUUID(String packageName) async {
+    String? value = await KeychainUtil.read(key: '$packageName.deviceUUID');
+    if (value == null) {
+      value = const Uuid().v7();
+      await KeychainUtil.write(key: '$packageName.deviceUUID', value: value);
+    }
+    return value;
   }
 }

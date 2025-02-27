@@ -35,12 +35,6 @@ dart pub global run dartdoc
 
 pp_kits: 我的工具箱
 
-pp_fan_menu: 高度自定义的扇形菜单
-
-pp_progress_bar: 高度自定义进度条
-
-pp_spin_wheel: 高度自定义旋转轮盘
-
 pp_purchase: 内购订阅
 
 pp_guides: 新功能引导(规划中)
@@ -52,6 +46,16 @@ pp_pay: 支付宝、微信支付、苹果支付等(规划中)
 pp_audio_player: 音频播放器(规划中)
 
 pp_video_player: 视频播放器(规划中)
+
+pp_fan_menu: 高度自定义的扇形菜单
+
+pp_progress_bar: 高度自定义进度条
+
+pp_spin_wheel: 高度自定义旋转轮盘
+
+pp_refresh: 高度自定义下拉刷新
+
+pp_login: 高度自定义登录
 
 ## 其他插件
 

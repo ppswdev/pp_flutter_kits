@@ -1,9 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// 应用工具类
+/// 提供一些常用的应用信息获取方法
 class AppUtil {
   /// 获取应用信息
   /// 返回 (应用名称, 包名, 版本号, 构建号)

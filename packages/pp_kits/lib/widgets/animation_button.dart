@@ -3,9 +3,24 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 /// 动画效果按钮
+/// 使用示例
+/// void example() {
+///   AnimationButton(
+///     child: Text('Tap me'),
+///     onTap: () {},
+///   );
+/// }
 class AnimationButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
+
+  /// 动画类型
+  /// 0: 无动画
+  /// 1: 弹跳动画
+  /// 2: 脉冲动画
+  /// 3: 抖动动画
+  /// 4: 缩放动画
+  /// 5: 缩放+旋转动画
   final int type;
 
   const AnimationButton({

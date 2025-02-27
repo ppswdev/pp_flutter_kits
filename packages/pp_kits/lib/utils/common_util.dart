@@ -6,9 +6,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../common/logger.dart';
 
+/// 通用工具类
+/// 提供一些常用的通用方法
 class CommonUtil {
-  /// 打开链接
+  /// 打开链接或者跳转到其他App
   /// @param url 链接
+  /// 使用示例
+  /// void example() {
+  ///   CommonUtil.openLink('https://www.google.com');
+  /// }
   static void openLink(String url) async {
     if (GetUtils.isURL(url)) {
       try {
@@ -74,7 +80,7 @@ class CommonUtil {
     return weights.length - 1;
   }
 
-  //生成随机色
+  /// 生成随机色
   static Color randomColor() {
     return Color.fromARGB(255, Random.secure().nextInt(255),
         Random.secure().nextInt(255), Random.secure().nextInt(255));

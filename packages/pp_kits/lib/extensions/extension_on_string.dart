@@ -4,15 +4,20 @@ import 'package:flutter/services.dart';
 
 import '../common/logger.dart';
 
+/// 字符串扩展
+/// 提供一些常用的字符串操作方法
 extension StringExtension on String {
+  /// 将字符串转换为int
   int toInt() {
     return int.tryParse(this) ?? 0;
   }
 
+  /// 将字符串转换为double
   double toDouble() {
     return double.tryParse(this) ?? 0.0;
   }
 
+  /// 将字符串转换为bool
   bool toBool() {
     return this == 'true' || this == '1';
   }
@@ -64,7 +69,13 @@ extension StringExtension on String {
     return Color(int.parse(buffer.toString(), radix: 16));
   }
 
+  /// 将字符串进行url编码
   String urlEncode() {
     return Uri.encodeFull(this);
+  }
+
+  /// 将字符串进行url解码
+  String urlDecode() {
+    return Uri.decodeFull(this);
   }
 }

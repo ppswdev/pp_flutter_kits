@@ -4,11 +4,11 @@ import 'dart:async';
 
 import 'package:pp_kits/common/logger.dart';
 
-enum NetworkStatus { mobile, wifi, ethernet, vpn, bluetooth, none }
+enum NetworkStatus { mobile, wifi, ethernet, vpn, bluetooth, unkown }
 
 class NetworkController extends GetxController {
   var isConnected = false.obs;
-  var status = NetworkStatus.none.obs;
+  var status = NetworkStatus.unkown.obs;
   late final Connectivity _connectivity;
   late final StreamSubscription<List<ConnectivityResult>>
       _connectivitySubscription;
@@ -42,13 +42,13 @@ class NetworkController extends GetxController {
       status.value = NetworkStatus.bluetooth;
       Logger.trace('pp_kits 连接的蓝牙网络');
     } else if (results.contains(ConnectivityResult.other)) {
-      status.value = NetworkStatus.none;
+      status.value = NetworkStatus.unkown;
       Logger.trace('pp_kits 未知的网络');
     } else if (results.contains(ConnectivityResult.none)) {
-      status.value = NetworkStatus.none;
+      status.value = NetworkStatus.unkown;
       Logger.trace('pp_kits 无网络');
     }
-    if (status.value == NetworkStatus.none) {
+    if (status.value == NetworkStatus.unkown) {
       Logger.log('pp_kits 网络已断开');
       isConnected.value = false;
     } else {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// 自定义事件总线
-/// 相当于iOS的NotificationCenter
+/// 相当于iOS的NotificationCenter，用于发送事件通知和监听事件通知
 class EventBus {
   /// 单例模式
   static final EventBus _instance = EventBus._internal();
@@ -19,7 +19,7 @@ class EventBus {
     return _streamControllers[T] as StreamController<T>;
   }
 
-  /// 发布事件
+  /// 发送通知事件
   ///
   /// [event] 事件对象, events.dart中的事件
   void send<T>(T event) {
