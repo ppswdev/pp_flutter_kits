@@ -1,23 +1,3 @@
-
-Easy-to-use in-app purchases that can callback results and facilitate operational tracking
-
-## Features
-
-- Configurable
-- Callable function
-
-## Getting started
-
-``` bash
-flutter pub add pp_purchase
-```
-
-## Usage
-
-Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:pp_purchase/pp_purchase.dart';
@@ -193,5 +173,3 @@ class _SubsDemoPageState extends State<SubsDemoPage> {
     );
   }
 }
-
-```

@@ -1,6 +1,6 @@
-# pp_purchase_example
+# example
 
-Demonstrates how to use the pp_purchase plugin.
+A new Flutter project.
 
 ## Getting Started
 
