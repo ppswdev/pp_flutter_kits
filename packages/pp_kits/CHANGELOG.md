@@ -1,5 +1,6 @@
 ## 1.0.5
 
+* Supported to Fluttter 3.24.5
 * Supplementary optimization and improvement
 
 ## 1.0.4

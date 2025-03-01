@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,12 +17,13 @@
 		B21B8D042C538EC6009574E1 /* WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B21B8CF02C538EC5009574E1 /* WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B21B8D0A2C53DEF2009574E1 /* SpectrumAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D092C53DEF2009574E1 /* SpectrumAnalyzer.swift */; };
 		B21B8D0C2C53DFDA009574E1 /* VisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D0B2C53DFDA009574E1 /* VisualizerView.swift */; };
-		B21B8D132C54A34B009574E1 /* PlayerSmallWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D112C54911E009574E1 /* PlayerSmallWidget.swift */; };
-		B21B8D162C54A3AC009574E1 /* MusicEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D152C54A3AC009574E1 /* MusicEntry.swift */; };
+		B21B8D132C54A34B009574E1 /* PlayerStandardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D112C54911E009574E1 /* PlayerStandardWidget.swift */; };
 		B21B8D192C54A423009574E1 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */; };
 		B21B8D1C2C54D1F5009574E1 /* AppGroupsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */; };
 		B21B8D1D2C54D433009574E1 /* AppGroupsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */; };
-		B21B8D1F2C54E5EB009574E1 /* PlayerMediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D1E2C54E5EB009574E1 /* PlayerMediumWidget.swift */; };
+		B26C8FCF2D603915002D36B6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B21B8CF22C538EC5009574E1 /* WidgetKit.framework */; };
+		B26C8FD02D603915002D36B6 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B21B8CF42C538EC5009574E1 /* SwiftUI.framework */; };
+		B26C8FE12D603917002D36B6 /* Widgets2Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B2E73E132C47B34500C6F608 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E73E122C47B34500C6F608 /* AppDelegate.swift */; };
 		B2E73E152C47B34500C6F608 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E73E142C47B34500C6F608 /* SceneDelegate.swift */; };
 		B2E73E172C47B34500C6F608 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E73E162C47B34500C6F608 /* ViewController.swift */; };
@@ -42,6 +43,13 @@
 			remoteGlobalIDString = B21B8CEF2C538EC5009574E1;
 			remoteInfo = WidgetsExtension;
 		};
+		B26C8FDF2D603917002D36B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2E73E072C47B34500C6F608 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B26C8FCD2D603915002D36B6;
+			remoteInfo = Widgets2Extension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +60,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				B21B8D042C538EC6009574E1 /* WidgetsExtension.appex in Embed Foundation Extensions */,
+				B26C8FE12D603917002D36B6 /* Widgets2Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,10 +80,10 @@
 		B21B8D092C53DEF2009574E1 /* SpectrumAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectrumAnalyzer.swift; sourceTree = "<group>"; };
 		B21B8D0B2C53DFDA009574E1 /* VisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerView.swift; sourceTree = "<group>"; };
 		B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIExtensions.swift; sourceTree = "<group>"; };
-		B21B8D112C54911E009574E1 /* PlayerSmallWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSmallWidget.swift; sourceTree = "<group>"; };
-		B21B8D152C54A3AC009574E1 /* MusicEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicEntry.swift; sourceTree = "<group>"; };
+		B21B8D112C54911E009574E1 /* PlayerStandardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStandardWidget.swift; sourceTree = "<group>"; };
 		B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppGroupsShared.swift; sourceTree = "<group>"; };
-		B21B8D1E2C54E5EB009574E1 /* PlayerMediumWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerMediumWidget.swift; sourceTree = "<group>"; };
+		B26C8F8D2D5ED27F002D36B6 /* SwiftAudioEnginePlayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftAudioEnginePlayer.entitlements; sourceTree = "<group>"; };
+		B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widgets2Extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2E73E0F2C47B34500C6F608 /* SwiftAudioEnginePlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftAudioEnginePlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2E73E122C47B34500C6F608 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B2E73E142C47B34500C6F608 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +97,20 @@
 		B2E73E2F2C47FEFC00C6F608 /* AudioEnginePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEnginePlayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B26C8FE22D603917002D36B6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B26C8FCD2D603915002D36B6 /* Widgets2Extension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B26C8FD12D603915002D36B6 /* Widgets2 */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B26C8FE22D603917002D36B6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Widgets2; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		B21B8CED2C538EC5009574E1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -95,6 +118,15 @@
 			files = (
 				B21B8CF52C538EC5009574E1 /* SwiftUI.framework in Frameworks */,
 				B21B8CF32C538EC5009574E1 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B26C8FCB2D603915002D36B6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B26C8FD02D603915002D36B6 /* SwiftUI.framework in Frameworks */,
+				B26C8FCF2D603915002D36B6 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,19 +152,25 @@
 		B21B8CF62C538EC5009574E1 /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				B26C8FC42D5F275E002D36B6 /* Example */,
 				B21B8CF72C538EC5009574E1 /* WidgetsBundle.swift */,
-				B21B8CF92C538EC5009574E1 /* WidgetsLiveActivity.swift */,
-				B21B8CFB2C538EC5009574E1 /* Widgets.swift */,
 				B21B8CFD2C538EC5009574E1 /* AppIntent.swift */,
+				B21B8D112C54911E009574E1 /* PlayerStandardWidget.swift */,
 				B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */,
-				B21B8D152C54A3AC009574E1 /* MusicEntry.swift */,
-				B21B8D112C54911E009574E1 /* PlayerSmallWidget.swift */,
-				B21B8D1E2C54E5EB009574E1 /* PlayerMediumWidget.swift */,
+				B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */,
 				B21B8CFF2C538EC6009574E1 /* Assets.xcassets */,
 				B21B8D012C538EC6009574E1 /* Info.plist */,
-				B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */,
 			);
 			path = Widgets;
+			sourceTree = "<group>";
+		};
+		B26C8FC42D5F275E002D36B6 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				B21B8CFB2C538EC5009574E1 /* Widgets.swift */,
+				B21B8CF92C538EC5009574E1 /* WidgetsLiveActivity.swift */,
+			);
+			path = Example;
 			sourceTree = "<group>";
 		};
 		B2E73E062C47B34500C6F608 = {
@@ -140,6 +178,7 @@
 			children = (
 				B2E73E112C47B34500C6F608 /* SwiftAudioEnginePlayer */,
 				B21B8CF62C538EC5009574E1 /* Widgets */,
+				B26C8FD12D603915002D36B6 /* Widgets2 */,
 				B21B8CF12C538EC5009574E1 /* Frameworks */,
 				B2E73E102C47B34500C6F608 /* Products */,
 			);
@@ -150,6 +189,7 @@
 			children = (
 				B2E73E0F2C47B34500C6F608 /* SwiftAudioEnginePlayer.app */,
 				B21B8CF02C538EC5009574E1 /* WidgetsExtension.appex */,
+				B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -157,6 +197,7 @@
 		B2E73E112C47B34500C6F608 /* SwiftAudioEnginePlayer */ = {
 			isa = PBXGroup;
 			children = (
+				B26C8F8D2D5ED27F002D36B6 /* SwiftAudioEnginePlayer.entitlements */,
 				B2E73E122C47B34500C6F608 /* AppDelegate.swift */,
 				B2E73E142C47B34500C6F608 /* SceneDelegate.swift */,
 				B2E73E162C47B34500C6F608 /* ViewController.swift */,
@@ -193,6 +234,28 @@
 			productReference = B21B8CF02C538EC5009574E1 /* WidgetsExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		B26C8FCD2D603915002D36B6 /* Widgets2Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B26C8FE32D603917002D36B6 /* Build configuration list for PBXNativeTarget "Widgets2Extension" */;
+			buildPhases = (
+				B26C8FCA2D603915002D36B6 /* Sources */,
+				B26C8FCB2D603915002D36B6 /* Frameworks */,
+				B26C8FCC2D603915002D36B6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B26C8FD12D603915002D36B6 /* Widgets2 */,
+			);
+			name = Widgets2Extension;
+			packageProductDependencies = (
+			);
+			productName = Widgets2Extension;
+			productReference = B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B2E73E0E2C47B34500C6F608 /* SwiftAudioEnginePlayer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B2E73E232C47B34600C6F608 /* Build configuration list for PBXNativeTarget "SwiftAudioEnginePlayer" */;
@@ -206,6 +269,7 @@
 			);
 			dependencies = (
 				B21B8D032C538EC6009574E1 /* PBXTargetDependency */,
+				B26C8FE02D603917002D36B6 /* PBXTargetDependency */,
 			);
 			name = SwiftAudioEnginePlayer;
 			productName = SwiftAudioEnginePlayer;
@@ -219,11 +283,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					B21B8CEF2C538EC5009574E1 = {
 						CreatedOnToolsVersion = 15.2;
+					};
+					B26C8FCD2D603915002D36B6 = {
+						CreatedOnToolsVersion = 16.1;
 					};
 					B2E73E0E2C47B34500C6F608 = {
 						CreatedOnToolsVersion = 15.2;
@@ -245,6 +312,7 @@
 			targets = (
 				B2E73E0E2C47B34500C6F608 /* SwiftAudioEnginePlayer */,
 				B21B8CEF2C538EC5009574E1 /* WidgetsExtension */,
+				B26C8FCD2D603915002D36B6 /* Widgets2Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -255,6 +323,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B21B8D002C538EC6009574E1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B26C8FCC2D603915002D36B6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,11 +355,16 @@
 				B21B8CFA2C538EC5009574E1 /* WidgetsLiveActivity.swift in Sources */,
 				B21B8CFE2C538EC5009574E1 /* AppIntent.swift in Sources */,
 				B21B8CFC2C538EC5009574E1 /* Widgets.swift in Sources */,
-				B21B8D132C54A34B009574E1 /* PlayerSmallWidget.swift in Sources */,
-				B21B8D1F2C54E5EB009574E1 /* PlayerMediumWidget.swift in Sources */,
+				B21B8D132C54A34B009574E1 /* PlayerStandardWidget.swift in Sources */,
 				B21B8D192C54A423009574E1 /* SwiftUIExtensions.swift in Sources */,
-				B21B8D162C54A3AC009574E1 /* MusicEntry.swift in Sources */,
 				B21B8CF82C538EC5009574E1 /* WidgetsBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B26C8FCA2D603915002D36B6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +390,11 @@
 			isa = PBXTargetDependency;
 			target = B21B8CEF2C538EC5009574E1 /* WidgetsExtension */;
 			targetProxy = B21B8D022C538EC6009574E1 /* PBXContainerItemProxy */;
+		};
+		B26C8FE02D603917002D36B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B26C8FCD2D603915002D36B6 /* Widgets2Extension */;
+			targetProxy = B26C8FDF2D603917002D36B6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -381,6 +466,62 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mobiunity.dev.demo.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B26C8FE42D603917002D36B6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 645F99BV7K;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widgets2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets2;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobiunity.dev.demo.Widgets2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B26C8FE52D603917002D36B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 645F99BV7K;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widgets2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets2;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobiunity.dev.demo.Widgets2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -511,14 +652,15 @@
 		B2E73E242C47B34600C6F608 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SwiftAudioEnginePlayer/SwiftAudioEnginePlayer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 645F99BV7K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SwiftAudioEnginePlayer/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Apple Music授权";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -541,14 +683,15 @@
 		B2E73E252C47B34600C6F608 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SwiftAudioEnginePlayer/SwiftAudioEnginePlayer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 645F99BV7K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SwiftAudioEnginePlayer/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Apple Music授权";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -576,6 +719,15 @@
 			buildConfigurations = (
 				B21B8D062C538EC6009574E1 /* Debug */,
 				B21B8D072C538EC6009574E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B26C8FE32D603917002D36B6 /* Build configuration list for PBXNativeTarget "Widgets2Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B26C8FE42D603917002D36B6 /* Debug */,
+				B26C8FE52D603917002D36B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

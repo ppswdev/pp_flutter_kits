@@ -1,10 +1,22 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pp_kits/utils/keychain_util.dart';
+import 'package:uuid/uuid.dart';
 
+/// 应用工具类
+/// 提供一些常用的应用信息获取方法
 class AppUtil {
+  /// 获取钥匙串中存储的应用UUID
+  static Future<String> getAppUUID(String packageName) async {
+    String? value = await KeychainUtil.read(key: '$packageName.appUUID');
+    if (value == null) {
+      value = const Uuid().v7();
+      await KeychainUtil.write(key: '$packageName.appUUID', value: value);
+    }
+    return value;
+  }
+
   /// 获取应用信息
   /// 返回 (应用名称, 包名, 版本号, 构建号)
   static Future<

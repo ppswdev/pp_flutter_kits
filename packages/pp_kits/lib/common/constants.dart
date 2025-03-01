@@ -1,3 +1,6 @@
+/// 常量
+/// 定义了常规的通用常量
+/// 比如：是否同意隐私协议、是否是第一次启动、是否是vip、订阅过期时间、是否开启声音、是否开启触感反馈
 class PPConsts {
   /// 是否同意隐私协议
   static const String isAgreePrivacy = 'key_isAgreePrivacy';

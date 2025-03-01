@@ -1,10 +1,10 @@
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:get_time_ago/get_time_ago.dart';
 
 extension DateTimeExtension on DateTime {
   /// Returns Time Ago
-  String get timeAgo => timeago.format(this);
+  String get timeAgo => GetTimeAgo.parse(this);
 
-  /// Returns true if given date is today
+  // ... existing code ...
   bool get isToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -29,6 +29,7 @@ extension DateTimeExtension on DateTime {
   }
 }
 
+// ... existing code ...
 /// return true if given year is an leap year
 bool isLeapYear(int year) {
   bool leapYear = false;

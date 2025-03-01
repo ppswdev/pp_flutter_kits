@@ -1,6 +1,6 @@
 name: pp_fan_menu
 description: "Highly and easily customizable fan menu in Stack widget, you can place components anywhere in the screen."
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_fan_menu
 
 environment:

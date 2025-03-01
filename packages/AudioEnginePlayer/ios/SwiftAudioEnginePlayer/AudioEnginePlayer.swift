@@ -242,7 +242,7 @@ class AudioEnginePlayer {
             }
         }
         
-        print("当前进度：\(playbackProgress / 1000) newTime : \(time)")
+        //print("当前进度：\(playbackProgress / 1000) newTime : \(time)")
         // 设置当前播放进度
         if let newTime = time {
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime / 1000

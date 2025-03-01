@@ -4,6 +4,7 @@ Highly and easily customizable fan menu in Stack widget, you can place component
 
 - Based on the Stack layout, the system supports the top, middle, bottom, and left, middle, and right positions
 - Stack can be placed anywhere in the page content area
+- Support RTL display mode
 
 ## Screenshots
 
@@ -64,12 +65,16 @@ If you want to customize the Angle control of the number, add `startAngle` and `
 
 ```dart
 class FanMenuExample extends StatelessWidget {
-  const FanMenuExample({super.key});
+  FanMenuExample({super.key});
+
+  final GlobalKey<PPFanMenuState> _fanMenuKey = GlobalKey<PPFanMenuState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Fan Menu Example')),
+      appBar: AppBar(
+        title: Text(S.current.appTitle),
+      ),
       body: SafeArea(
         child: Container(
           color: Colors.amber,
@@ -193,6 +198,7 @@ class FanMenuExample extends StatelessWidget {
               // End
               Positioned.fill(
                 child: PPFanMenu(
+                  key: _fanMenuKey,
                   alignment: AlignmentDirectional.topEnd, //右上角建议：2-4个选项最佳
                   openIcon: const Icon(Icons.menu),
                   hideIcon: const Icon(Icons.close),
@@ -219,9 +225,9 @@ class FanMenuExample extends StatelessWidget {
                     Icon(Icons.star, size: 40),
                     Icon(Icons.camera, size: 40),
                     Icon(Icons.mail, size: 40),
-                    Icon(Icons.camera, size: 40),
-                    Icon(Icons.camera, size: 40),
-                    Icon(Icons.camera, size: 40),
+                    Icon(Icons.call, size: 40),
+                    Icon(Icons.message, size: 40),
+                    Icon(Icons.favorite, size: 40),
                   ],
                 ),
               ),
@@ -254,4 +260,4 @@ class FanMenuExample extends StatelessWidget {
     );
   }
 }
-
+```

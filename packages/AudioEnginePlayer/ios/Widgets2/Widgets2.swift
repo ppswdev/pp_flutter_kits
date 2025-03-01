@@ -1,14 +1,13 @@
 //
-//  Widgets.swift
-//  Widgets
+//  Widgets2.swift
+//  Widgets2
 //
-//  Created by xiaopin on 2024/7/26.
+//  Created by xiaopin on 2025/2/15.
 //
 
 import WidgetKit
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
@@ -31,16 +30,18 @@ struct Provider: AppIntentTimelineProvider {
 
         return Timeline(entries: entries, policy: .atEnd)
     }
+
+//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
+//        // Generate a list containing the contexts this widget is relevant in.
+//    }
 }
 
-@available(iOS 17.0, *)
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let configuration: ConfigurationAppIntent
 }
 
-@available(iOS 17.0, *)
-struct WidgetsEntryView : View {
+struct Widgets2EntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
@@ -54,19 +55,17 @@ struct WidgetsEntryView : View {
     }
 }
 
-@available(iOS 17.0, *)
-struct Widgets: Widget {
-    let kind: String = "Widgets"
+struct Widgets2: Widget {
+    let kind: String = "Widgets2"
 
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
-            WidgetsEntryView(entry: entry)
+            Widgets2EntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
     }
 }
 
-@available(iOS 17.0, *)
 extension ConfigurationAppIntent {
     fileprivate static var smiley: ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
@@ -81,9 +80,9 @@ extension ConfigurationAppIntent {
     }
 }
 
-//#Preview(as: .systemSmall) {
-//    Widgets()
-//} timeline: {
-//    SimpleEntry(date: .now, configuration: .smiley)
-//    SimpleEntry(date: .now, configuration: .starEyes)
-//}
+#Preview(as: .systemSmall) {
+    Widgets2()
+} timeline: {
+    SimpleEntry(date: .now, configuration: .smiley)
+    SimpleEntry(date: .now, configuration: .starEyes)
+}

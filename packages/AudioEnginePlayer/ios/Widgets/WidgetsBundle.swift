@@ -11,8 +11,8 @@ import SwiftUI
 @main
 struct WidgetsBundle: WidgetBundle {
     var body: some Widget {
-        PlayerSmallWidget()
-        PlayerMediumWidget()
+        //可以添加最多5个Widget, 每个可以设置3个显示模式
+        PlayerStandardWidget()
         //Widgets()
         //WidgetsLiveActivity()
     }

@@ -9,15 +9,19 @@ import UIKit
 import Foundation
 
 enum DataKeys:String{
-    case appGroupKey = "group.com.mobiunity.dev.demo.widget"
+    case appGroupKey = "group.com.mobiunity.dev.demo"
+    case widget_kind_default = "com.mobiunity.dev.demo.widgetkind.default"
     case fileKey_currentTrack = "current_play.track"
     case udKey_IsVIP = "isVip"
+    case udKey_IsPlaying = "isPlaying"
+    case udKey_control_command = "control_command"
 }
 
 class AppGroupsShared{
     static func setValue(_ value:Any?, forKey key:DataKeys){
         if let userDefaults = UserDefaults(suiteName: DataKeys.appGroupKey.rawValue) {
             userDefaults.setValue(value, forKey: key.rawValue)
+            userDefaults.synchronize()
         }
     }
     

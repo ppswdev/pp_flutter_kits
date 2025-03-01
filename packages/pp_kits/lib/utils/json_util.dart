@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 import '../common/logger.dart';
 
+/// JSON工具类
+/// 提供一些常用的JSON操作方法
 class JsonUtil {
   ///
   /// 定义一个通用的 JSON 数组解析为对象List的方法

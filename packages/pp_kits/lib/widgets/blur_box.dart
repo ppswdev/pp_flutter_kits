@@ -1,20 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-/**
- * 
-  BlurContainer(
-    radius: 30.0,
-    color: Colors.white,
-    borderColor: Colors.blue,
-    opacity: 0.3,
-  )
- */
 /// 毛玻璃透明背景
 class BlurBox extends StatelessWidget {
+  /// 圆角半径
   final double? radius;
+
+  /// 背景颜色
   final Color? color;
+
+  /// 边框颜色
   final Color? borderColor;
+
+  /// 透明度
   final double? opacity;
 
   const BlurBox({
