@@ -1,6 +1,6 @@
 name: custom_background_scaffold
 description: "Supports custom solid color, gradient color, background image Scaffold"
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/custom_background_scaffold
 
 environment:

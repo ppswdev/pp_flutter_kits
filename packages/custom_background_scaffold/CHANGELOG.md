@@ -1,3 +1,7 @@
+## 1.0.2
+
+* tidy
+
 ## 1.0.1
 
 * tidy and add example

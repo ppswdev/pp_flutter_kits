@@ -9,7 +9,7 @@ Supports custom solid color, gradient color, background image Scaffold
 
 ``` yaml
 dependencies:
-  custom_background_scaffold: ^1.0.1
+  custom_background_scaffold: ^1.0.2
 ```
 
 ## Usage
