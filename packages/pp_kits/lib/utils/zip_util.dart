@@ -82,8 +82,12 @@ class ZipUtil {
 
       // 压缩并保存
       final zipData = ZipEncoder().encode(archive);
+      if (zipData == null) {
+        throw Exception('压缩数据为空');
+      }
       final zipFile = File(targetPath);
       await zipFile.writeAsBytes(zipData);
+      await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
       throw Exception('压缩错误: $e');
@@ -132,8 +136,12 @@ class ZipUtil {
 
       // 使用密码压缩并保存
       final zipData = ZipEncoder(password: password).encode(archive);
+      if (zipData == null) {
+        throw Exception('压缩数据为空');
+      }
       final zipFile = File(targetPath);
       await zipFile.writeAsBytes(zipData);
+      await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
       throw Exception('加密压缩错误: $e');
