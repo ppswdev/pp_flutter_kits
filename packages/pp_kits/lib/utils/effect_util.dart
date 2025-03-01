@@ -25,6 +25,19 @@ class EffectUtil {
   final _audioPool = [AudioPool(5), AudioPool(3)];
 
   /// 点击反馈特效
+  /// enableHapticFeedback: 是否启用触感反馈
+  /// level: 触感反馈强度
+  /// enableSound: 是否启用音效
+  /// audioAssetPath: 音效资源路径
+  ///
+  /// 使用示例
+  /// void example() {
+  ///   EffectUtil().tapFeedbackEffect(
+  ///     enableHapticFeedback: true,
+  ///     level: 1,
+  ///     enableSound: true,
+  ///     audioAssetPath: 'assets/sounds/win_sound.mp3',
+  ///   );
   void tapFeedbackEffect({
     bool enableHapticFeedback = false,
     int level = 1,
@@ -52,6 +65,11 @@ class EffectUtil {
 
   /// 播放音效的方法
   /// assetPath : 'assets/sounds/win_sound.mp3'
+  ///
+  /// 使用示例
+  /// void example() {
+  ///   EffectUtil().playSoundEffect('assets/sounds/win_sound.mp3');
+  /// }
   void playSoundEffect(String assetPath) async {
     Logger.log('Playing sound from: $assetPath');
     try {
@@ -62,6 +80,12 @@ class EffectUtil {
   }
 
   /// 触感反馈
+  /// level: 触感反馈强度
+  ///
+  /// 使用示例
+  /// void example() {
+  ///   EffectUtil().hapticFeedbackImpact(level: 1);
+  /// }
   void hapticFeedbackImpact({int level = 1}) {
     switch (level) {
       case 1:

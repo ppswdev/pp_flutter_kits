@@ -1,16 +1,31 @@
-import 'package:pp_kits/utils/keychain_util.dart';
-import 'package:uuid/uuid.dart';
-
 /// 设备工具类
 /// 提供一些常用的设备信息获取方法
 class DeviceUtil {
   /// 获取设备型号
+  ///
+  /// machine: 设备型号, iosInfo.utsname.machine 如 iPhone15,2
+  ///
+  /// 返回值: 设备型号名称 如 iPhone 14 Pro
+  ///
   /// https://theapplewiki.com/wiki/Models#iPhone
+  ///
   /// https://theapplewiki.com/wiki/Models#iPad
+  ///
   /// https://theapplewiki.com/wiki/Models#iPad_Air
+  ///
   /// https://theapplewiki.com/wiki/Models#iPad_Pro
+  ///
   /// https://theapplewiki.com/wiki/Models#iPad_mini
   ///
+  /// 使用示例
+  ///
+  /// void example() {
+  ///
+  ///   String modelName = DeviceUtil.iosModelName('iPhone15,2');
+  ///
+  ///   print(modelName); // 输出: iPhone 14 Pro
+  ///
+  /// }
   static String iosModelName(String machine) {
     switch (machine) {
       // iPhone 系列
@@ -82,14 +97,16 @@ class DeviceUtil {
         return "iPhone 15 Pro";
       case "iPhone16,2":
         return "iPhone 15 Pro Max";
-      case "iPhone17,3":
-        return "iPhone 16";
-      case "iPhone17,4":
-        return "iPhone 16 Plus";
       case "iPhone17,1":
         return "iPhone 16 Pro";
       case "iPhone17,2":
         return "iPhone 16 Pro Max";
+      case "iPhone17,3":
+        return "iPhone 16";
+      case "iPhone17,4":
+        return "iPhone 16 Plus";
+      case "iPhone17,5":
+        return "iPhone 16e";
 
       // iPad 系列
       case "iPad2,1" || "iPad2,2" || "iPad2,3" || "iPad2,4":
@@ -172,15 +189,5 @@ class DeviceUtil {
       default:
         return "Unknown Device";
     }
-  }
-
-  /// 获取设备UUID
-  static Future<String> getDeviceUUID(String packageName) async {
-    String? value = await KeychainUtil.read(key: '$packageName.deviceUUID');
-    if (value == null) {
-      value = const Uuid().v7();
-      await KeychainUtil.write(key: '$packageName.deviceUUID', value: value);
-    }
-    return value;
   }
 }
