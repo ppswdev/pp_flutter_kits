@@ -32,5 +32,6 @@ migrate_working_dir/
 /build/
 dist/
 symbols/
+pubspec.lock
 .flutter-plugins
 .flutter-plugins-dependencies
