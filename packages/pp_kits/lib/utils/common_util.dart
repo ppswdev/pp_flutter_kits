@@ -96,16 +96,14 @@ class CommonUtil {
     final random = Random.secure();
     final range = (255 * variation).toInt();
 
-    int newValue(int base) {
-      final delta = random.nextInt(range) - (range ~/ 2);
-      return (base + delta).clamp(0, 255);
-    }
-
-    return Color.fromARGB(
-      255,
-      newValue(baseColor.red),
-      newValue(baseColor.green),
-      newValue(baseColor.blue),
+    // 使用 Color.withValues() 方法来创建新颜色
+    return baseColor.withValues(
+      red: (baseColor.r + (random.nextInt(range) - (range ~/ 2)) / 255)
+          .clamp(0.0, 1.0),
+      green: (baseColor.g + (random.nextInt(range) - (range ~/ 2)) / 255)
+          .clamp(0.0, 1.0),
+      blue: (baseColor.b + (random.nextInt(range) - (range ~/ 2)) / 255)
+          .clamp(0.0, 1.0),
     );
   }
 }

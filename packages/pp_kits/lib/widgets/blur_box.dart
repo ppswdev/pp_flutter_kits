@@ -35,7 +35,7 @@ class BlurBox extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 毛玻璃效果
           child: Container(
             decoration: BoxDecoration(
-              color: color!.withOpacity(opacity!), // 半透明效果
+              color: color!.withValues(alpha: opacity!), // 半透明效果
               borderRadius: BorderRadius.circular(radius!),
               border: Border.all(
                 width: 2.0,
