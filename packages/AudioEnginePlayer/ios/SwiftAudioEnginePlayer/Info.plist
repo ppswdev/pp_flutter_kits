@@ -38,5 +38,7 @@
 	<array>
 		<string>audio</string>
 	</array>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>We need access to your Apple Music account to play your music collection and provide personalized recommendations.</string>
 </dict>
 </plist>
