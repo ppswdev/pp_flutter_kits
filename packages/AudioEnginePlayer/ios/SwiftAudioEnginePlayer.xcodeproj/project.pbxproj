@@ -21,6 +21,8 @@
 		B21B8D192C54A423009574E1 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */; };
 		B21B8D1C2C54D1F5009574E1 /* AppGroupsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */; };
 		B21B8D1D2C54D433009574E1 /* AppGroupsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */; };
+		B23DBC512D7EBE5900E546D8 /* AppleMusicPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23DBC502D7EBE5600E546D8 /* AppleMusicPlayer.swift */; };
+		B23DBC572D7EDF5100E546D8 /* AppleMusicPlayerExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23DBC562D7EDF5100E546D8 /* AppleMusicPlayerExample.swift */; };
 		B26C8FCF2D603915002D36B6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B21B8CF22C538EC5009574E1 /* WidgetKit.framework */; };
 		B26C8FD02D603915002D36B6 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B21B8CF42C538EC5009574E1 /* SwiftUI.framework */; };
 		B26C8FE12D603917002D36B6 /* Widgets2Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -82,6 +84,8 @@
 		B21B8D0F2C548E2B009574E1 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIExtensions.swift; sourceTree = "<group>"; };
 		B21B8D112C54911E009574E1 /* PlayerStandardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStandardWidget.swift; sourceTree = "<group>"; };
 		B21B8D1B2C54D1F5009574E1 /* AppGroupsShared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppGroupsShared.swift; sourceTree = "<group>"; };
+		B23DBC502D7EBE5600E546D8 /* AppleMusicPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicPlayer.swift; sourceTree = "<group>"; };
+		B23DBC562D7EDF5100E546D8 /* AppleMusicPlayerExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicPlayerExample.swift; sourceTree = "<group>"; };
 		B26C8F8D2D5ED27F002D36B6 /* SwiftAudioEnginePlayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftAudioEnginePlayer.entitlements; sourceTree = "<group>"; };
 		B26C8FCE2D603915002D36B6 /* Widgets2Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widgets2Extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2E73E0F2C47B34500C6F608 /* SwiftAudioEnginePlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftAudioEnginePlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -206,6 +210,8 @@
 				B21B8D0B2C53DFDA009574E1 /* VisualizerView.swift */,
 				B2E73E282C47B36900C6F608 /* EqualizerViewController.swift */,
 				B2E73E292C47B36900C6F608 /* EqualizerViewController.xib */,
+				B23DBC502D7EBE5600E546D8 /* AppleMusicPlayer.swift */,
+				B23DBC562D7EDF5100E546D8 /* AppleMusicPlayerExample.swift */,
 				B2E73E182C47B34500C6F608 /* Main.storyboard */,
 				B2E73E1B2C47B34600C6F608 /* Assets.xcassets */,
 				B2E73E1D2C47B34600C6F608 /* LaunchScreen.storyboard */,
@@ -375,6 +381,8 @@
 				B21B8D1D2C54D433009574E1 /* AppGroupsShared.swift in Sources */,
 				B2E73E172C47B34500C6F608 /* ViewController.swift in Sources */,
 				B2E73E2C2C47B36900C6F608 /* EqualizerViewController.swift in Sources */,
+				B23DBC572D7EDF5100E546D8 /* AppleMusicPlayerExample.swift in Sources */,
+				B23DBC512D7EBE5900E546D8 /* AppleMusicPlayer.swift in Sources */,
 				B2E73E132C47B34500C6F608 /* AppDelegate.swift in Sources */,
 				B21B8D0C2C53DFDA009574E1 /* VisualizerView.swift in Sources */,
 				B2E73E302C47FEFD00C6F608 /* AudioEnginePlayer.swift in Sources */,

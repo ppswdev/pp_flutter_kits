@@ -13,9 +13,7 @@ import MediaPlayer
 class EqualizerViewController: UIViewController {
     private var visualizerView: VisualizerView!
     lazy var audioEnginePlayer = AudioEnginePlayer()
-    
-    let musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    
+        
     @IBOutlet weak var btnPlayOrPause: UIButton!
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var labPlayProgress: UILabel!
@@ -170,50 +168,6 @@ class EqualizerViewController: UIViewController {
         audioEnginePlayer.setPlaylist(tracks, autoPlay: true)
     }
     
-    @IBAction func openAppleMusic(_ sender: Any) {
-        let alert = UIAlertController(title: "选择导入方式", message: nil, preferredStyle: .actionSheet)
-        
-        // 导入所有选项
-        alert.addAction(UIAlertAction(title: "导入所有", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            
-            MPMediaLibrary.requestAuthorization { status in
-                if status == .authorized {
-                    let query = MPMediaQuery.songs()
-                    if let items = query.items {
-                        for item in items {
-                            let title = item.title ?? "未知标题"
-                            let artist = item.artist ?? "未知艺术家"
-                            let albumTitle = item.albumTitle ?? "未知专辑"
-                            let assetURL = item.assetURL?.absoluteString ?? "未下载"
-                            print("歌曲: \(title), 艺术家: \(artist), 专辑: \(albumTitle), 地址: \(assetURL)")
-                        }
-                        self.musicPlayer.setQueue(with: query)
-                        self.musicPlayer.play()
-                    } else {
-                        print("没有找到任何歌曲")
-                    }
-                } else {
-                    print("媒体库访问被拒绝")
-                }
-            }
-        })
-        
-        // 打开媒体库选项
-        alert.addAction(UIAlertAction(title: "打开媒体库", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            let mediaPicker = MPMediaPickerController(mediaTypes: .music)
-            mediaPicker.delegate = self
-            mediaPicker.allowsPickingMultipleItems = true
-            self.present(mediaPicker, animated: true)
-        })
-        
-        // 取消选项
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        
-        present(alert, animated: true)
-    }
-    
     @IBAction func setPlaylistAction(_ sender: Any) {
         audioEnginePlayer.setPlaylist(tracks, autoPlay: true)
     }
@@ -236,28 +190,5 @@ class EqualizerViewController: UIViewController {
     
     @IBAction func speedChanged(_ sender: UISlider) {
         audioEnginePlayer.setSpeed(sender.value)
-    }
-}
-
-extension EqualizerViewController:MPMediaPickerControllerDelegate{
-    // MPMediaPickerControllerDelegate 方法
-    func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
-        dismiss(animated: true, completion: nil)
-        
-        // 处理用户选择的媒体项
-        let items = mediaItemCollection.items
-        for item in items {
-            let title = item.title ?? "未知标题"
-            let artist = item.artist ?? "未知艺术家"
-            let albumTitle = item.albumTitle ?? "未知专辑"
-            let assetURL = item.assetURL?.absoluteString ?? "未下载"
-            print("歌曲: \(title), 艺术家: \(artist), 专辑: \(albumTitle), 地址: \(assetURL)")
-        }
-        self.musicPlayer.setQueue(with: mediaItemCollection)
-        self.musicPlayer.play()
-    }
-    
-    func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
-        dismiss(animated: true, completion: nil)
     }
 }
