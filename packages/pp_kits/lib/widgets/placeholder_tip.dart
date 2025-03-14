@@ -34,11 +34,11 @@ class PlaceholderTip extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: textStyle ??
-                  const TextStyle(color: Colors.grey, fontSize: 18),
+                  const TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ),
           if (button != null) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             button!,
           ],
         ],

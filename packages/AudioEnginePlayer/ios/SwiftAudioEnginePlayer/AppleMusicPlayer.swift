@@ -21,7 +21,7 @@ enum AMPRepeatMode {
 }
 
 /// 音乐播放器封装类，提供对 Apple Music 的访问和控制
-class AppleMusicPlayer {
+class AppleMusicPlayer:NSObject {
     // MARK: - 类型定义
 
     /// 授权回调闭包类型
@@ -89,7 +89,8 @@ class AppleMusicPlayer {
     // MARK: - 初始化
     
     /// 初始化播放器
-    init() {
+    override init() {
+        super.init()
         setupNotifications()
     }
     
@@ -323,28 +324,24 @@ class AppleMusicPlayer {
     
     /// 打开媒体选择器
     func openMediaPicker(from viewController: UIViewController) {
-        MPMediaLibrary.requestAuthorization { [weak self] status in
-            guard let self = self else { return }
-            self.onAuth?(status.rawValue)
-            if status == .authorized {
-                let mediaPicker = MPMediaPickerController(mediaTypes: .music)
-                mediaPicker.allowsPickingMultipleItems = true
-                
-                // 设置媒体选择器回调
-                let delegate = MediaPickerDelegate { [weak self] items in
+        // 确保在主线程上执行
+        DispatchQueue.main.async {
+            MPMediaLibrary.requestAuthorization { [weak self] status in
+                // 授权回调可能在后台线程，所以需要再次确保在主线程上执行UI操作
+                DispatchQueue.main.async {
                     guard let self = self else { return }
-                    self.setCurrentSongsList(items)
-                }
-                
-                // 保持委托对象的引用
-                objc_setAssociatedObject(mediaPicker, &AssociatedKeys.delegateKey, delegate, .OBJC_ASSOCIATION_RETAIN)
-                
-                mediaPicker.delegate = delegate
-                viewController.present(mediaPicker, animated: true)
-            } else {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.onError?("媒体库访问被拒绝")
+                    
+                    if status == .authorized {
+                        let picker = MPMediaPickerController(mediaTypes: .music)
+                        picker.delegate = self
+                        picker.allowsPickingMultipleItems = true
+                        viewController.present(picker, animated: true, completion: nil)
+                    } else {
+                        // 处理未授权情况
+                        if let onError = self.onError {
+                            onError("未获得媒体库访问权限")
+                        }
+                    }
                 }
             }
         }
@@ -385,26 +382,13 @@ class AppleMusicPlayer {
 // MARK: - 辅助类型
 
 /// 媒体选择器委托
-private class MediaPickerDelegate: NSObject, MPMediaPickerControllerDelegate {
-    private let completion: ([MPMediaItem]) -> Void
-    
-    init(completion: @escaping ([MPMediaItem]) -> Void) {
-        self.completion = completion
-        super.init()
-    }
-    
+extension AppleMusicPlayer:MPMediaPickerControllerDelegate {
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         mediaPicker.dismiss(animated: true)
-        completion(mediaItemCollection.items)
+        setCurrentSongsList(mediaItemCollection.items)
     }
     
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
         mediaPicker.dismiss(animated: true)
     }
 }
-
-/// 关联键，用于存储委托对象
-private struct AssociatedKeys {
-    static var delegateKey = "MediaPickerDelegateKey"
-}
-
