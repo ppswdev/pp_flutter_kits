@@ -1,15 +1,38 @@
 # pp_asa_attribution
 
-A new Flutter plugin project.
+Apple search ads attribution plugin
 
+## Built on
+
+- Flutter 3.24.5+
+- iOS 14.3+
+- Swift 5.0+
+  
+## Requirements
+
+- Add iOS Framework: iAd、AdServices、AdSupport、AppTrackingTransparency
+  
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/to/develop-plugins),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+```dart
+import 'package:pp_asa_attribution/pp_asa_attribution.dart';
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Map<String, dynamic>? attributionJson = await PPAsaAttribution().requestAttributionDetails();
+```
 
+## Results
+
+```json
+{
+    clickDate: 2025-03-15T12:04Z, 
+    countryOrRegion: US, 
+    campaignId: 1234567890, 
+    conversionType: Download, 
+    keywordId: 12323222, 
+    adGroupId: 1234567890, 
+    attribution: true, 
+    claimType: Click, 
+    orgId: 1234567890, 
+    adId: 1234567890
+}
+```

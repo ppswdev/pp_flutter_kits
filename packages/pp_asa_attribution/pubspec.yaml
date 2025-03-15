@@ -1,5 +1,5 @@
 name: pp_asa_attribution
-description: "A new Flutter plugin project."
+description: "Apple search ads attribution plugin, built on Flutter, for iOS 14.3+"
 version: 1.0.0
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_asa_attribution
 

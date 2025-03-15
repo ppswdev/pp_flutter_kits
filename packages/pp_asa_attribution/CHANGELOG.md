@@ -1,3 +1,4 @@
 ## 1.0.0
 
-* Initial release. Only supports iOS 14.3+.
+* Only supports iOS 14.3+.
+* Built on Flutter 3.24.5 & Swift 5
