@@ -57,6 +57,8 @@ pp_refresh: 高度自定义下拉刷新
 
 pp_login: 高度自定义登录
 
+pp_asa_attribution: iOS归因数据
+
 ## 其他插件
 
 audio_engine_player: 音频引擎播放
