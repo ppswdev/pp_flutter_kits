@@ -251,7 +251,8 @@ class PPSpinWheelState extends State<PPSpinWheel>
     // 计算点击位置相对于圆心的角度
     final dx = localPosition.dx - center.dx;
     final dy = localPosition.dy - center.dy;
-    final angle = atan2(dy, dx);
+    // 从12点方向开始计算角度
+    final angle = atan2(dx, -dy);
 
     // 将角度转换为0-2π范围
     final normalizedAngle = angle < 0 ? angle + 2 * pi : angle;

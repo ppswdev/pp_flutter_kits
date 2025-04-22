@@ -10,7 +10,7 @@ Custom spin wheel. Makes it easier for code to implement wheel effects.
 
 ```yaml
 dependencies:
-  pp_spin_wheel: ^1.0.7
+  pp_spin_wheel: ^1.0.8
 ```
 
 ## Usage

@@ -1,3 +1,7 @@
+## 1.0.8
+
+* fix bug
+
 ## 1.0.7
 
 * Optimize user experience
