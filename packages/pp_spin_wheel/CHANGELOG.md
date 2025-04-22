@@ -1,5 +1,7 @@
 ## 1.0.7
 
+* Optimize user experience
+
 ## 1.0.6
 
 * Added use GlobalKey to call the Wheel functions

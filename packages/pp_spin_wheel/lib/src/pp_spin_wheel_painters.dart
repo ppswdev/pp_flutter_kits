@@ -31,9 +31,10 @@ class WheelPainter extends CustomPainter {
   final bool enableWeight;
   final Function(List<double>)? onItemAnglesUpdated;
 
-  // 记录每个item的角度范围,从12点钟方向开始
+  /// 记录每个item的角度范围,从12点钟方向开始
   final List<(double startAngle, double endAngle)> itemAngleRanges = [];
-  // 记录每个item的中间角度,从12点钟方向开始
+
+  /// 记录每个item的中间角度,从12点钟方向开始
   final List<double> itemAngles = [];
 
   WheelPainter({
@@ -52,10 +53,11 @@ class WheelPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    double startAngle = 0; // 默认从3点钟方向开始
+    double startAngle = -pi / 2; // 从12点钟方向(0点)开始
     itemAngleRanges.clear();
     itemAngles.clear();
-
+    var endLineColor = Colors.transparent;
+    var isEven = items.length % 2 == 0;
     for (var i = 0; i < items.length; i++) {
       final item = items[i];
       final sweepAngle = enableWeight
@@ -80,8 +82,37 @@ class WheelPainter extends CustomPainter {
         paint,
       );
 
+      // 绘制分隔线
+      if (!isEven) {
+        //如果是奇数数组，获取第二元素的背景色为分割线背景色
+        if (i == 1) {
+          endLineColor = item.bgColor;
+        }
+
+        //在最后一个画一条分隔线
+        if (endLineColor != Colors.transparent && i == items.length - 1) {
+          final endLinePaint = Paint()
+            ..color = endLineColor
+            ..strokeWidth = 1.0
+            ..style = PaintingStyle.stroke;
+
+          final startPoint = Offset(
+            center.dx + cos(startAngle + sweepAngle) * radius,
+            center.dy + sin(startAngle + sweepAngle) * radius,
+          );
+          final endPoint = center;
+
+          canvas.drawLine(startPoint, endPoint, endLinePaint);
+        }
+      }
+
       // 绘制文字
       var scaledTextStyle = textStyle;
+      if (item.weight == 0 && enableWeight) {
+        scaledTextStyle = textStyle.copyWith(
+          color: Colors.transparent,
+        );
+      }
       final title = item.title;
 
       // 先测试文字宽度是否超出radius
