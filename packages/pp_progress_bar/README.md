@@ -6,7 +6,8 @@ Easy and highly customizable style progress bar
 - Custom display percentage values, text style
 - Default track color, highlighted track color, and highlighted track fillet
 - Transparent overlay can be added to enhance the display effect
-
+- Support gradient colors
+  
 ## Example effect
 
 ![Sample1](screenshots/sample1.png)

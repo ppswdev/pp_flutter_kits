@@ -18,6 +18,13 @@ flutter create --org com.ppsw --template=plugin --platforms=android,ios 插件�
 flutter create --org com.ppsw --template=plugin --platforms=android,ios,web,macos,windows,linux 插件名
 ```
 
+### 发布插件
+
+``` bash
+dart pub publish --dry-run
+dart pub publish
+```
+
 ### 创建示例工程
 
 ``` bash

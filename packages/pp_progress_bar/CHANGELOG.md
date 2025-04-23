@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Support gradient colors
+
 ## 1.0.1
 
 * doc update

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// 自定义进度条
+/// A customizable progress bar widget for Flutter.
+/// This widget allows you to create a progress bar with various customization
+/// options, including colors, height, border radius, and the option to show
+/// percentage text. It also supports gradient colors for both the track and
+/// progress sections.
+/// The progress bar can be used to indicate the progress of a task or operation
+/// and can be easily integrated into any Flutter application.
 class PPProgressBar extends StatelessWidget {
   /// 当前进度值 0.0 - 1.0
   final double value;
@@ -17,8 +23,12 @@ class PPProgressBar extends StatelessWidget {
   /// 默认轨道颜色
   final Color trackColor;
 
+  final List<Color>? trackColors;
+
   /// 高亮轨道颜色
   final Color progressColor;
+
+  final List<Color>? progressColors;
 
   /// 高亮轨道颜色
   final double progressRadius;
@@ -36,7 +46,9 @@ class PPProgressBar extends StatelessWidget {
     this.height = 50,
     this.borderRadius = 25,
     this.trackColor = const Color.fromARGB(255, 113, 75, 164),
+    this.trackColors,
     this.progressColor = const Color.fromARGB(255, 215, 73, 99),
+    this.progressColors,
     this.progressRadius = 1.0,
     this.percentageStyle,
     this.overlay,
@@ -55,7 +67,16 @@ class PPProgressBar extends StatelessWidget {
                 // 默认轨道
                 Container(
                   width: double.infinity,
-                  color: trackColor,
+                  decoration: BoxDecoration(
+                    color: trackColors != null ? null : trackColor,
+                    gradient: trackColors != null
+                        ? LinearGradient(
+                            colors: trackColors!,
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          )
+                        : null,
+                  ),
                 ),
 
                 // 进度轨道
@@ -63,7 +84,14 @@ class PPProgressBar extends StatelessWidget {
                   widthFactor: value,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: progressColor,
+                      color: progressColors != null ? null : progressColor,
+                      gradient: progressColors != null
+                          ? LinearGradient(
+                              colors: progressColors!,
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            )
+                          : null,
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(
                             value == 1.0 ? borderRadius : progressRadius),
