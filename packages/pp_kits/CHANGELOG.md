@@ -1,3 +1,8 @@
+## 1.0.8
+
+* update packages
+* added feature
+
 ## 1.0.7
 
 * Requirements: Flutter 3.27.0+, Dart 3.6.0+
