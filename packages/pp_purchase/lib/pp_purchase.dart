@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
-// import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-// import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 
 /// 订阅购买状态
 enum IAPPurchaseStatus {
@@ -127,6 +127,9 @@ class SubsPurchase {
   /// 产品ID列表
   List<String> _productIds = [];
 
+  /// 一次性买断订阅产品
+  List<String> _onetimeSubsIds = [];
+
   /// 验证共享密钥
   String _sharedSecret = '';
 
@@ -139,11 +142,13 @@ class SubsPurchase {
   /// 初始化时传入产品ID
   ///
   /// [productIds] 产品ID列表
+  /// [onetimeSubIds] 一次性买断订阅产品ID列表
   /// [sharedSecret] 验证共享密钥
-  Future<void> initialize(List<String> productIds,
+  Future<void> initialize(List<String> productIds, List<String> onetimeSubIds,
       {required String sharedSecret, bool showLog = false}) async {
     _productIds = productIds;
     _sharedSecret = sharedSecret;
+    _onetimeSubsIds = onetimeSubIds;
     _showLog = showLog;
     try {
       _isAvailable = await _iap.isAvailable();
@@ -638,6 +643,11 @@ class SubsPurchase {
 
           // 检查是否为有效订阅
           if (expiresDateMs > now) {
+            validPurchases.add(transaction);
+          }
+        } else {
+          //如果一次性买断中有这个产品,则认为是有效购买
+          if (_onetimeSubsIds.contains(productId)) {
             validPurchases.add(transaction);
           }
         }

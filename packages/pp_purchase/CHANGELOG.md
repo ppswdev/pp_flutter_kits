@@ -1,3 +1,8 @@
+## 1.0.1
+
+* add one-time subscription logic
+* docs updates
+
 ## 1.0.0
 
 * Initial version
