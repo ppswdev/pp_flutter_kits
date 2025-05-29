@@ -12,16 +12,30 @@ public class PPAsaAttributionPlugin: NSObject, FlutterPlugin {
     switch call.method {
     case "getPlatformVersion":
         result("iOS " + UIDevice.current.systemVersion)
+    
+    case "attributionToken":
+        result(AsaManager.attributionToken())
+    case "requestAttributionWithToken":
+        if let args = call.arguments as? [String: Any],
+           let token = args["token"] as? String {
+            AsaManager.requestAttribution(withToken: token) { data, error in
+                if let attributionData = data {
+                    result(attributionData)
+                } else {
+                    result(FlutterError(code: "FAILED", message: "requestAttribution error", details: error))
+                }
+            }
+        } else {
+            result(FlutterError(code: "INVALID_ARGUMENT", message: "Token is required", details: nil))
+        }
     case "requestAttributionDetails":
         AsaManager.requestAttribution { data, error in
             if let attributionData = data {
                 result(attributionData)
             } else {
-                result(FlutterError(code: "FAILED",  message: "requestAttribution error",  details: nil))
+                result(FlutterError(code: "FAILED",  message: "requestAttribution error",  details: error))
             }
         }
-    case "attributionToken":
-        result(AsaManager.attributionToken())
     default:
         result(FlutterMethodNotImplemented)
     }

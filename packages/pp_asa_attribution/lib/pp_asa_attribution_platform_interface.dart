@@ -32,6 +32,12 @@ abstract class PPAsaAttributionPlatform extends PlatformInterface {
     throw UnimplementedError('attributionToken() has not been implemented.');
   }
 
+  /// 使用token请求归因详情
+  Future<Map<String, dynamic>?> requestAttributionWithToken(String token) {
+    throw UnimplementedError(
+        'requestAttributionDetails() has not been implemented.');
+  }
+
   /// 请求归因详情
   Future<Map<String, dynamic>?> requestAttributionDetails() {
     throw UnimplementedError(

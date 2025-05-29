@@ -11,6 +11,11 @@ class PPAsaAttribution {
   }
 
   /// 请求归因详情
+  Future<Map<String, dynamic>?> requestAttributionWithToken(String token) {
+    return PPAsaAttributionPlatform.instance.requestAttributionWithToken(token);
+  }
+
+  /// 请求归因详情
   Future<Map<String, dynamic>?> requestAttributionDetails() {
     return PPAsaAttributionPlatform.instance.requestAttributionDetails();
   }

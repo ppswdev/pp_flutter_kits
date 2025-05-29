@@ -6,7 +6,7 @@ class AsaManager {
         if #available(iOS 14.3, *) {
             do {
                 let attributionToken = try AAAttribution.attributionToken()
-                return attributionToken
+                return attributionToken 
             } catch {
                 print("Failed to get attribution token: \(error.localizedDescription)")
             }
@@ -14,20 +14,6 @@ class AsaManager {
             print("AAAttribution is not available on this iOS version.")
         }
         return nil
-    }
-    
-    static func requestAttribution(complete: @escaping (([String: Any]?, Error?) -> Void)) {
-        if #available(iOS 14.3, *) {
-            guard let token = attributionToken(), !token.isEmpty else {
-                let error = NSError(domain: "app", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve attribution token"])
-                complete(nil, error)
-                return
-            }
-            requestAttribution(withToken: token, complete: complete)
-        } else {
-            let error = NSError(domain: "app", code: -1, userInfo: [NSLocalizedDescriptionKey: "ATTracking Not Allowed"])
-            complete(nil, error)
-        }
     }
     
     static func requestAttribution(withToken token: String, complete: @escaping (([String: Any]?, Error?) -> Void)) {
@@ -57,5 +43,21 @@ class AsaManager {
             }
         }
         dataTask.resume()
+    }
+    
+    static func requestAttribution(complete: @escaping (([String: Any]?, Error?) -> Void)) {
+        if #available(iOS 14.3, *) {
+            guard let token = attributionToken(), !token.isEmpty else {
+                let error = NSError(domain: "app", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve attribution token"])
+                complete(nil, error)
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                requestAttribution(withToken: token, complete: complete)
+            }
+        } else {
+            let error = NSError(domain: "app", code: -1, userInfo: [NSLocalizedDescriptionKey: "ATTracking Not Allowed"])
+            complete(nil, error)
+        }
     }
 }

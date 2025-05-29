@@ -17,33 +17,62 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _ppAsaAttributionPlugin = PPAsaAttribution();
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    fetchASAData1();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _ppAsaAttributionPlugin.getPlatformVersion() ??
-          'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+  Future<void> fetchASAData1() async {
+    Map<String, dynamic>? attributionJson =
+        await PPAsaAttribution().requestAttributionDetails();
+    int retryCount = 0;
+    while (attributionJson == null && retryCount < 3) {
+      print('uploadASAData attributionJson is null, retry count: $retryCount');
+      // 延迟5秒后重试
+      await Future.delayed(const Duration(seconds: 5));
+      attributionJson = await PPAsaAttribution().requestAttributionDetails();
+      retryCount++;
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
+    if (attributionJson == null) {
+      print('uploadASAData json null after 3 retries');
+      return;
+    }
+    print('uploadASAData attributionJson: $attributionJson');
     setState(() {
-      _platformVersion = platformVersion;
+      _platformVersion = attributionJson.toString();
+    });
+  }
+
+  Future<void> fetchASAData2() async {
+    String? token = await PPAsaAttribution().attributionToken();
+    if (token == null) {
+      print('uploadASAData token is null');
+      return;
+    }
+    print('uploadASAData token: $token');
+    // 延迟500毫秒后再请求
+    await Future.delayed(const Duration(milliseconds: 500));
+    Map<String, dynamic>? attributionJson =
+        await PPAsaAttribution().requestAttributionWithToken(token);
+    int retryCount = 0;
+    while (attributionJson == null && retryCount < 3) {
+      print('uploadASAData attributionJson is null, retry count: $retryCount');
+      // 延迟5秒后重试
+      await Future.delayed(const Duration(seconds: 5));
+      attributionJson =
+          await PPAsaAttribution().requestAttributionWithToken(token);
+      retryCount++;
+    }
+    if (attributionJson == null) {
+      print('uploadASAData json null after 3 retries');
+      return;
+    }
+    print('uploadASAData attributionJson: $attributionJson');
+    setState(() {
+      _platformVersion = attributionJson.toString();
     });
   }
 
