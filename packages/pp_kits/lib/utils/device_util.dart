@@ -1,3 +1,7 @@
+import 'package:uuid/uuid.dart';
+
+import 'keychain_util.dart';
+
 /// 设备工具类
 /// 提供一些常用的设备信息获取方法
 class DeviceUtil {
@@ -189,5 +193,15 @@ class DeviceUtil {
       default:
         return "Unknown Device";
     }
+  }
+
+  /// 获取设备UUID
+  static Future<String> getDeviceUUID(String packageName) async {
+    String? value = await KeychainUtil.read(key: '$packageName.deviceUUID');
+    if (value == null) {
+      value = const Uuid().v7();
+      await KeychainUtil.write(key: '$packageName.deviceUUID', value: value);
+    }
+    return value;
   }
 }

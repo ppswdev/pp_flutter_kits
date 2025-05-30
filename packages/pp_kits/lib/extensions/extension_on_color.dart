@@ -47,6 +47,20 @@ class HexColor extends Color {
   }
 }
 
+extension ColorExtension on Color {
+  /// 返回十六进制字符串表示的颜色。
+  ///
+  /// 可选的 [leadingHashSign] 参数表示是否添加 "#" 前缀。
+  /// 可选的 [includeAlpha] 参数表示是否包含透明度值。
+  /// 返回一个十六进制字符串。
+  String toHex({bool leadingHashSign = true, bool includeAlpha = false}) =>
+      '${leadingHashSign ? '#' : ''}'
+      '${includeAlpha ? alpha.toRadixString(16).padLeft(2, '0') : ''}'
+      '${red.toRadixString(16).padLeft(2, '0')}'
+      '${green.toRadixString(16).padLeft(2, '0')}'
+      '${blue.toRadixString(16).padLeft(2, '0')}';
+}
+
 /// 字符串转颜色
 extension String2ColorExtension on String {
   /// 将十六进制颜色字符串转换为 Color 对象。

@@ -16,6 +16,7 @@ export 'utils/app_util.dart';
 export 'utils/common_util.dart';
 export 'utils/device_util.dart';
 export 'utils/effect_util.dart';
+export 'utils/encrypt_util.dart';
 export 'utils/json_util.dart';
 export 'utils/keyboard_util.dart';
 export 'utils/keychain_util.dart';

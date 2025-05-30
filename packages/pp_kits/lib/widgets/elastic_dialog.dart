@@ -83,6 +83,7 @@ class ElasticDialogState extends State<ElasticDialog>
       child: Transform.translate(
         offset: widget.offset,
         child: Dialog(
+          insetPadding: EdgeInsets.zero,
           elevation: 1,
           backgroundColor: widget.backgroundColor,
           shape: RoundedRectangleBorder(

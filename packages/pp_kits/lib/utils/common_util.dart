@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +10,29 @@ import '../common/logger.dart';
 /// 通用工具类
 /// 提供一些常用的通用方法
 class CommonUtil {
+  /// 设置状态栏样式
+  ///
+  /// @param isDark 是否为深色模式
+  ///
+  /// @param isTransparent 是否透明
+  static void setStatusBarStyle(
+      {bool isDark = false, bool isTransparent = true}) {
+    if (GetPlatform.isAndroid) {
+      if (isTransparent) {
+        // 设置状态栏透明
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+        ));
+      }
+
+      // 设置状态栏内容颜色
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      ));
+    } else if (GetPlatform.isIOS) {}
+  }
+
   /// 打开链接或者跳转到其他App
   /// @param url 链接
   /// 使用示例
@@ -105,5 +129,31 @@ class CommonUtil {
       blue: (baseColor.b + (random.nextInt(range) - (range ~/ 2)) / 255)
           .clamp(0.0, 1.0),
     );
+  }
+
+  /// 字符串数组，填充空格保持字符串长度一致
+  ///
+  /// @param strs 字符串列表
+  static List<String> fillSpaceStr(List<String> strs) {
+    if (strs.isEmpty) return strs;
+
+    // 获取最长字符串的长度
+    int maxLength = strs.map((str) => str.length).reduce(max);
+
+    // 遍历处理每个字符串
+    List<String> result = strs.map((str) {
+      if (str.length == maxLength) return str;
+
+      // 计算需要补充的空格数量
+      int spacesToAdd = maxLength - str.length;
+      // 如果是奇数，后面多加一个空格
+      int frontSpaces = spacesToAdd ~/ 2;
+      int backSpaces = spacesToAdd - frontSpaces;
+
+      // 在字符串前后添加空格
+      return '${' ' * frontSpaces}$str${' ' * backSpaces}';
+    }).toList();
+
+    return result;
   }
 }

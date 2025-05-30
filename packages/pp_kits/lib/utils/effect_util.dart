@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import '../common/logger.dart';
 
 class AudioPool {
-  final List<AudioPlayer> _players;
-  int _currentPlayerIndex = 0;
+  final List<AudioPlayer> players;
+  int currentPlayerIndex = 0;
 
-  AudioPool(int size) : _players = List.generate(size, (_) => AudioPlayer());
+  AudioPool(int size) : players = List.generate(size, (_) => AudioPlayer());
 
   Future<void> play(String assetPath) async {
-    final player = _players[_currentPlayerIndex];
-    _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.length;
+    final player = players[currentPlayerIndex];
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     await player.play(AssetSource(assetPath));
   }
 }
@@ -19,6 +19,7 @@ class AudioPool {
 /// 特效工具类
 class EffectUtil {
   static final EffectUtil _instance = EffectUtil._internal();
+  static EffectUtil get instance => _instance;
   factory EffectUtil() => _instance;
   EffectUtil._internal();
 
@@ -48,13 +49,13 @@ class EffectUtil {
       hapticFeedbackImpact();
     }
     if (enableSound) {
-      _tapSoundEffect(audioAssetPath);
+      tapSoundEffect(audioAssetPath);
     }
   }
 
   /// 点击音效
   /// assetPath : 'assets/sounds/win_sound.mp3'
-  void _tapSoundEffect(String assetPath) async {
+  void tapSoundEffect(String assetPath) async {
     Logger.log('Playing sound from: $assetPath');
     try {
       await _audioPool[0].play(assetPath.replaceAll('assets/', ''));
@@ -76,6 +77,13 @@ class EffectUtil {
       await _audioPool[1].play(assetPath.replaceAll('assets/', ''));
     } catch (e) {
       Logger.log('Error playing sound: $e');
+    }
+  }
+
+  /// 停止所有音效播放
+  void stopSounds() {
+    for (var player in _audioPool[1].players) {
+      player.stop();
     }
   }
 
