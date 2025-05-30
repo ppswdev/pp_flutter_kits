@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// 屏幕工具类
+/// 设备屏幕工具类
 /// 获取屏幕宽度、高度、像素密度、是否是手机、平板、桌面、获取顶部安全距离高度、底部安全距离高度、AppBar默认高度、底部导航栏高度、底部TabBar高度+底部安全距离高度、屏幕方向、是否是横屏、是否是竖屏、获取状态栏高度、获取可用屏幕高度
-class ScreenUtil {
+class DScreenUtil {
   /// 获取屏幕宽度
   static double width() {
     return Get.width;

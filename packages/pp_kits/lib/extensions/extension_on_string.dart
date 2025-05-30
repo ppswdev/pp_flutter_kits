@@ -30,6 +30,38 @@ extension StringExtension on String {
     return emojiRegex.hasMatch(this);
   }
 
+  /// 判断字符串是否为合法的IP地址（支持IPv4和IPv6）
+  bool isValidIP() {
+    // IPv4正则表达式
+    final ipv4Pattern = RegExp(
+      r'^(\d{1,3}\.){3}\d{1,3}$',
+    );
+
+    // IPv6正则表达式
+    final ipv6Pattern = RegExp(
+      r'^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$',
+    );
+
+    // 检查是否为IPv4地址
+    if (ipv4Pattern.hasMatch(this)) {
+      final parts = split('.');
+      for (final part in parts) {
+        final number = int.parse(part);
+        if (number < 0 || number > 255) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // 检查是否为IPv6地址
+    if (ipv6Pattern.hasMatch(this)) {
+      return true;
+    }
+
+    return false;
+  }
+
   /// 将文本内容写入指定文件目录中
   /// [filePath] 文件路径
   bool writeToFile(String filePath) {

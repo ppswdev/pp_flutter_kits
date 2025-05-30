@@ -1,6 +1,6 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.0.8
+version: 1.0.9
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_kits
 
 environment:
@@ -11,29 +11,31 @@ dependencies:
   flutter:
     sdk: flutter
 
-  get: ^4.7.2
-  intl: ^0.19.0
-  path: ^1.9.0
-  uuid: ^4.5.1
-  archive: ^4.0.7
-  audioplayers: ^6.4.0
-  connectivity_plus: ^6.1.4
-  device_info_plus: ^11.3.0
-  file_picker: ^10.1.7
-  flutter_easyloading: ^3.0.5
-  flutter_screenutil: ^5.9.3
-  flutter_secure_storage: ^9.2.4
-  flutter_timezone: ^4.1.0
-  get_time_ago: ^2.3.1
-  image_cropper: ^9.1.0
-  image_picker: ^1.1.2
-  network_info_plus: ^6.1.4
-  package_info_plus: ^8.3.0
-  path_provider: ^2.1.5
-  share_plus: ^11.0.0
-  shared_preferences: ^2.5.3
-  url_launcher: ^6.3.1
-  open_settings_plus: ^0.4.0
+  dio: ^5.7.0 #网络请求
+  get: ^4.7.2 #状态管理
+  intl: ^0.19.0 #国际化
+  path: ^1.9.0  #文件路径处理
+  uuid: ^4.5.1  #生成唯一标识符
+  archive: ^4.0.7 #压缩和解压缩文件
+  audioplayers: ^6.4.0  #audio播放
+  connectivity_plus: ^6.1.4 #网络连接状态
+  device_info_plus: ^11.3.0 #设备信息
+  file_picker: ^10.1.7  #文件选择
+  adaptive_dialog: ^2.4.1 #对话框
+  flutter_easyloading: ^3.0.5 #加载动画
+  flutter_screenutil: ^5.9.3  #屏幕适配
+  flutter_secure_storage: ^9.2.4  #安全存储
+  flutter_timezone: ^4.1.0  #时区处理
+  get_time_ago: ^2.3.1  #时间处理
+  image_cropper: ^9.1.0 #图片裁剪
+  image_picker: ^1.1.2  #图片选择
+  network_info_plus: ^6.1.4 #网络信息
+  package_info_plus: ^8.3.0 #应用包信息
+  path_provider: ^2.1.5 #文件路径提供
+  share_plus: ^11.0.0 #分享功能
+  shared_preferences: ^2.5.3  #本地存储
+  url_launcher: ^6.3.1  #链接启动
+  open_settings_plus: ^0.4.0  #打开系统设置
 
 dev_dependencies:
   flutter_test:

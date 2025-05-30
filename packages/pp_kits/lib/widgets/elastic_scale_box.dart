@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// 弹性缩放动画容器组件
+///
 /// 用法
+/// ```dart
 /// ElasticScaleBox(
 ///   child: Container(
 ///     width: 260.px,
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 ///     ),
 ///   ),
 /// )
+/// ```
 class ElasticScaleBox extends StatelessWidget {
   final Widget child;
 

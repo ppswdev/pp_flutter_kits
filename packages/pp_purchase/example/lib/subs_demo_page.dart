@@ -15,11 +15,14 @@ class _SubsDemoPageState extends State<SubsDemoPage> {
   bool _isLoading = true;
   String _status = '';
 
-  // 定义产品ID
+  // 订阅产品ID
   static const List<String> _productIds = [
     'weekly_vip',
     'annually_vip',
   ];
+
+  // 非消耗型产品
+  static const List<String> _nonconsumableIds = [];
 
   @override
   void initState() {
@@ -29,7 +32,7 @@ class _SubsDemoPageState extends State<SubsDemoPage> {
 
   Future<void> _initPurchase() async {
     // 可以在启动时初始化，也可以在需要时初始化，根据功能需求需要
-    await _subsPurchase.initialize(_productIds,
+    await _subsPurchase.initialize(_productIds, _nonconsumableIds,
         sharedSecret: 'testf80cba1241718168ddde807test', showLog: true);
     final products = await _subsPurchase.loadProducts();
     setState(() {

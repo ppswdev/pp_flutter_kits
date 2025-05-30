@@ -5,11 +5,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// 安全存储工具类
 /// 提供一些常用的安全存储方法, 比如：读取、写入、删除, iOS存储到钥匙串中, Android存储到KeyStore中
 /// 使用示例
+/// ``` dart
 /// void example() {
 ///   KeychainUtil.write(key: 'key', value: 'value');
 ///   KeychainUtil.read(key: 'key');
 ///   KeychainUtil.delete(key: 'key');
 /// }
+/// ```
 class KeychainUtil {
   /// 获取安全存储实例
   static get storage {

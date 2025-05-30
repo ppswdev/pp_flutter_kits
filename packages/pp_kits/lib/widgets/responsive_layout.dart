@@ -20,23 +20,25 @@ import 'package:flutter/material.dart';
 /// - `isTablet`: Returns true if the screen size is between 650 and 1100 pixels.
 /// - `isDesktop`: Returns true if the screen size is greater than 1100 pixels.
 /// These methods can be used to conditionally render widgets based on the screen size.
+///
 /// Example usage:
 /// ```dart
 /// ResponsiveLayout(
-///  mobile: MobileWidget(),
-///  tablet: TabletWidget(),
-///  desktop: DesktopWidget(),
+///  mobile: mobileWidget(),
+///  tablet: tabletWidget(),
+///  desktop: desktopWidget(),
 ///  );
+/// ```
 class ResponsiveLayout extends StatelessWidget {
   final Widget mobile;
   final Widget? tablet;
-  final Widget desktop;
+  final Widget? desktop;
 
   const ResponsiveLayout({
     super.key,
     required this.mobile,
     this.tablet,
-    required this.desktop,
+    this.desktop,
   });
 
   static bool isMobile(BuildContext context) =>
@@ -53,12 +55,12 @@ class ResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    if (size.width >= 1100) {
-      return desktop;
+    if (size.width >= 1100 && desktop != null) {
+      return desktop!;
     }
 
-    if (size.width >= 650) {
-      return tablet ?? desktop;
+    if (size.width >= 650 && tablet != null) {
+      return tablet!;
     }
 
     return mobile;

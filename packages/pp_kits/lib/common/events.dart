@@ -19,8 +19,9 @@ class ThemeChangedEvent {
 /// VIP状态改变事件
 class VipStatusChangedEvent {
   final String message;
+  final bool isVip;
 
-  VipStatusChangedEvent(this.message);
+  VipStatusChangedEvent(this.message, this.isVip);
 }
 
 /// 产品信息改变事件

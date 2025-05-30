@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 
 /// 压缩解压工具类
+///
+/// 使用示例:
+///
+/// ``` dart
 /// // 压缩文件（不加密）
 /// try {
 ///   final zipPath = await ZipUtil.zip(
@@ -44,6 +48,7 @@ import 'package:archive/archive.dart';
 /// } catch (e) {
 ///   print('解密解压失败：$e');
 /// }
+/// ```
 class ZipUtil {
   /// 压缩文件/文件夹（不加密）
   /// [sourcePath] 源文件/文件夹路径

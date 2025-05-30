@@ -72,8 +72,6 @@ class PPProgressBar extends StatelessWidget {
                     gradient: trackColors != null
                         ? LinearGradient(
                             colors: trackColors!,
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
                           )
                         : null,
                   ),
@@ -88,8 +86,6 @@ class PPProgressBar extends StatelessWidget {
                       gradient: progressColors != null
                           ? LinearGradient(
                               colors: progressColors!,
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
                             )
                           : null,
                       borderRadius: BorderRadius.only(

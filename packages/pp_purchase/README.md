@@ -515,3 +515,11 @@ class _SubsDemoPageState extends State<SubsDemoPage> {
 }
 
 ```
+
+## 常见错误日志信息
+
+``` bash
+flutter: 2025-05-15 15:58:04.240713 [package:spinthewheel/modules/guides/guides2_controller.dart:315 Guides2Controller.purchase.<anonymous closure>] SubsPurchase guides 崩溃 购买过程崩溃: PlatformException(storekit_duplicate_product_object, There is a pending transaction for the same product identifier. Please either wait for it to be finished or finish it manually using `completePurchase` to avoid edge cases., {applicationUsername: null, requestData: null, simulatesAskToBuyInSandbox: false, paymentDiscount: null, productIdentifier: spiteel_weekly, quantity: 1}, null) null
+
+flutter: 2025-05-15 18:08:02.137080 [package:spinthewheel/modules/guides/guides2_controller.dart:315 Guides2Controller.purchase.<anonymous closure>] SubsPurchase guides 系统错误 购买过程系统错误: SKErrorDomain IAPError(code: purchase_error, source: app_store, message: SKErrorDomain, details: {NSLocalizedDescription: An unknown error occurred, NSUnderlyingError: {domain: ASDServerErrorDomain, userInfo: {NSLocalizedFailureReason: You are currently subscribed to this}, code: 3532}})
+```

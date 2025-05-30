@@ -1,16 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-/// 提示框工具类
-/// 提供一些常用的提示框操作方法
+/// 弹窗提示，加载，进度条等
 class PPAlert {
-  /// 是否显示加载中
   static var isLoading = false;
-
-  /// 是否显示提示框
   static var isAlerted = false;
 
   /// 显示加载中
@@ -69,99 +64,148 @@ class PPAlert {
     EasyLoading.showProgress(progress, status: status);
   }
 
-  /// 显示系统提示框
+  static SnackBarConfig snackBarConfig = SnackBarConfig();
+
+  /// 显示自定义SnackBar
+  static void showSnackBar({
+    String title = 'Tips',
+    String message = 'Messages',
+    String okLabelText = 'OK',
+    Function? onOK,
+  }) {
+    Get.snackbar(
+      title,
+      message,
+      // 样式
+      snackStyle: SnackStyle.FLOATING,
+      backgroundGradient: snackBarConfig.backgroundGradient,
+      backgroundColor: snackBarConfig.backgroundColor,
+      colorText: snackBarConfig.colorText,
+      barBlur: snackBarConfig.barBlur,
+      //如果需要弹出时有模态全屏背景色，需要设置overlayBlur和overlayColor
+      //overlayBlur: 1, // 遮罩模糊度
+      //overlayColor: Colors.black.withValues(alpha: .5), // 遮罩颜色,
+      //边框
+      borderRadius: snackBarConfig.borderRadius,
+
+      //间距位置
+      maxWidth: snackBarConfig.maxWidth,
+      margin: snackBarConfig.margin,
+      padding: snackBarConfig.padding,
+      snackPosition: snackBarConfig.snackPosition,
+
+      //动画
+      forwardAnimationCurve: Curves.linearToEaseOut, // 动画曲线
+      reverseAnimationCurve: Curves.linearToEaseOut, // 反向动画曲线
+      // forwardAnimationCurve: Curves.fastLinearToSlowEaseIn, // 动画曲线
+      // reverseAnimationCurve: Curves.fastEaseInToSlowEaseOut, // 反向动画曲线
+      animationDuration: Duration(milliseconds: 500), // 动画时间
+
+      //其他
+      duration: Duration(seconds: 3), // 显示时间
+      isDismissible: true, // 是否可关闭
+      onTap: (snack) {
+        if (onOK != null) {
+          onOK();
+        }
+      },
+    );
+  }
+
+  /// 显示系统AlertDialog
   static void showSysAlert(
-      {String title = '提示',
-      String text = '提示内容',
-      String okButtonText = '确定',
+      {String title = 'Tips',
+      String message = 'Messages',
+      String okLabelText = 'OK',
       Function? onOK}) async {
     if (isAlerted) {
       return;
     }
     isAlerted = true;
-    await showDialog(
+    final result = await showOkAlertDialog(
       context: Get.context!,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(
-            title,
-            style: TextStyle(fontSize: 20.w),
-          ),
-          content: Text(
-            text,
-            style: TextStyle(fontSize: 15.w),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-                isAlerted = false;
-                if (onOK != null) {
-                  onOK();
-                }
-              },
-              child: Text(okButtonText, style: TextStyle(fontSize: 18.w)),
-            ),
-          ],
-        );
-      },
+      title: title,
+      message: message,
+      okLabel: okLabelText,
     );
+    if (result == OkCancelResult.ok) {
+      isAlerted = false;
+      if (onOK != null) {
+        onOK();
+      }
+    }
   }
 
-  /// 显示系统确认框
+  /// 显示系统确认对话框
   static void showSysConfirm(
-      {String title = '确认',
-      String text = '你确定要继续吗？',
-      String cancelButtonText = '取消',
-      String okButtonText = '确定',
+      {String title = 'Confirm',
+      String message = 'Do you want to do it?',
+      String cancelLabelText = 'Cancel',
+      String okLabelText = 'OK',
       Function? onCancel,
       required Function onConfirm}) async {
     if (isAlerted) {
       return;
     }
     isAlerted = true;
-    await showDialog(
+    final result = await showOkCancelAlertDialog(
       context: Get.context!,
+      title: title,
+      message: message,
+      cancelLabel: cancelLabelText,
+      okLabel: okLabelText,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 20),
-          ),
-          content: Text(
-            text,
-            style: const TextStyle(fontSize: 15),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                isAlerted = false;
-                Navigator.of(context).pop();
-                if (onCancel != null) {
-                  onCancel();
-                }
-              },
-              child: Text(
-                cancelButtonText,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                isAlerted = false;
-                Navigator.of(context).pop();
-                onConfirm();
-              },
-              child: Text(
-                okButtonText,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ),
-          ],
-        );
-      },
+      defaultType: OkCancelAlertDefaultType.cancel,
     );
+    if (result == OkCancelResult.ok) {
+      isAlerted = false;
+      onConfirm();
+    } else if (result == OkCancelResult.cancel) {
+      isAlerted = false;
+      if (onCancel != null) {
+        onCancel();
+      }
+    }
   }
+}
+
+class SnackBarConfig {
+  /// 背景渐变色
+  final LinearGradient? backgroundGradient;
+
+  /// 背景色
+  final Color backgroundColor;
+
+  /// 文字颜色
+  final Color colorText;
+
+  /// 背景模糊度
+  final double barBlur;
+
+  /// 边框圆角
+  final double borderRadius;
+
+  /// 最大宽度
+  final double maxWidth;
+
+  /// 外边距
+  final EdgeInsets margin;
+
+  /// 内边距
+  final EdgeInsets padding;
+
+  /// 位置
+  final SnackPosition snackPosition;
+
+  const SnackBarConfig({
+    this.backgroundGradient,
+    this.backgroundColor = Colors.black54,
+    this.colorText = Colors.white,
+    this.barBlur = 7,
+    this.borderRadius = 15,
+    this.maxWidth = 600,
+    this.margin = const EdgeInsets.all(15),
+    this.padding = const EdgeInsets.all(15),
+    this.snackPosition = SnackPosition.TOP,
+  });
 }

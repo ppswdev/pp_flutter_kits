@@ -34,7 +34,7 @@ import 'dart:isolate';
 ///   IsolateManager.killAll();
 /// }
 /// ```
-class IsolateManager {
+class IsolateTask {
   /// 存储活跃的isolate实例
   static final Map<String, Isolate> _isolates = {};
 
