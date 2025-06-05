@@ -87,4 +87,21 @@ class JsonUtil {
       return false;
     }
   }
+
+  /// 从文件中读取JSON数据
+  /// filePath: 文件路径
+  /// 返回解析后的Map<String, dynamic>，如果读取失败返回null
+  static Map<String, dynamic>? readJsonFromFile(String filePath) {
+    try {
+      final file = File(filePath);
+      if (!file.existsSync()) {
+        return null;
+      }
+      final jsonString = file.readAsStringSync();
+      return jsonDecode(jsonString) as Map<String, dynamic>;
+    } catch (e) {
+      Logger.log('Error reading JSON from file: $e');
+      return null;
+    }
+  }
 }

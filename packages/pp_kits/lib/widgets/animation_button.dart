@@ -27,11 +27,14 @@ class AnimationButton extends StatefulWidget {
   /// 5: 缩放+旋转动画
   final int type;
 
+  final Duration delayTap;
+
   const AnimationButton({
     super.key,
     required this.child,
     required this.onTap,
     this.type = 0,
+    this.delayTap = const Duration(milliseconds: 0),
   });
 
   @override
@@ -182,8 +185,10 @@ class AnimationButtonState extends State<AnimationButton>
 
   void _onTapDown(TapDownDetails details) {
     _controller.forward().then((_) {
-      widget.onTap();
       _controller.reset();
+    });
+    Future.delayed(widget.delayTap, () {
+      widget.onTap();
     });
   }
 
