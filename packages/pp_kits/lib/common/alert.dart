@@ -167,6 +167,62 @@ class PPAlert {
       }
     }
   }
+
+  /// 显示单个文本输入框弹窗
+  static Future<String> showSingleTextInput({
+    String title = 'Title',
+    String message = '',
+    String initialText = '',
+    String hintText = '',
+    String cancelLabelText = 'Cancel',
+    String okLabelText = 'OK',
+  }) async {
+    final texts = await showTextInputDialog(
+      context: Get.context!,
+      title: title,
+      message: message.isNotEmpty ? message : null,
+      textFields: [
+        DialogTextField(
+          initialText: initialText,
+          hintText: hintText,
+        ),
+      ],
+    );
+    return texts != null && texts.isNotEmpty ? texts[0] : '';
+  }
+
+  /// 显示2个文本输入框弹窗
+  static Future<List<String>> showDoubleTextInput({
+    String title = 'Title',
+    String message = '',
+    List<String>? initialTexts,
+    List<String>? hintTexts,
+    String cancelLabelText = 'Cancel',
+    String okLabelText = 'OK',
+  }) async {
+    final texts = await showTextInputDialog(
+      context: Get.context!,
+      title: title,
+      message: message.isNotEmpty ? message : null,
+      textFields: [
+        DialogTextField(
+          initialText: initialTexts != null && initialTexts.isNotEmpty
+              ? initialTexts[0]
+              : '',
+          hintText:
+              hintTexts != null && hintTexts.isNotEmpty ? hintTexts[0] : '',
+        ),
+        DialogTextField(
+          initialText: initialTexts != null && initialTexts.length > 1
+              ? initialTexts[1]
+              : '',
+          hintText:
+              hintTexts != null && hintTexts.length > 1 ? hintTexts[1] : '',
+        ),
+      ],
+    );
+    return texts ?? ['', ''];
+  }
 }
 
 class SnackBarConfig {
