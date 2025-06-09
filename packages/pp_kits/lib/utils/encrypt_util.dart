@@ -5,12 +5,8 @@ import 'package:encrypt/encrypt.dart';
 import 'package:hex/hex.dart';
 
 class EncryptUtil {
-  static const String KEY_ALGORITHM = "AES";
-  static const int DEFAULT_KEY_SIZE = 128;
-  static const String ECB_PKCS7_PADDING = "AES/ECB/PKCS7";
-
   static String initHexKey() {
-    final key = Key.fromSecureRandom(DEFAULT_KEY_SIZE ~/ 8);
+    final key = Key.fromSecureRandom(128 ~/ 8);
     return HEX.encode(key.bytes);
   }
 

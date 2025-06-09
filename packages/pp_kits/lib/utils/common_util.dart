@@ -1,11 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../common/logger.dart';
 
 /// 通用工具类
 /// 提供一些常用的通用方法

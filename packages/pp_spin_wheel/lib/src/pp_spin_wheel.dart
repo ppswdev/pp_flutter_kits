@@ -1,7 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pp_kits/common/logger.dart';
-
 import 'pp_spin_wheel_item.dart';
 import 'pp_spin_wheel_painters.dart';
 
@@ -267,7 +265,7 @@ class PPSpinWheelState extends State<PPSpinWheel>
         matchingIndexes.add(matchIndex);
       }
     }
-    Logger.trace('tapWheelItem matchingIndexes : $matchingIndexes');
+    //Logger.trace('tapWheelItem matchingIndexes : $matchingIndexes');
 
     if (ignore) {
       matchingIndexes.removeWhere((value) => value == index);
@@ -279,7 +277,7 @@ class PPSpinWheelState extends State<PPSpinWheel>
       }
     }
 
-    Logger.trace('tapWheelItem filterIndexs : ${widget.filterIndexs}');
+    //Logger.trace('tapWheelItem filterIndexs : ${widget.filterIndexs}');
   }
 
   void _onTapWheel(Offset localPosition, {bool isManual = true}) {
@@ -323,11 +321,11 @@ class PPSpinWheelState extends State<PPSpinWheel>
           tapWheelItem(i, ignore: true);
         }
         final item = widget.items[i];
-        Logger.trace(
-            'onTapWheel filterIndexs1 : ${widget.filterIndexs} ${item.selected}');
+        //Logger.trace(
+        //    'onTapWheel filterIndexs1 : ${widget.filterIndexs} ${item.selected}');
         widget.onItemPressed?.call(i, item.selected);
-        Logger.trace(
-            'onTapWheel filterIndexs2 : ${widget.filterIndexs} ${item.selected}');
+        //Logger.trace(
+        //    'onTapWheel filterIndexs2 : ${widget.filterIndexs} ${item.selected}');
 
         break;
       }
@@ -378,7 +376,7 @@ class PPSpinWheelState extends State<PPSpinWheel>
         : widget.items.length.toDouble();
 
     calcFinalPositions();
-    Logger.trace('转盘最新 filterIndexs ：${widget.filterIndexs}');
+    //Logger.trace('转盘最新 filterIndexs ：${widget.filterIndexs}');
     return SizedBox(
       width: widget.size,
       height: widget.size,
