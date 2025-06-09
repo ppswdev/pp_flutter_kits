@@ -1,18 +1,5 @@
 import 'package:flutter/material.dart';
 
-/*
-//弹出一个对话框，位置在中心点向上偏移100
-Get.dialog(
-  ElasticDialog(
-    offset: const Offset(0, -100),
-    backgroundColor: Colors.red,
-    radius: 20,
-    child: YourWidget(),
-  ),
-  barrierDismissible: false,
-  barrierColor: Colors.black.withOpacity(0.3),
-);
-*/
 /// 弹性动画对话框
 /// 使用示例
 /// void example() {

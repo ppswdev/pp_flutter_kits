@@ -10,50 +10,6 @@ import '../common/logger.dart';
 /// 通用工具类
 /// 提供一些常用的通用方法
 class CommonUtil {
-  /// 设置状态栏样式
-  ///
-  /// @param isDark 是否为深色模式
-  ///
-  /// @param isTransparent 是否透明
-  static void setStatusBarStyle(
-      {bool isDark = false, bool isTransparent = true}) {
-    if (GetPlatform.isAndroid) {
-      if (isTransparent) {
-        // 设置状态栏透明
-        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-        ));
-      }
-
-      // 设置状态栏内容颜色
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      ));
-    } else if (GetPlatform.isIOS) {}
-  }
-
-  /// 打开链接或者跳转到其他App
-  /// @param url 链接
-  /// 使用示例
-  /// void example() {
-  ///   CommonUtil.openLink('https://www.google.com');
-  /// }
-  static void openLink(String url) async {
-    if (GetUtils.isURL(url)) {
-      try {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri);
-        } else {
-          throw 'Could not launch $url';
-        }
-      } catch (e) {
-        Logger.log('ppkits openLink error: $e');
-      }
-    }
-  }
-
   /// 复制文本
   /// @param text 文本
   static copy(String text) {

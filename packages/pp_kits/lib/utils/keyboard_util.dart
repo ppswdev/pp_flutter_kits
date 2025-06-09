@@ -4,7 +4,11 @@ import 'package:get/get.dart';
 import '../common/logger.dart';
 
 /// 键盘工具类
+///
 /// 使用示例：
+///
+/// ``` dart
+///
 /// class DemoController extends BaseController {
 ///   @override
 ///   void onInit() {
@@ -35,6 +39,7 @@ import '../common/logger.dart';
 ///     KeyboardManager().hideKeyboard();
 ///   }
 /// }
+/// ```
 class KeyboardUtil {
   static final KeyboardUtil _instance = KeyboardUtil._internal();
   static KeyboardUtil get instance => _instance;

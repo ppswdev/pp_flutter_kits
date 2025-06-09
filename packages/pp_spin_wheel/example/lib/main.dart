@@ -112,8 +112,8 @@ class _GameWheelPageState extends State<GameWheelPage> {
           items: items,
           //filterIndexs: const [0, 1],
           numberOfTurns: 10,
-          onItemPressed: (index) {
-            print('index: $index');
+          onItemPressed: (index, selected) {
+            print('index: $index $selected');
           },
           onItemSpinning: (index) {
             // Play spin audio & Feedback

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pp_kits/utils/app_util.dart';
 import 'package:pp_kits/utils/common_util.dart';
 import 'package:uuid/uuid.dart';
 
@@ -121,5 +122,5 @@ Future<T?> localJsonToModel<T>(
 
 /// 打开链接
 void openLink(String url) {
-  CommonUtil.openLink(url);
+  AppUtil.openLink(url);
 }

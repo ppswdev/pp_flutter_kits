@@ -1,11 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:pp_kits/common/logger.dart';
 
 import 'pp_spin_wheel_item.dart';
 import 'pp_spin_wheel_painters.dart';
 
 class PPSpinWheel extends StatefulWidget {
   final List<PPSpinWheelItem> items;
+  final int numberOfRepetitions;
   final double size;
   final double backgroundSize;
   final double wheelSize;
@@ -18,16 +20,18 @@ class PPSpinWheel extends StatefulWidget {
   final TextStyle? textStyle;
   final int numberOfTurns;
   final List<int>? filterIndexs;
-  final Function(int)? onItemPressed;
+  final Function(int, bool)? onItemPressed;
   final VoidCallback? onStartPressed;
   final Function(int)? onAnimationEnd;
   final VoidCallback? onSpinFastAudio;
   final VoidCallback? onSpinSlowAudio;
   final Function(int)? onItemSpinning;
+  final VoidCallback? onCannotSpin;
 
   const PPSpinWheel({
     super.key,
     required this.items,
+    this.numberOfRepetitions = 0,
     this.size = 350,
     this.wheelSize = 320,
     this.backgroundSize = 350,
@@ -46,6 +50,7 @@ class PPSpinWheel extends StatefulWidget {
     this.onSpinFastAudio,
     this.onSpinSlowAudio,
     this.onItemSpinning,
+    this.onCannotSpin,
   });
 
   @override
@@ -102,7 +107,7 @@ class PPSpinWheelState extends State<PPSpinWheel>
         } else {
           stopShaking();
         }
-
+        calcFinalPositions();
         widget.onAnimationEnd?.call(_currentItemIndex);
       }
     });
@@ -197,12 +202,13 @@ class PPSpinWheelState extends State<PPSpinWheel>
     if (widget.filterIndexs != null) {
       availableIndexs.removeWhere((i) => widget.filterIndexs!.contains(i));
     }
-    print('availableIndexs: $availableIndexs');
+    //print('availableIndexs: $availableIndexs');
     if (availableIndexs.isEmpty) {
       _isSpinning = false;
+      widget.onCannotSpin?.call();
       return;
     }
-
+    widget.onStartPressed?.call();
     setState(() {
       _isSpinning = true;
     });
@@ -239,11 +245,44 @@ class PPSpinWheelState extends State<PPSpinWheel>
     }
   }
 
-  void tapWheelItem(int index) {
-    _onTapWheel(_itemCenters[index]);
+  void tapWheelItem(int index, {bool ignore = false}) {
+    if (_itemCenters.isEmpty) {
+      return;
+    }
+    // 计算每组的基础数量
+    final itemsPerGroup =
+        widget.items.length ~/ (widget.numberOfRepetitions + 1);
+
+    // 获取所有匹配的索引
+    List<int> matchingIndexes = [];
+
+    // 计算在组内的偏移量
+    final offsetInGroup = index % itemsPerGroup;
+
+    // 遍历所有组，找到对应位置的索引
+    for (int i = 0; i < widget.numberOfRepetitions + 1; i++) {
+      // 计算在当前组的实际索引
+      final matchIndex = i * itemsPerGroup + offsetInGroup;
+      if (matchIndex < widget.items.length) {
+        matchingIndexes.add(matchIndex);
+      }
+    }
+    Logger.trace('tapWheelItem matchingIndexes : $matchingIndexes');
+
+    if (ignore) {
+      matchingIndexes.removeWhere((value) => value == index);
+    }
+    // 对所有匹配的索引执行点击操作
+    for (int matchIndex in matchingIndexes) {
+      if (matchIndex < _itemCenters.length) {
+        _onTapWheel(_itemCenters[matchIndex], isManual: false);
+      }
+    }
+
+    Logger.trace('tapWheelItem filterIndexs : ${widget.filterIndexs}');
   }
 
-  void _onTapWheel(Offset localPosition) {
+  void _onTapWheel(Offset localPosition, {bool isManual = true}) {
     if (_isSpinning) return;
 
     final center = Size(widget.wheelSize, widget.wheelSize).center(Offset.zero);
@@ -278,7 +317,18 @@ class PPSpinWheelState extends State<PPSpinWheel>
           widget.items.clear();
           widget.items.addAll(newItems);
         });
-        widget.onItemPressed?.call(i);
+
+        if (isManual) {
+          //如果是手动点击
+          tapWheelItem(i, ignore: true);
+        }
+        final item = widget.items[i];
+        Logger.trace(
+            'onTapWheel filterIndexs1 : ${widget.filterIndexs} ${item.selected}');
+        widget.onItemPressed?.call(i, item.selected);
+        Logger.trace(
+            'onTapWheel filterIndexs2 : ${widget.filterIndexs} ${item.selected}');
+
         break;
       }
       startAngle += sweepAngle;
@@ -286,13 +336,11 @@ class PPSpinWheelState extends State<PPSpinWheel>
   }
 
   void startSpin() {
-    widget.onStartPressed?.call();
     _isSpinning = false;
     _startSpinAnimation();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void calcFinalPositions() {
     // 计算总权重
     final totalWeight = widget.enableWeight
         ? widget.items.fold(0.0, (sum, item) => sum + item.weight)
@@ -300,7 +348,8 @@ class PPSpinWheelState extends State<PPSpinWheel>
 
     // 计算每个item的中心点位置
     _itemCenters.clear();
-    double startAngle = 0;
+    // 从12点位置开始,即-pi/2
+    double startAngle = -pi / 2;
     final radius = widget.wheelSize / 2;
     final center = Size(widget.wheelSize, widget.wheelSize).center(Offset.zero);
 
@@ -319,7 +368,17 @@ class PPSpinWheelState extends State<PPSpinWheel>
       _itemCenters.add(Offset(centerX, centerY));
       startAngle += sweepAngle;
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    // 计算总权重
+    final totalWeight = widget.enableWeight
+        ? widget.items.fold(0.0, (sum, item) => sum + item.weight)
+        : widget.items.length.toDouble();
+
+    calcFinalPositions();
+    Logger.trace('转盘最新 filterIndexs ：${widget.filterIndexs}');
     return SizedBox(
       width: widget.size,
       height: widget.size,

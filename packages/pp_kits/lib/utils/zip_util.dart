@@ -97,8 +97,11 @@ class ZipUtil {
   }
 
   /// 使用密码压缩文件/文件夹
+  ///
   /// [sourcePath] 源文件/文件夹路径
+  ///
   /// [targetPath] 目标zip文件路径
+  ///
   /// [password] 压缩密码
   static Future<String> zipWithPassword(
     String sourcePath,
@@ -148,8 +151,11 @@ class ZipUtil {
   }
 
   /// 解压缩（不需要密码）
+  ///
   /// [zipPath] zip文件路径
+  ///
   /// [targetPath] 解压目标路径
+  ///
   static Future<List<String>> unzip(String zipPath, String targetPath) async {
     try {
       final bytes = await File(zipPath).readAsBytes();
@@ -175,8 +181,11 @@ class ZipUtil {
   }
 
   /// 使用密码解压缩
+  ///
   /// [zipPath] zip文件路径
+  ///
   /// [targetPath] 解压目标路径
+  ///
   /// [password] 解压密码
   static Future<List<String>> unzipWithPassword(
     String zipPath,
