@@ -1,3 +1,8 @@
+## 1.1.4
+
+* Requirements: Flutter 3.32.0+, Dart 3.8.0+
+* package to intl: ^0.20.2
+  
 ## 1.1.3
 
 * Supplementary optimization and improvement
