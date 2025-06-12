@@ -18,25 +18,43 @@ class MethodChannelPPAsaAttribution extends PPAsaAttributionPlatform {
 
   /// 获取归因token
   @override
-  Future<String?> attributionToken() async {
-    final token = await methodChannel.invokeMethod<String>('attributionToken');
-    return token;
+  Future<String> attributionToken() async {
+    try {
+      final token =
+          await methodChannel.invokeMethod<String>('attributionToken');
+      return token ?? '';
+    } catch (e) {
+      return '';
+    }
   }
 
   /// 使用token请求归因详情
   @override
-  Future<Map<String, dynamic>?> requestAttributionWithToken(
-      String token) async {
-    final Map? result = await methodChannel
-        .invokeMethod<Map>('requestAttributionWithToken', {'token': token});
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+  Future<Map<String, dynamic>> requestAttributionWithToken(String token) async {
+    try {
+      final result = await methodChannel
+          .invokeMethod('requestAttributionWithToken', {'token': token});
+      if (result is Map) {
+        return result.cast<String, dynamic>();
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
   }
 
   /// 请求归因详情
   @override
-  Future<Map<String, dynamic>?> requestAttributionDetails() async {
-    final Map? result =
-        await methodChannel.invokeMethod<Map>('requestAttributionDetails');
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+  Future<Map<String, dynamic>> requestAttributionDetails() async {
+    try {
+      final result =
+          await methodChannel.invokeMethod('requestAttributionDetails');
+      if (result is Map) {
+        return result.cast<String, dynamic>();
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
   }
 }
