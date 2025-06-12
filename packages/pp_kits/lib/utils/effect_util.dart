@@ -97,12 +97,15 @@ class EffectUtil {
   void hapticFeedbackImpact({int level = 1}) {
     switch (level) {
       case 1:
-        HapticFeedback.lightImpact();
+        HapticFeedback.selectionClick();
         break;
       case 2:
-        HapticFeedback.mediumImpact();
+        HapticFeedback.lightImpact();
         break;
       case 3:
+        HapticFeedback.mediumImpact();
+        break;
+      case 4:
         HapticFeedback.heavyImpact();
         break;
       default:
