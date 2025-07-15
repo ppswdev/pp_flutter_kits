@@ -16,12 +16,15 @@ class AppUtil {
   /// 获取钥匙串中存储的应用UUID
   static Future<String> getAppUUID() async {
     final appInfo = await getAppInfo();
-    String? value =
-        await KeychainUtil.read(key: '${appInfo.packageName}.appUUID');
+    String? value = await KeychainUtil.read(
+      key: '${appInfo.packageName}.appUUID',
+    );
     if (value == null) {
       value = const Uuid().v7();
       await KeychainUtil.write(
-          key: '${appInfo.packageName}.appUUID', value: value);
+        key: '${appInfo.packageName}.appUUID',
+        value: value,
+      );
     }
     return value;
   }
@@ -29,19 +32,16 @@ class AppUtil {
   /// 获取应用信息
   /// 返回 (应用名称, 包名, 版本号, 构建号)
   static Future<
-      ({
-        String appName,
-        String packageName,
-        String version,
-        String buildNumber
-      })> getAppInfo() async {
+    ({String appName, String packageName, String version, String buildNumber})
+  >
+  getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     return (
       appName: packageInfo.appName,
       packageName: packageInfo.packageName,
       version: packageInfo.version,
-      buildNumber: packageInfo.buildNumber
+      buildNumber: packageInfo.buildNumber,
     );
   }
 
@@ -50,21 +50,25 @@ class AppUtil {
   /// @param isDark 是否为深色模式
   ///
   /// @param isTransparent 是否透明
-  static void setStatusBarStyle(
-      {bool isDark = false, bool isTransparent = true}) {
+  static void setStatusBarStyle({
+    bool isDark = false,
+    bool isTransparent = true,
+  }) {
     if (GetPlatform.isAndroid) {
       if (isTransparent) {
         // 设置状态栏透明
-        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-        ));
+        SystemChrome.setSystemUIOverlayStyle(
+          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+        );
       }
 
       // 设置状态栏内容颜色
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      ));
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        ),
+      );
     } else if (GetPlatform.isIOS) {}
   }
 
@@ -116,28 +120,39 @@ class AppUtil {
   ///
   /// @param files 文件 [XFile('${directory.path}/image1.jpg')...]
   ///
-  static Future<bool> share(
-      {String subject = '',
-      String title = '',
-      String text = '',
-      String url = '',
-      List<XFile> files = const []}) async {
+  /// 如果分享链接，并希望展示Smart App Banner, 需要在分享的网页中添加以下Open Graph元数据：
+  ///
+  /// ``` html
+  /// <head>
+  ///   <!-- 标题 -->
+  ///   <meta property="og:title" content="欢迎使用 XXX App">
+  ///   <!-- 描述 -->
+  ///   <meta property="og:description" content="立即下载 XXX App，享受AI智能体验！">
+  ///   <!-- 链接 -->
+  ///   <meta property="og:url" content="https://yourdomain.com/welcome">
+  ///   <!-- 图标（建议 1200x630 或 512x512） -->
+  ///   <meta property="og:image" content="https://yourdomain.com/assets/share-icon.png">
+  ///   <!-- iOS Safari Smart App Banner（上一个问题） -->
+  ///   <meta name="apple-itunes-app" content="app-id=1234567890, app-argument=https://yourdomain.com/welcome">
+  // </head>
+  /// ```
+  ///
+  static Future<bool> share({
+    String subject = '',
+    String title = '',
+    String text = '',
+    String url = '',
+    List<XFile> files = const [],
+  }) async {
     EasyLoading.show();
     ShareResult shareResult;
     ShareParams shareParams;
     if (files.isNotEmpty) {
       shareParams = ShareParams(files: files);
     } else if (url.isNotEmpty) {
-      shareParams = ShareParams(
-        title: title,
-        uri: Uri.parse(url),
-      );
+      shareParams = ShareParams(title: title, uri: Uri.parse(url));
     } else {
-      shareParams = ShareParams(
-        subject: subject,
-        title: title,
-        text: text,
-      );
+      shareParams = ShareParams(subject: subject, title: title, text: text);
     }
     //检查是否是iPad
     if (GetPlatform.isIOS && Get.context?.isTablet == true) {

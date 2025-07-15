@@ -233,6 +233,10 @@ class SubsPurchase {
 
   // 加载产品信息
   Future<List<ProductDetails>> loadProducts() async {
+    if (productDetailsMap.values.isNotEmpty) {
+      splog('loadProducts is exist');
+      return productDetailsMap.values.toList();
+    }
     try {
       final ProductDetailsResponse response =
           await _iap.queryProductDetails(_productIds.toSet());

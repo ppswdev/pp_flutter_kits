@@ -18,7 +18,8 @@ flutter pub add pp_purchase
 
 ``` dart
 //初始化所有内购对象
-Future<void> initialize(List<String> productIds,{required String sharedSecret, bool showLog = false}) async
+Future<void> initialize(List<String> productIds, List<String> onetimeSubIds,
+      {required String sharedSecret, bool showLog = false}) async
 ```
 
 ### Load all products
@@ -520,6 +521,72 @@ class _SubsDemoPageState extends State<SubsDemoPage> {
 
 ``` bash
 flutter: 2025-05-15 15:58:04.240713 [package:spinthewheel/modules/guides/guides2_controller.dart:315 Guides2Controller.purchase.<anonymous closure>] SubsPurchase guides 崩溃 购买过程崩溃: PlatformException(storekit_duplicate_product_object, There is a pending transaction for the same product identifier. Please either wait for it to be finished or finish it manually using `completePurchase` to avoid edge cases., {applicationUsername: null, requestData: null, simulatesAskToBuyInSandbox: false, paymentDiscount: null, productIdentifier: spiteel_weekly, quantity: 1}, null) null
+```
 
+```
 flutter: 2025-05-15 18:08:02.137080 [package:spinthewheel/modules/guides/guides2_controller.dart:315 Guides2Controller.purchase.<anonymous closure>] SubsPurchase guides 系统错误 购买过程系统错误: SKErrorDomain IAPError(code: purchase_error, source: app_store, message: SKErrorDomain, details: {NSLocalizedDescription: An unknown error occurred, NSUnderlyingError: {domain: ASDServerErrorDomain, userInfo: {NSLocalizedFailureReason: You are currently subscribed to this}, code: 3532}})
+```
+
+```
+标题: NSURLErrorDomain
+详细堆栈: IAPError(代码: purchase_error, 来源: app_store, 消息: NSURLErrorDomain, 详情: {NSLocalizedDescription: 互联网连接似乎已断开。, NSUnderlyingError: {域: kCFErrorDomainCFNetwork, 用户信息: {}, 代码: -1009}})
+```
+
+```
+标题: SKErrorDomain
+详细堆栈: IAPError(代码: purchase_error, 来源: app_store, 消息: SKErrorDomain, 详情: {NSLocalizedDescription: 发生了未知错误, NSUnderlyingError: {domain: ASDErrorDomain, userInfo: {NSUnderlyingError: {domain: AMSErrorDomain, userInfo: {AMSDescription: Bag加载失败, NSDebugDescription: Bag加载失败 无法获取p2-in-app-buy因为我们未能加载bag., AMSFailureReason: 无法获取p2-in-app-buy因为我们未能加载bag., NSUnderlyingError: {domain: AMSErrorDomain, userInfo: {AMSDescription: Bag加载失败, NSDebugDescription: Bag加载失败 我们未能加载bag., AMSFailureReason: 我们未能加载bag., NSUnderlyingError: {domain: NSURLErrorDomain, userInfo: {AMSStatusCode: 0, _NSURLErrorFailingURLSessionTaskErrorKey: LocalDataTask <88D242DF-58FE-441B-B087-014A6FC806AA>.<777>, AMSDescription: 发生未知错误。请重试。, NSUnderlyingError: {domain: kCFErrorDomainCFNetwork, userInfo: {_kCFStreamErrorDomainKey: 1, _kCFStreamErrorCodeKey: 50, _NSURLErrorNWPathKey_desc: 不满足条件 (无网络路由), _NSURLErrorNWResolutionReportKey_desc: 在1ms内使用缓存中的未知解析了0个端点}, code: -1009}, NSDebugDescription: 发生未知错误。请重试。, _kCFStreamErrorCodeKey: 50, _NSURLErrorRelatedURLSessionTaskErrorKey: [LocalDataTask <88D242DF-58FE-441B-B087-014A6FC806AA>.<777>], NSLocalizedDescription: 互联网连接似乎已关闭。, NSErrorFailingURLStringKey: https://bag.itunes.apple.com/bag.xml?deviceClass=iPad&format=json&os=iOS&osVersion=18.0.1&product=com.apple.storekitd&productVersion=3.0&profile=appstored&profileVersion=1&storefront=143504-28,30, NSErrorFailingURLKey: https://bag.itunes.apple.com/bag.xml?deviceClass=iPad&format=json&os=iOS&osVersion=18.0.1&product=com.apple.storekitd&productVersion=3.0&profile=appstored&profileVersion=1&storefront=143504-28,30, _kCFStreamErrorDomainKey: 1}, code: -1009}}, code: 203}}, code: 203}}, code: 500}})
+```
+
+```
+标题：SKErrorDomain
+详细堆栈：IAPError（代码：purchase_error，来源：app_store，消息：SKErrorDomain，详细信息：{NSLocalizedDescription：发生了错误，NSUnderlyingError：{domain：ASDErrorDomain，userInfo：{NSDebugDescription：收到的购买响应没有交易，但包含带有购买参数的操作URL，NSUnderlyingError：{domain：AMSErrorDomain，userInfo：{NSLocalizedDescription：购买失败，AMSURL： https://p29-buy.itunes.apple.com/WebObjects/MZBuy.woa/wa/inAppBuy?guid=bd6dacc17e08f495dfd21e72a66453e9d0fd3af2，AMSStatusCode：200，AMSServerPayload_desc：{
+"取消购买批次" = 1;
+customerMessage = "Se necesita informaci\U00f3n de pago";
+对话框={
+取消按钮字符串=取消；
+默认按钮=确定；
+解释=“Para suscribirte，agrega un nuevo m\U00e9todo de pago。Set te cobrar\U00e1 s\U00f3lo cuando termine tu periodo de prueba。”;
+初始复选框值 = 1;
+isFree = 1;
+"m-allowed" = 0;
+message = "您需要付款信息\U00f3n";
+okButtonAction = {
+kind = Goto;
+subtarget = "account.editAddress";
+target = main;
+tidContinue = 1;
+url = "https://p29-buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/com.apple.jingle.app.finance.DirectAction/editAddress?offerName=offline_music_weekly&guid=bd6dacc17e08f495dfd21e72a66453e9d0fd3af2&quantity=1&ageCheck=true&pricingParameters=STDQ&vid= 0C50D690-C1BE-473A-90C8-84807C2ACA2B&appExtVrsId=875007291&bvrs=107&appAdamId=6532609250&showIAPExtraDialog=false&hasConfirmedBuySubscription=true&offrd-free-trial=false&salableAdamId=6566171053&clientCorrelationKey=4F1BCD13-A060-4605-A494-B463D F3F421F&hasBeenAuthedForBuy=true&price=0&pg=default&storeCohort=10%7Cdate%3D1749180600000&sf%3D143509&pgtp%3DSoftware&pgid%3D6532609250&prpg%3DSearch_e666c085-dfad-4899-b9a9-9ca6871aeb56&ctxt%3DSearch&issrch%3D1&lngid%3D28&icloud-backup-enabled= 1&productType=A&hasConfirmedPaymentSheet=true&offrd-intro-price=true&bid=com.mobiunity.htmusic&hasWebOptIn=false&xToken=BAIAAAF5AAJNFAAAAABoRQEI73wiycqQnSRoQoYjuzB1Eg7lCiglWNWuWaQgiYC593%2FBoQPOekmbtZvyvd5Jlx4hJahryanAgnCwa6Sx";
+};
+okButtonString = 继续;
+};
+failureType = "";
+"m-allowed" = 0;
+metrics = {
+actionUrl = "p29-buy.itunes.apple.com/WebObjects/MZBuy.woa/wa/inAppBuy";
+asnState = 0;
+dialogId = "MZCommerce.CreditCardRequiredOnFileForIAPSubscriptionFreeTrialBuy";
+eventType = dialog;
+message = "Se necesita informaci\U00f3n d";
+mtEventTime = "2025-06-08 03:18:09 Etc/GMT";
+mtTopic = "xp_its_main";
+options = (
+继续,
+取消
+);
+};
+pings = (
+"https://xp.apple.com/report/2/xp_its_main?code=MZCommerce.CreditCardRequiredOnFileForIAPSubscriptionFreeTrialBuy&buttons=Continuar%3ACancelar&baseVersion=1&dsId=22433974012&eventVersion=1&storeFrontHeader=143509-28%2C29&eventTime=1749352713987&eventType=dialog&message=Se%20necesita%20informaci%C3%B3n%20d"
+);
+}, NSLocalizedFailureReason: 服务器取消了购买}, 代码: 305}}, 代码: 504}})
+
+
+```
+
+```
+标题：SKErrorDomain
+详细堆栈：IAPError（代码：purchase_error，来源：app_store，消息：SKErrorDomain，详细信息：{NSLocalizedDescription：发生未知错误，NSUnderlyingError：{domain：ASDErrorDomain，userInfo：{NSUnderlyingError：{domain：AMSErrorDomain，userInfo：{}，代码：305}}，代码：504}}）
+```
+
+```
+
 ```

@@ -1,3 +1,8 @@
+## 1.0.2
+
+* logic optmized
+* docs updates
+
 ## 1.0.1
 
 * add one-time subscription logic
