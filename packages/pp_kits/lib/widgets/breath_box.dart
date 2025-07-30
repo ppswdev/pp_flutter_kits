@@ -41,7 +41,7 @@ class BreathBox extends StatelessWidget {
   final VoidCallback? onScaleDown;
   final void Function(double scale)? onBreathing;
 
-  const BreathWidget({
+  const BreathBox({
     super.key,
     required this.child,
     this.minScale = 0.6,
