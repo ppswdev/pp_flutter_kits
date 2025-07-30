@@ -48,33 +48,42 @@ class NetworkController extends GetxController {
     'https://www.baidu.com/robots.txt',
     'https://www.huaweicloud.com/robots.txt',
     'https://www.oracle.com/robots.txt',
-    'https://www.tiktok.com/robots.txt',
+    'https://www.tiktok.com/robots.txt'
   ];
 
+  List<String> extraUrls = [];
+  // 检查网络健康状态的间隔时间，单位：分钟
+  int checkMinutesInterval = 8;
+  // 网络健康检测的最快响应时间，单位：毫秒
+  int fastResponseTime = 0;
+
   /// IP监听器
-  Timer? _ipCheckTimer;
+  Timer? _healthCheckTimer;
+  bool _isGettingPublicIP = false;
+  static const int maxRetryCount = 3;
+  static const Duration retryDelay = Duration(seconds: 2);
 
   /// 防抖（debounce）机制，防止频繁检测,用Timer
   Timer? _healthCheckDebounceTimer;
   late final Connectivity _connectivity;
   late final StreamSubscription<List<ConnectivityResult>>
-  _connectivitySubscription;
+      _connectivitySubscription;
 
   @override
   void onInit() {
     super.onInit();
     _connectivity = Connectivity();
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
-      List<ConnectivityResult> results,
-    ) {
+    _connectivitySubscription = _connectivity.onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
       Logger.trace('onConnectivityChanged');
       _updateNetworkStatus(results);
     });
     Logger.log('网络初始化完成, 开启监听中...');
 
     // 启动定时器获取公网IP
-    _ipCheckTimer = Timer.periodic(const Duration(seconds: 8), (timer) {
-      getPublicIp();
+    _healthCheckTimer =
+        Timer.periodic(Duration(minutes: checkMinutesInterval), (timer) {
+      checkNetworkHealth();
     });
   }
 
@@ -82,8 +91,8 @@ class NetworkController extends GetxController {
   void onClose() {
     Logger.trace('NetworkController资源释放');
     _connectivitySubscription.cancel();
-    _ipCheckTimer?.cancel();
-    _ipCheckTimer = null;
+    _healthCheckTimer?.cancel();
+    _healthCheckTimer = null;
     super.onClose();
   }
 
@@ -136,8 +145,8 @@ class NetworkController extends GetxController {
 
   /// 检查网络连接状态
   void checkConnectivity() async {
-    final List<ConnectivityResult> results = await (_connectivity
-        .checkConnectivity());
+    final List<ConnectivityResult> results =
+        await (_connectivity.checkConnectivity());
     _updateNetworkStatus(results);
   }
 
@@ -201,11 +210,13 @@ class NetworkController extends GetxController {
     // 记录每个节点的响应时间
     final Map<String, int> responseTimes = {};
 
-    // 为每个URL创建单独的CancelToken
-    final cancelTokens = _testUrls.map((_) => CancelToken()).toList();
+    final urls = _testUrls + extraUrls;
 
-    for (var i = 0; i < _testUrls.length; i++) {
-      final url = _testUrls[i];
+    // 为每个URL创建单独的CancelToken
+    final cancelTokens = urls.map((_) => CancelToken()).toList();
+
+    for (var i = 0; i < urls.length; i++) {
+      final url = urls[i];
       final cancelToken = cancelTokens[i];
 
       Logger.log('网络健康检测: 开始请求 $url');
@@ -213,33 +224,31 @@ class NetworkController extends GetxController {
 
       Dio()
           .get(
-            url,
-            options: Options(
-              receiveTimeout: Duration(milliseconds: timeoutMs),
-              sendTimeout: Duration(milliseconds: timeoutMs),
-            ),
-            cancelToken: cancelToken,
-          )
+        url,
+        options: Options(
+          receiveTimeout: Duration(milliseconds: timeoutMs),
+          sendTimeout: Duration(milliseconds: timeoutMs),
+        ),
+        cancelToken: cancelToken,
+      )
           .then((response) {
-            stopwatch.stop();
-            final responseTime = stopwatch.elapsedMilliseconds;
-            responseTimes[url] = responseTime;
+        stopwatch.stop();
+        final responseTime = stopwatch.elapsedMilliseconds;
+        responseTimes[url] = responseTime;
 
-            Logger.log(
-              '网络健康检测: $url 响应 statusCode=${response.statusCode}, 耗时=${responseTime}ms',
-            );
+        Logger.log(
+            '网络健康检测: $url 响应 statusCode=${response.statusCode}, 耗时=${responseTime}ms');
 
-            if (response.statusCode == 200) {
-              hasSuccess = true;
-            }
-          })
-          .catchError((e) {
-            stopwatch.stop();
-            final responseTime = stopwatch.elapsedMilliseconds;
-            responseTimes[url] = responseTime;
+        if (response.statusCode == 200) {
+          hasSuccess = true;
+        }
+      }).catchError((e) {
+        stopwatch.stop();
+        final responseTime = stopwatch.elapsedMilliseconds;
+        responseTimes[url] = responseTime;
 
-            Logger.log('网络健康检测: $url 请求失败/超时，耗时=${responseTime}ms，错误: $e');
-          });
+        Logger.log('网络健康检测: $url 请求失败/超时，耗时=${responseTime}ms，错误: $e');
+      });
     }
 
     // 超时后判断最终状态
@@ -262,6 +271,7 @@ class NetworkController extends GetxController {
         if (hasSuccess) {
           // 获取最快的响应时间
           final fastestTime = responseTimes.values.reduce(min);
+          fastResponseTime = fastestTime;
           if (fastestTime <= slowThresholdMs) {
             Logger.log('网络健康检测: 最快节点响应时间 ${fastestTime}ms，判定为 available');
             completer.complete(NetworkStatus.available);
@@ -281,19 +291,73 @@ class NetworkController extends GetxController {
 
   /// 获取公网IP
   Future<String> getPublicIp() async {
+    // 如果正在执行，直接返回默认IP
+    if (_isGettingPublicIP) {
+      Logger.log('网络: 正在获取公网IP中，返回默认IP: 127.0.0.1');
+      return '127.0.0.1';
+    }
+
+    // 如果已有有效IP，直接返回
     if (publicIP.isValidIP()) {
-      Logger.log('网络: 已获取公网IP，跳过获取');
+      Logger.log('网络: 已获取公网IP，跳过获取: $publicIP');
       return publicIP;
     }
 
-    Logger.log('网络: 开始获取公网IP......');
-    final apiEndpoints = [
-      'https://api.ipify.org',
-      'https://ifconfig.me/ip',
-      'https://icanhazip.com',
-      'https://checkip.amazonaws.com',
-    ];
+    // 设置执行状态
+    _isGettingPublicIP = true;
 
+    try {
+      Logger.log('网络: 开始获取公网IP......');
+
+      final apiEndpoints = [
+        'https://api.ipify.org',
+        'https://ifconfig.me/ip',
+        'https://icanhazip.com',
+        'https://checkip.amazonaws.com',
+        'https://ipapi.co/ip',
+        'https://ipinfo.io/ip',
+      ];
+
+      int retryCount = 0;
+      String? resultIP;
+
+      // 重试循环
+      while (retryCount < maxRetryCount && resultIP == null) {
+        Logger.log('网络: 第 ${retryCount + 1} 次尝试获取公网IP');
+
+        try {
+          resultIP = await _attemptGetPublicIP(apiEndpoints);
+
+          publicIP = resultIP ?? '127.0.0.1';
+          Logger.log('网络: 成功获取公网IP: $publicIP');
+          return publicIP;
+        } catch (e) {
+          Logger.log('网络: 第 ${retryCount + 1} 次获取公网IP失败: $e');
+        }
+
+        retryCount++;
+
+        // 如果不是最后一次重试，等待后继续
+        if (retryCount < maxRetryCount) {
+          Logger.log('网络: 等待 ${retryDelay.inSeconds} 秒后重试...');
+          await Future.delayed(retryDelay);
+        }
+      }
+
+      // 所有重试都失败，返回默认IP
+      Logger.log('网络: 获取公网IP失败，已达到最大重试次数 ($maxRetryCount)，返回默认IP');
+      return '127.0.0.1';
+    } catch (e) {
+      Logger.log('网络: 获取公网IP过程中发生异常: $e');
+      return '127.0.0.1';
+    } finally {
+      // 重置执行状态
+      _isGettingPublicIP = false;
+    }
+  }
+
+  /// 单次尝试获取公网IP
+  Future<String?> _attemptGetPublicIP(List<String> apiEndpoints) async {
     // 创建CancelToken用于取消其他请求
     final cancelToken = CancelToken();
 
@@ -302,15 +366,28 @@ class NetworkController extends GetxController {
       final requests = apiEndpoints.map((endpoint) async {
         Logger.log('网络: 获取IP源> $endpoint');
         try {
-          final response = await Dio().get(endpoint, cancelToken: cancelToken);
+          final response = await Dio().get(
+            endpoint,
+            cancelToken: cancelToken,
+            options: Options(
+              receiveTimeout: Duration(seconds: 10),
+              sendTimeout: Duration(seconds: 10),
+            ),
+          );
+
           if (response.statusCode == 200) {
             final ip = response.data.toString().trim();
             if (ip.isValidIP()) {
+              Logger.log('网络: 从 $endpoint 成功获取IP: $ip');
               return ip;
+            } else {
+              Logger.log('网络: 从 $endpoint 获取的IP格式无效: $ip');
             }
+          } else {
+            Logger.log('网络: 从 $endpoint 获取IP失败，状态码: ${response.statusCode}');
           }
         } catch (e) {
-          Logger.log('获取公网IP失败 $endpoint: $e');
+          Logger.log('网络: 获取公网IP失败 $endpoint: $e');
         }
         return null;
       }).toList();
@@ -321,22 +398,16 @@ class NetworkController extends GetxController {
       if (results != null) {
         // 取消其他请求
         cancelToken.cancel('已获取到IP');
-
-        publicIP = results;
-        _ipCheckTimer?.cancel();
-        _ipCheckTimer = null;
-
-        Logger.log('网络: 成功获取公网IP: $publicIP');
+        return results;
       }
-    } catch (e) {
-      Logger.log('获取公网IP失败: $e');
-    }
 
-    Logger.log('网络: 当前公共IP>$publicIP');
-    return publicIP;
+      return null;
+    } catch (e) {
+      Logger.log('网络: 单次尝试获取公网IP失败: $e');
+      return null;
+    }
   }
 }
-
 /*
 Obx(() {
   switch (networkController.status.value) {
