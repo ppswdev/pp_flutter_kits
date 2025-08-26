@@ -1,3 +1,7 @@
+## 1.0.4
+
+* fix bug
+
 ## 1.0.3
 
 * add `getSubcriptionTitle` and `getSubcriptionSubTitle` method
