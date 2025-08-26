@@ -729,8 +729,8 @@ extension SubsPurchaseExtension on SubsPurchase {
             SubscriptionDuration.lifetime.name, languageCode);
       }
       //常规订阅
-      final duration = SubsLocale.getUnit(
-          appStoreProduct.skProduct.subscriptionPeriod?.unit.name);
+      final duration =
+          SubsLocale.getUnit(appStoreProduct.skProduct.subscriptionPeriod);
       return SubsLocale.defaultSubtitle(
           appStoreProduct.skProduct, duration, languageCode);
     }

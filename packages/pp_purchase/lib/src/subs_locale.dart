@@ -2,22 +2,42 @@ import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 class SubsLocale {
   /// 将StoreKit的周期单位转换为标准单位
-  static String getUnit(String? unit) {
-    switch (unit?.toLowerCase()) {
-      case 'day':
-      case 'days':
-        return 'day';
+  static String getUnit(SKProductSubscriptionPeriodWrapper? period) {
+    if (period == null) return 'day';
+
+    final unit = period.unit.name;
+    final numberOfUnits = period.numberOfUnits;
+
+    switch (unit.toLowerCase()) {
       case 'week':
       case 'weeks':
+        if (numberOfUnits >= 52) {
+          return 'year';
+        }
+        if (numberOfUnits >= 4) {
+          return 'month';
+        }
         return 'week';
       case 'month':
       case 'months':
+        if (numberOfUnits >= 12) {
+          return 'year';
+        }
         return 'month';
       case 'year':
       case 'years':
         return 'year';
       default:
-        return 'day'; // 默认返回天
+        if (numberOfUnits >= 365) {
+          return 'year';
+        }
+        if (numberOfUnits >= 30) {
+          return 'month';
+        }
+        if (numberOfUnits >= 7) {
+          return 'week';
+        }
+        return 'day';
     }
   }
 
@@ -565,7 +585,7 @@ class SubsLocale {
     final price = skProduct.price;
     final currencySymbol = skProduct.priceLocale.currencySymbol;
     final productUnit = _getLocalizedUnit(
-        languageCode, 1, getUnit(skProduct.subscriptionPeriod!.unit.name));
+        languageCode, 1, getUnit(skProduct.subscriptionPeriod));
 
     // 原价订阅描述：灵活选择、性价比之选、最优惠
     final description =
@@ -853,7 +873,7 @@ class SubsLocale {
       case 'vi':
         return '$currencySymbol$price/$productUnit';
       case 'zh_Hans':
-        return '每$productUnit$currencySymbol$price';
+        return '每$productUnit$currencySymbol$price元';
       case 'zh_Hant':
         return '每$productUnit$currencySymbol$price';
       default:
@@ -906,7 +926,7 @@ class SubsLocale {
       case 'vi':
         return '$currencySymbol$price/tháng · ~$currencySymbol${weeklyPrice.toStringAsFixed(1)}/tuần';
       case 'zh_Hans':
-        return '每月$currencySymbol$price · 约$currencySymbol${weeklyPrice.toStringAsFixed(1)}/周';
+        return '每月$currencySymbol$price元 · 约$currencySymbol${weeklyPrice.toStringAsFixed(1)}元/周';
       case 'zh_Hant':
         return '每月$currencySymbol$price · 約$currencySymbol${weeklyPrice.toStringAsFixed(1)}/周';
       default:
@@ -959,7 +979,7 @@ class SubsLocale {
       case 'vi':
         return '$currencySymbol$price/năm · chỉ $currencySymbol${weeklyPrice.toStringAsFixed(1)}/tuần';
       case 'zh_Hans':
-        return '每年$currencySymbol$price · 仅$currencySymbol${weeklyPrice.toStringAsFixed(1)}/周';
+        return '每年$currencySymbol$price元 · 仅$currencySymbol${weeklyPrice.toStringAsFixed(1)}元/周';
       case 'zh_Hant':
         return '每年$currencySymbol$price · 僅$currencySymbol${weeklyPrice.toStringAsFixed(1)}/周';
       default:
@@ -983,7 +1003,7 @@ class SubsLocale {
     final currencySymbol = skProduct.priceLocale.currencySymbol;
     final introductoryPrice = skProduct.introductoryPrice!;
     final productUnit = _getLocalizedUnit(
-        languageCode, 1, getUnit(skProduct.subscriptionPeriod!.unit.name));
+        languageCode, 1, getUnit(skProduct.subscriptionPeriod));
     switch (introductoryPrice.paymentMode) {
       case SKProductDiscountPaymentMode.payAsYouGo:
         // 按需付费：显示折扣价格
@@ -999,8 +1019,7 @@ class SubsLocale {
         // 免费试用：显示试用期和后续价格
         final numberOfPeriods =
             introductoryPrice.subscriptionPeriod.numberOfUnits;
-        final trialUnit =
-            getUnit(introductoryPrice.subscriptionPeriod.unit.name);
+        final trialUnit = getUnit(introductoryPrice.subscriptionPeriod);
         final unit1 =
             _getLocalizedUnit(languageCode, numberOfPeriods, trialUnit);
         return _buildFreeTrialText(languageCode, numberOfPeriods, unit1,
@@ -1053,7 +1072,7 @@ class SubsLocale {
       case 'vi':
         return 'Ưu đãi đặc biệt: $currencySymbol$introPrice/$productUnit';
       case 'zh_Hans':
-        return '限时优惠: 每$productUnit$currencySymbol$introPrice';
+        return '限时优惠: 每$productUnit$currencySymbol$introPrice元';
       case 'zh_Hant':
         return '限時優惠: 每$productUnit$currencySymbol$introPrice';
       default:
@@ -1111,7 +1130,7 @@ class SubsLocale {
       case 'vi':
         return 'Tiết kiệm $discountPercent%: $currencySymbol$introPrice/$productUnit';
       case 'zh_Hans':
-        return '节省$discountPercent%: 每$productUnit$currencySymbol$introPrice';
+        return '节省$discountPercent%: 每$productUnit$currencySymbol$introPrice元';
       case 'zh_Hant':
         return '節省$discountPercent%: 每$productUnit$currencySymbol$introPrice';
       default:
@@ -1164,7 +1183,7 @@ class SubsLocale {
       case 'vi':
         return 'Dùng thử miễn phí $numberOfPeriods $trialPeriodUnit, sau đó $currencySymbol$price/$productUnit';
       case 'zh_Hans':
-        return '免费试用 $numberOfPeriods $trialPeriodUnit，然后每$productUnit$currencySymbol$price';
+        return '免费试用 $numberOfPeriods $trialPeriodUnit，然后每$productUnit$currencySymbol$price元';
       case 'zh_Hant':
         return '免費試用 $numberOfPeriods $trialPeriodUnit，然後每$productUnit$currencySymbol$price';
       default:
