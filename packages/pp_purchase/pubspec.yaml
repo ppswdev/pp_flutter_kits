@@ -1,6 +1,6 @@
 name: pp_purchase
 description: "Easy-to-use in-app purchases that can callback results and facilitate operational tracking."
-version: 1.0.4
+version: 1.0.5
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_purchase
 
 environment:

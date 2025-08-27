@@ -1,3 +1,7 @@
+## 1.0.5
+
+* logic optmized
+
 ## 1.0.4
 
 * fix bug
@@ -7,7 +11,6 @@
 * add `getSubcriptionTitle` and `getSubcriptionSubTitle` method
 * add locale manage
 * logic tidy
-*
 
 ## 1.0.2
 

@@ -43,7 +43,10 @@ class SubsLocale {
 
   /// 获取本地化的单位文本
   static String _getLocalizedUnit(
-      String languageCode, int numberOfPeriods, String unit) {
+    String languageCode,
+    int numberOfPeriods,
+    String unit,
+  ) {
     switch (languageCode) {
       case 'ar':
         switch (unit) {
@@ -310,8 +313,11 @@ class SubsLocale {
   }
 
   /// 订阅标题（标准长度）
-  static String subscriptionTitle(String duration, String languageCode,
-      {bool isShort = false}) {
+  static String subscriptionTitle(
+    String duration,
+    String languageCode, {
+    bool isShort = false,
+  }) {
     switch (languageCode) {
       case 'ar':
         switch (duration) {
@@ -581,15 +587,23 @@ class SubsLocale {
 
   // 默认副标题
   static String defaultSubtitle(
-      SKProductWrapper skProduct, String duration, String languageCode) {
+    SKProductWrapper skProduct,
+    String duration,
+    String languageCode,
+  ) {
     final price = skProduct.price;
     final currencySymbol = skProduct.priceLocale.currencySymbol;
     final productUnit = _getLocalizedUnit(
-        languageCode, 1, getUnit(skProduct.subscriptionPeriod));
+      languageCode,
+      1,
+      getUnit(skProduct.subscriptionPeriod),
+    );
 
     // 原价订阅描述：灵活选择、性价比之选、最优惠
-    final description =
-        SubsLocale.defaultSubDescription(duration, languageCode);
+    final description = SubsLocale.defaultSubDescription(
+      duration,
+      languageCode,
+    );
 
     // 根据订阅类型和地区文化习惯显示价格
     switch (duration) {
@@ -1003,27 +1017,50 @@ class SubsLocale {
     final currencySymbol = skProduct.priceLocale.currencySymbol;
     final introductoryPrice = skProduct.introductoryPrice!;
     final productUnit = _getLocalizedUnit(
-        languageCode, 1, getUnit(skProduct.subscriptionPeriod));
+      languageCode,
+      1,
+      getUnit(skProduct.subscriptionPeriod),
+    );
     switch (introductoryPrice.paymentMode) {
       case SKProductDiscountPaymentMode.payAsYouGo:
         // 按需付费：显示折扣价格
+        final numberOfPeriods = introductoryPrice.numberOfPeriods;
         return _buildPayAsYouGoText(
-            languageCode, introductoryPrice.price, currencySymbol, productUnit);
+          languageCode,
+          introductoryPrice.price,
+          currencySymbol,
+          productUnit,
+          numberOfPeriods,
+        );
 
       case SKProductDiscountPaymentMode.payUpFront:
         // 预付：显示节省金额和折扣价格
-        return _buildPayUpFrontText(languageCode, introductoryPrice.price,
-            price, currencySymbol, productUnit);
+        return _buildPayUpFrontText(
+          languageCode,
+          introductoryPrice.price,
+          price,
+          currencySymbol,
+          productUnit,
+        );
 
       case SKProductDiscountPaymentMode.freeTrail:
         // 免费试用：显示试用期和后续价格
         final numberOfPeriods =
             introductoryPrice.subscriptionPeriod.numberOfUnits;
         final trialUnit = getUnit(introductoryPrice.subscriptionPeriod);
-        final unit1 =
-            _getLocalizedUnit(languageCode, numberOfPeriods, trialUnit);
-        return _buildFreeTrialText(languageCode, numberOfPeriods, unit1,
-            productUnit, price, currencySymbol);
+        final unit1 = _getLocalizedUnit(
+          languageCode,
+          numberOfPeriods,
+          trialUnit,
+        );
+        return _buildFreeTrialText(
+          languageCode,
+          numberOfPeriods,
+          unit1,
+          productUnit,
+          price,
+          currencySymbol,
+        );
       default:
         return '';
     }
@@ -1035,48 +1072,129 @@ class SubsLocale {
     String introPrice,
     String currencySymbol,
     String productUnit,
+    int numberOfPeriods,
   ) {
     switch (languageCode) {
       case 'ar':
-        return 'عرض خاص: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'عرض خاص: $currencySymbol$introPrice/$productUnit (الأسبوع الأول)';
+        } else {
+          return 'عرض خاص: $currencySymbol$introPrice/$productUnit (الأسبوعين الأولين)';
+        }
       case 'de':
-        return 'Sonderangebot: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Sonderangebot: $currencySymbol$introPrice/$productUnit (erste Woche)';
+        } else {
+          return 'Sonderangebot: $currencySymbol$introPrice/$productUnit (erste $numberOfPeriods Wochen)';
+        }
       case 'en':
-        return 'Special offer: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Special offer: $currencySymbol$introPrice/$productUnit (first $productUnit)';
+        } else {
+          return 'Special offer: $currencySymbol$introPrice/$productUnit (first $numberOfPeriods ${productUnit}s)';
+        }
       case 'es':
-        return 'Oferta especial: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Oferta especial: $currencySymbol$introPrice/$productUnit (primer $productUnit)';
+        } else {
+          return 'Oferta especial: $currencySymbol$introPrice/$productUnit (primeros $numberOfPeriods ${productUnit}s)';
+        }
       case 'fil':
-        return 'Espesyal na alok: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Espesyal na alok: $currencySymbol$introPrice/$productUnit (unang $productUnit)';
+        } else {
+          return 'Espesyal na alok: $currencySymbol$introPrice/$productUnit (unang $numberOfPeriods ${productUnit}s)';
+        }
       case 'fr':
-        return 'Offre spéciale: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Offre spéciale: $currencySymbol$introPrice/$productUnit (premier $productUnit)';
+        } else {
+          return 'Offre spéciale: $currencySymbol$introPrice/$productUnit (premiers $numberOfPeriods ${productUnit}s)';
+        }
       case 'id':
-        return 'Penawaran khusus: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Penawaran khusus: $currencySymbol$introPrice/$productUnit ($productUnit pertama)';
+        } else {
+          return 'Penawaran khusus: $currencySymbol$introPrice/$productUnit ($numberOfPeriods $productUnit pertama)';
+        }
       case 'it':
-        return 'Offerta speciale: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Offerta speciale: $currencySymbol$introPrice/$productUnit (primo $productUnit)';
+        } else {
+          return 'Offerta speciale: $currencySymbol$introPrice/$productUnit (primi $numberOfPeriods ${productUnit}s)';
+        }
       case 'ja':
-        return '特別価格: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return '特別価格: $currencySymbol$introPrice/$productUnit (初回$productUnit)';
+        } else {
+          return '特別価格: $currencySymbol$introPrice/$productUnit (初回$numberOfPeriods$productUnit)';
+        }
       case 'ko':
-        return '특별 할인: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return '특별 할인: $currencySymbol$introPrice/$productUnit (첫 $productUnit)';
+        } else {
+          return '특별 할인: $currencySymbol$introPrice/$productUnit (첫 $numberOfPeriods$productUnit)';
+        }
       case 'pl':
-        return 'Oferta specjalna: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Oferta specjalna: $currencySymbol$introPrice/$productUnit (pierwszy $productUnit)';
+        } else {
+          return 'Oferta specjalna: $currencySymbol$introPrice/$productUnit (pierwsze $numberOfPeriods ${productUnit}s)';
+        }
       case 'pt':
-        return 'Oferta especial: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Oferta especial: $currencySymbol$introPrice/$productUnit (primeiro $productUnit)';
+        } else {
+          return 'Oferta especial: $currencySymbol$introPrice/$productUnit (primeiros $numberOfPeriods ${productUnit}s)';
+        }
       case 'ru':
-        return 'Специальное предложение: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Специальное предложение: $currencySymbol$introPrice/$productUnit (первый $productUnit)';
+        } else {
+          return 'Специальное предложение: $currencySymbol$introPrice/$productUnit (первые $numberOfPeriods ${productUnit}s)';
+        }
       case 'th':
-        return 'ข้อเสนอพิเศษ: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'ข้อเสนอพิเศษ: $currencySymbol$introPrice/$productUnit ($productUnitแรก)';
+        } else {
+          return 'ข้อเสนอพิเศษ: $currencySymbol$introPrice/$productUnit ($numberOfPeriods $productUnitแรก)';
+        }
       case 'tr':
-        return 'Özel teklif: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Özel teklif: $currencySymbol$introPrice/$productUnit (ilk $productUnit)';
+        } else {
+          return 'Özel teklif: $currencySymbol$introPrice/$productUnit (ilk $numberOfPeriods $productUnit)';
+        }
       case 'uk':
-        return 'Спеціальна пропозиція: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Спеціальна пропозиція: $currencySymbol$introPrice/$productUnit (перший $productUnit)';
+        } else {
+          return 'Спеціальна пропозиція: $currencySymbol$introPrice/$productUnit (перші $numberOfPeriods ${productUnit}s)';
+        }
       case 'vi':
-        return 'Ưu đãi đặc biệt: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Ưu đãi đặc biệt: $currencySymbol$introPrice/$productUnit ($productUnit đầu tiên)';
+        } else {
+          return 'Ưu đãi đặc biệt: $currencySymbol$introPrice/$productUnit ($numberOfPeriods $productUnit đầu tiên)';
+        }
       case 'zh_Hans':
-        return '限时优惠: 每$productUnit$currencySymbol$introPrice元';
+        if (numberOfPeriods == 1) {
+          return '限时优惠: 每$productUnit$currencySymbol$introPrice元（首$productUnit）';
+        } else {
+          return '限时优惠: 每$productUnit$currencySymbol$introPrice元（前$numberOfPeriods$productUnit）';
+        }
       case 'zh_Hant':
-        return '限時優惠: 每$productUnit$currencySymbol$introPrice';
+        if (numberOfPeriods == 1) {
+          return '限時優惠: 每$productUnit$currencySymbol$introPrice（首$productUnit）';
+        } else {
+          return '限時優惠: 每$productUnit$currencySymbol$introPrice（前$numberOfPeriods$productUnit）';
+        }
       default:
-        return 'Special offer: $currencySymbol$introPrice/$productUnit';
+        if (numberOfPeriods == 1) {
+          return 'Special offer: $currencySymbol$introPrice/$productUnit (first $productUnit)';
+        } else {
+          return 'Special offer: $currencySymbol$introPrice/$productUnit (first $numberOfPeriods ${productUnit}s)';
+        }
     }
   }
 
