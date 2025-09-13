@@ -1,3 +1,7 @@
+## 1.0.6
+
+* logic optmized
+
 ## 1.0.5
 
 * logic optmized

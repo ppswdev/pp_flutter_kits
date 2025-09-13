@@ -716,9 +716,16 @@ extension SubsPurchaseExtension on SubsPurchase {
   String getSubcriptionSubTitle(ProductDetails product, String languageCode) {
     if (Platform.isIOS) {
       final appStoreProduct = product as AppStoreProductDetails;
+
+      //介绍性优惠：免费试用，随用随付，提前支付
       if (appStoreProduct.skProduct.introductoryPrice != null) {
-        //介绍性优惠：免费试用，随用随付，提前支付
         return SubsLocale.introductoryPriceSubtitle(
+            appStoreProduct.skProduct, languageCode);
+      }
+
+      //促销优惠：免费试用，随用随付，提前支付
+      if (appStoreProduct.skProduct.discounts.isNotEmpty) {
+        return SubsLocale.discountSubtitle(
             appStoreProduct.skProduct, languageCode);
       }
 

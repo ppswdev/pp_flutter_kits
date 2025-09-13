@@ -2,6 +2,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// SharedPreferences工具类
 /// 提供一些常用的SharedPreferences操作方法
+///
+/// 应用启动要先初始化：SharepUtil.init();
 class SharepUtil {
   static SharedPreferences? _prefs;
 

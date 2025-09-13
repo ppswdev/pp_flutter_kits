@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -20,6 +21,11 @@ extension StringExtension on String {
   /// 将字符串转换为bool
   bool toBool() {
     return this == 'true' || this == '1';
+  }
+
+  /// 将字符串转换为json
+  Map<String, dynamic> toJson() {
+    return jsonDecode(this) as Map<String, dynamic>;
   }
 
   /// 判断文本是否是Emoji表情
@@ -75,6 +81,21 @@ extension StringExtension on String {
     } catch (e) {
       Logger.log('Error writing to file: $e');
       return false;
+    }
+  }
+
+  /// 从指定文件目录中读取文本内容
+  /// [filePath] 文件路径
+  String readFileText() {
+    try {
+      final file = File(this);
+      if (!file.existsSync()) {
+        return '';
+      }
+      return File(this).readAsStringSync();
+    } catch (e) {
+      Logger.log('Error reading from file: $e');
+      return '';
     }
   }
 

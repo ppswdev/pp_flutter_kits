@@ -18,6 +18,7 @@ export 'extensions/extension_on_date_time.dart';
 export 'extensions/extension_on_getx.dart';
 export 'extensions/extension_on_int.dart';
 export 'extensions/extension_on_list.dart';
+export 'extensions/extension_on_map.dart';
 export 'extensions/extension_on_string.dart';
 
 // PP Utils

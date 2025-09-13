@@ -1066,6 +1066,69 @@ class SubsLocale {
     }
   }
 
+  /// 获取折扣文本
+  ///
+  /// [skProduct] 产品信息
+  /// [languageCode] 语言代码：支持ar,de,en,es,fil,fr,id,it,ja,ko,pl,pt,ru,th,tr,uk,vi,zh_Hans,zh_Hant, 默认是en
+  static String discountSubtitle(
+    SKProductWrapper skProduct,
+    String languageCode,
+  ) {
+    if (skProduct.discounts.isEmpty) {
+      return '';
+    }
+    final price = skProduct.price;
+    final currencySymbol = skProduct.priceLocale.currencySymbol;
+    final discount = skProduct.discounts.first;
+    final productUnit = _getLocalizedUnit(
+      languageCode,
+      1,
+      getUnit(skProduct.subscriptionPeriod),
+    );
+    switch (discount.paymentMode) {
+      case SKProductDiscountPaymentMode.payAsYouGo:
+        // 按需付费：显示折扣价格
+        final numberOfPeriods = discount.numberOfPeriods;
+        return _buildPayAsYouGoText(
+          languageCode,
+          discount.price,
+          currencySymbol,
+          productUnit,
+          numberOfPeriods,
+        );
+
+      case SKProductDiscountPaymentMode.payUpFront:
+        // 预付：显示节省金额和折扣价格
+        return _buildPayUpFrontText(
+          languageCode,
+          discount.price,
+          price,
+          currencySymbol,
+          productUnit,
+        );
+
+      case SKProductDiscountPaymentMode.freeTrail:
+        // 免费试用：显示试用期和后续价格
+        final numberOfPeriods = discount.subscriptionPeriod.numberOfUnits;
+        final trialUnit = getUnit(discount.subscriptionPeriod);
+        final unit1 = _getLocalizedUnit(
+          languageCode,
+          numberOfPeriods,
+          trialUnit,
+        );
+        return _buildFreeTrialText(
+          languageCode,
+          numberOfPeriods,
+          unit1,
+          productUnit,
+          price,
+          currencySymbol,
+        );
+      default:
+        return '';
+    }
+  }
+
   /// 构建按需付费文本
   static String _buildPayAsYouGoText(
     String languageCode,

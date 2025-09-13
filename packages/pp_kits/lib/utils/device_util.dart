@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:get/get.dart';
 
 class DeviceInfo {
   /// iOS、Android
@@ -77,5 +78,29 @@ class DeviceUtil {
       );
     }
     return null;
+  }
+
+  static bool isPhone() {
+    return Get.context!.isPhone;
+  }
+
+  static bool isTablet() {
+    return Get.context!.isTablet;
+  }
+
+  static bool isPortrait() {
+    return Get.context!.isPortrait;
+  }
+
+  static bool isLandscape() {
+    return Get.context!.isLandscape;
+  }
+
+  static bool isWeb() {
+    return GetPlatform.isWeb;
+  }
+
+  static bool isDesktop() {
+    return GetPlatform.isWindows || GetPlatform.isMacOS || GetPlatform.isLinux;
   }
 }
