@@ -1,4 +1,6 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:pp_segmented/pp_segmented.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,19 +56,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -103,20 +92,275 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            PPSegmentedControl<int>(
+              items: List.generate(
+                9,
+                (index) =>
+                    SegmentItem(value: index + 1, child: Text('${index + 1}')),
+              ),
+              selectedValue: 1,
+              onChanged: (count) {
+                print('选中: $count');
+              },
+              width: double.infinity,
+              height: 35,
+              borderRadius: 9,
+              backgroundColor: Color(0xFF807D78).withValues(alpha: 0.12),
+              indicatorColor: Colors.green,
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black,
+              indicatorBorderRadius: 7,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<int>(
+              items: List.generate(
+                9,
+                (index) =>
+                    SegmentItem(value: index + 1, child: Text('${index + 1}')),
+              ),
+              selectedValue: 1,
+              onChanged: (count) {
+                print('选中: $count');
+              },
+              width: double.infinity,
+              height: 35,
+              borderRadius: 9,
+              backgroundColor: Color(0xFF807D78).withOpacity(0.12),
+              backgroundGradient: LinearGradient(
+                colors: [Colors.blue, Colors.purple],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              indicatorColor: Colors.green,
+              indicatorGradient: LinearGradient(
+                colors: [Colors.white, Colors.green],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black,
+              indicatorBorderRadius: 7,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<int>(
+              items: List.generate(
+                9,
+                (index) =>
+                    SegmentItem(value: index + 1, child: Text('${index + 1}')),
+              ),
+              selectedValue: 1,
+              onChanged: (count) {
+                print('选中: $count');
+              },
+              width: double.infinity,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: Color(0xFF807D78).withValues(alpha: 0.12),
+              indicatorColor: Colors.green,
+              indicatorGradient: LinearGradient(
+                colors: [Colors.blue, Colors.purple],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black,
+              indicatorBorderRadius: 20,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<int>(
+              items: [
+                SegmentItem(value: 1, child: Text('首页')),
+                SegmentItem(value: 2, child: Text('发现')),
+                SegmentItem(value: 3, child: Text('消息')),
+                SegmentItem(value: 4, child: Text('我的')),
+              ],
+              selectedValue: 1,
+              onChanged: (value) => print('选中: $value'),
+              height: 45,
+              borderRadius: 12,
+              backgroundGradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.1),
+                  Colors.purple.withOpacity(0.1),
+                ],
+              ),
+              indicatorGradient:
+                  LinearGradient(colors: [Colors.blue, Colors.purple]),
+              indicatorBorderRadius: 10,
+              indicatorShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black87,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<int>(
+              items: [
+                SegmentItem(value: 1, child: Icon(Icons.home, size: 16)),
+                SegmentItem(value: 2, child: Icon(Icons.search, size: 16)),
+                SegmentItem(value: 3, child: Icon(Icons.message, size: 16)),
+                SegmentItem(value: 4, child: Icon(Icons.person, size: 16)),
+              ],
+              selectedValue: 1,
+              onChanged: (value) => print('选中: $value'),
+              height: 45,
+              borderRadius: 12,
+              backgroundGradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.1),
+                  Colors.purple.withOpacity(0.1),
+                ],
+              ),
+              indicatorGradient:
+                  LinearGradient(colors: [Colors.blue, Colors.purple]),
+              indicatorBorderRadius: 10,
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black87,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<int>(
+              items: [
+                SegmentItem(value: 1, child: Text('首页')),
+                SegmentItem(
+                  value: 2,
+                  child: AutoSizeText(
+                    '发现发现发现发现发现发现',
+                    textAlign: TextAlign.center,
+                    minFontSize: 8,
+                  ),
+                ),
+                SegmentItem(
+                  value: 3,
+                  child: AutoSizeText(
+                    'Long length word Long length word',
+                    textAlign: TextAlign.center,
+                    minFontSize: 8,
+                    maxFontSize: 20,
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ),
+                SegmentItem(value: 4, child: Text('我的')),
+              ],
+              selectedValue: 1,
+              onChanged: (value) => print('选中: $value'),
+              height: 60,
+              borderRadius: 20,
+              backgroundGradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.1),
+                  Colors.purple.withOpacity(0.1),
+                ],
+              ),
+              indicatorGradient:
+                  LinearGradient(colors: [Colors.blue, Colors.purple]),
+              indicatorBorderRadius: 20,
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black87,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<String>(
+              items: [
+                SegmentItem(
+                  value: 'home',
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.home, size: 16),
+                      SizedBox(width: 4),
+                      Text('首页'),
+                    ],
+                  ),
+                ),
+                SegmentItem(
+                  value: 'search',
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.search, size: 16),
+                      SizedBox(width: 4),
+                      Text('搜索'),
+                    ],
+                  ),
+                ),
+              ],
+              selectedValue: 'home',
+              onChanged: (value) => print(value),
+              height: 50,
+              borderRadius: 20,
+              backgroundGradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.1),
+                  Colors.purple.withOpacity(0.1),
+                ],
+              ),
+              indicatorGradient:
+                  LinearGradient(colors: [Colors.blue, Colors.purple]),
+              indicatorBorderRadius: 20,
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black,
+            ),
+            SizedBox(height: 15),
+            PPSegmentedControl<String>(
+              items: [
+                SegmentItem(
+                  value: 'easy',
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: 5),
+                    color: Colors.amber,
+                    child: Text('简单'),
+                  ),
+                ),
+                SegmentItem(
+                  value: 'medium',
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star, size: 16),
+                        SizedBox(width: 4),
+                        Text('中等'),
+                      ],
+                    ),
+                  ),
+                ),
+                SegmentItem(
+                  value: 'hard',
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.diamond, size: 16),
+                      Text('困难', style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+              selectedValue: 'easy',
+              onChanged: (value) => print('选中: $value'),
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black54,
+              backgroundColor: Colors.grey.withOpacity(0.1),
+              indicatorColor: Colors.green,
+              indicator: Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
