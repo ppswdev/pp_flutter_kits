@@ -1,3 +1,3 @@
 ## 1.0.0
 
-* TODO: Describe initial release.
+* Only supports fixed width

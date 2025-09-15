@@ -94,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            // 数字模式
             PPSegmentedControl<int>(
               items: List.generate(
                 9,
@@ -114,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               indicatorBorderRadius: 7,
             ),
             SizedBox(height: 15),
+            // 固定宽度
             PPSegmentedControl<int>(
               items: List.generate(
                 9,
@@ -144,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
               indicatorBorderRadius: 7,
             ),
             SizedBox(height: 15),
+            // 圆角模式
             PPSegmentedControl<int>(
               items: List.generate(
                 9,
@@ -169,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
               indicatorBorderRadius: 20,
             ),
             SizedBox(height: 15),
+            // 文字模式
             PPSegmentedControl<int>(
               items: [
                 SegmentItem(value: 1, child: Text('首页')),
@@ -200,6 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
               unselectedTextColor: Colors.black87,
             ),
             SizedBox(height: 15),
+            // 图标模式
             PPSegmentedControl<int>(
               items: [
                 SegmentItem(value: 1, child: Icon(Icons.home, size: 16)),
@@ -224,6 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
               unselectedTextColor: Colors.black87,
             ),
             SizedBox(height: 15),
+            // 文字自适应
             PPSegmentedControl<int>(
               items: [
                 SegmentItem(value: 1, child: Text('首页')),
@@ -264,6 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
               unselectedTextColor: Colors.black87,
             ),
             SizedBox(height: 15),
+            // 图文组合
             PPSegmentedControl<String>(
               items: [
                 SegmentItem(
@@ -306,6 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
               unselectedTextColor: Colors.black,
             ),
             SizedBox(height: 15),
+            // 自定义复杂内容
             PPSegmentedControl<String>(
               items: [
                 SegmentItem(
@@ -357,6 +365,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
+            ),
+            // 滚动模式
+            PPSegmentedControl<String>(
+              items: [
+                SegmentItem(
+                    value: 'very_long_option_name', child: Text('很长的选项名称')),
+                SegmentItem(value: 'short', child: Text('短')),
+                SegmentItem(value: 'medium_length', child: Text('中等长度')),
+                SegmentItem(
+                  value: 'another_very_long_option',
+                  child: Text('另一个很长的选项'),
+                ),
+                SegmentItem(value: 'end', child: Text('结束')),
+              ],
+              selectedValue: 'short',
+              onChanged: (value) => print('选中: $value'),
+              isScrollable: true, // 启用滚动
+              minItemWidth: 80, // 最小宽度
+              itemPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              selectedTextColor: Colors.white,
+              unselectedTextColor: Colors.black54,
+              backgroundColor: Colors.grey.withOpacity(0.1),
+              indicatorColor: Colors.blue,
             ),
           ],
         ),

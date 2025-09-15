@@ -58,6 +58,15 @@ class PPSegmentedControl<T> extends StatefulWidget {
   /// 可选：指示器动画曲线
   final Curve animationCurve;
 
+  /// 可选：是否允许滚动，默认false
+  final bool isScrollable;
+
+  /// 可选：选项最小宽度，仅在滚动模式下有效
+  final double minItemWidth;
+
+  /// 可选：选项内边距，仅在滚动模式下有效
+  final EdgeInsets itemPadding;
+
   const PPSegmentedControl({
     super.key,
     required this.items,
@@ -79,6 +88,9 @@ class PPSegmentedControl<T> extends StatefulWidget {
     this.selectedTextStyle,
     this.animationDuration = const Duration(milliseconds: 200),
     this.animationCurve = Curves.easeInOut,
+    this.isScrollable = false,
+    this.minItemWidth = 60,
+    this.itemPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
   });
 
   @override
@@ -146,14 +158,17 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
           bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: color,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
           ),
           bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: color,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
           ),
           labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
             color: color,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
           ),
         ),
         // 设置按钮主题颜色
@@ -172,6 +187,7 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
                 : widget.unselectedTextStyle) ??
             TextStyle(
               color: color,
+              fontSize: 16,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),
         child: child,
@@ -191,72 +207,136 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
             : null,
         borderRadius: BorderRadius.circular(widget.borderRadius),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final itemWidth = constraints.maxWidth / widget.items.length;
-          return Stack(
-            children: [
-              // 选中指示器
-              AnimatedPositioned(
-                duration: widget.animationDuration,
-                curve: widget.animationCurve,
-                left: _selectedIndex * itemWidth,
-                top: 0,
-                bottom: 0,
-                width: itemWidth,
-                child: widget.indicator != null
-                    ? widget.indicator!
-                    : Container(
-                        margin: EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          gradient: widget.indicatorGradient,
-                          color: widget.indicatorGradient == null
-                              ? widget.indicatorColor
-                              : null,
-                          borderRadius: BorderRadius.circular(
-                            widget.indicatorBorderRadius,
-                          ),
-                          boxShadow: widget.indicatorShadow,
-                        ),
-                      ),
-              ),
-              // 选项列表
-              Row(
-                children: List.generate(widget.items.length, (index) {
-                  final item = widget.items[index];
-                  final isSelected = index == _selectedIndex;
+      child: widget.isScrollable
+          ? _buildScrollableContent()
+          : _buildFixedContent(),
+    );
+  }
 
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = index;
-                        });
-                        _animationController.forward(from: 0);
-                        widget.onChanged?.call(item.value);
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        width: itemWidth,
-                        height: widget.height,
-                        child: Center(
-                          child: _buildItemWithTheme(
-                            item.child,
-                            isSelected
-                                ? widget.selectedTextColor
-                                : widget.unselectedTextColor,
-                            isSelected,
-                          ),
+  /// 构建固定内容（平均分配宽度）
+  Widget _buildFixedContent() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = constraints.maxWidth / widget.items.length;
+        return Stack(
+          children: [
+            // 选中指示器
+            AnimatedPositioned(
+              duration: widget.animationDuration,
+              curve: widget.animationCurve,
+              left: _selectedIndex * itemWidth,
+              top: 0,
+              bottom: 0,
+              width: itemWidth,
+              child: widget.indicator != null
+                  ? widget.indicator!
+                  : Container(
+                      margin: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        gradient: widget.indicatorGradient,
+                        color: widget.indicatorGradient == null
+                            ? widget.indicatorColor
+                            : null,
+                        borderRadius: BorderRadius.circular(
+                          widget.indicatorBorderRadius,
+                        ),
+                        boxShadow: widget.indicatorShadow,
+                      ),
+                    ),
+            ),
+            // 选项列表
+            Row(
+              children: List.generate(widget.items.length, (index) {
+                final item = widget.items[index];
+                final isSelected = index == _selectedIndex;
+
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                      _animationController.forward(from: 0);
+                      widget.onChanged?.call(item.value);
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      width: itemWidth,
+                      height: widget.height,
+                      child: Center(
+                        child: _buildItemWithTheme(
+                          item.child,
+                          isSelected
+                              ? widget.selectedTextColor
+                              : widget.unselectedTextColor,
+                          isSelected,
                         ),
                       ),
                     ),
-                  );
-                }),
-              ),
-            ],
-          );
-        },
-      ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// 构建滚动内容（自适应宽度）
+  Widget _buildScrollableContent() {
+    return Stack(
+      children: [
+        // 滚动视图
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: IntrinsicWidth(
+            child: Row(
+              children: List.generate(widget.items.length, (index) {
+                final item = widget.items[index];
+                final isSelected = index == _selectedIndex;
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                    _animationController.forward(from: 0);
+                    widget.onChanged?.call(item.value);
+                  },
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: widget.minItemWidth),
+                    padding: widget.itemPadding,
+                    height: widget.height,
+                    child: Center(
+                      child: _buildItemWithTheme(
+                        item.child,
+                        isSelected
+                            ? widget.selectedTextColor
+                            : widget.unselectedTextColor,
+                        isSelected,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
+        // 选中指示器（滚动模式）
+        if (widget.indicator == null) _buildScrollableIndicator(),
+      ],
+    );
+  }
+
+  /// 构建滚动模式的指示器
+  Widget _buildScrollableIndicator() {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return const SizedBox.shrink(); // 简化版本，暂时不显示指示器
+      },
     );
   }
 }
