@@ -16,12 +16,30 @@ class AppUtil {
   /// 获取钥匙串中存储的应用UUID
   static Future<String> getAppUUID() async {
     final appInfo = await getAppInfo();
-    String? value =
-        await KeychainUtil.read(key: '${appInfo.packageName}.appUUID');
+    String? value;
+
+    try {
+      value = await KeychainUtil.read(key: '${appInfo.packageName}.appUUID');
+    } catch (e) {
+      Logger.trace('Failed to read UUID from keychain: $e');
+    }
+
     if (value == null) {
       value = const Uuid().v7();
-      await KeychainUtil.write(
-          key: '${appInfo.packageName}.appUUID', value: value);
+      try {
+        //防止触发安全机制崩溃
+        Future.delayed(const Duration(milliseconds: 500));
+        KeychainUtil.write(
+          key: '${appInfo.packageName}.appUUID',
+          value: value,
+        ).then((bool success) {
+          if (success) {
+            Logger.trace('Write UUID to keychain success: $value');
+          }
+        });
+      } catch (writeError) {
+        Logger.trace('Failed to write UUID to keychain: $writeError');
+      }
     }
     return value;
   }
@@ -29,19 +47,16 @@ class AppUtil {
   /// 获取应用信息
   /// 返回 (应用名称, 包名, 版本号, 构建号)
   static Future<
-      ({
-        String appName,
-        String packageName,
-        String version,
-        String buildNumber
-      })> getAppInfo() async {
+    ({String appName, String packageName, String version, String buildNumber})
+  >
+  getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     return (
       appName: packageInfo.appName,
       packageName: packageInfo.packageName,
       version: packageInfo.version,
-      buildNumber: packageInfo.buildNumber
+      buildNumber: packageInfo.buildNumber,
     );
   }
 
@@ -50,21 +65,25 @@ class AppUtil {
   /// @param isDark 是否为深色模式
   ///
   /// @param isTransparent 是否透明
-  static void setStatusBarStyle(
-      {bool isDark = false, bool isTransparent = true}) {
+  static void setStatusBarStyle({
+    bool isDark = false,
+    bool isTransparent = true,
+  }) {
     if (GetPlatform.isAndroid) {
       if (isTransparent) {
         // 设置状态栏透明
-        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-        ));
+        SystemChrome.setSystemUIOverlayStyle(
+          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+        );
       }
 
       // 设置状态栏内容颜色
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      ));
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        ),
+      );
     } else if (GetPlatform.isIOS) {}
   }
 
@@ -116,28 +135,22 @@ class AppUtil {
   ///
   /// @param files 文件 [XFile('${directory.path}/image1.jpg')...]
   ///
-  static Future<bool> share(
-      {String subject = '',
-      String title = '',
-      String text = '',
-      String url = '',
-      List<XFile> files = const []}) async {
+  static Future<bool> share({
+    String subject = '',
+    String title = '',
+    String text = '',
+    String url = '',
+    List<XFile> files = const [],
+  }) async {
     EasyLoading.show();
     ShareResult shareResult;
     ShareParams shareParams;
     if (files.isNotEmpty) {
       shareParams = ShareParams(files: files);
     } else if (url.isNotEmpty) {
-      shareParams = ShareParams(
-        title: title,
-        uri: Uri.parse(url),
-      );
+      shareParams = ShareParams(title: title, uri: Uri.parse(url));
     } else {
-      shareParams = ShareParams(
-        subject: subject,
-        title: title,
-        text: text,
-      );
+      shareParams = ShareParams(subject: subject, title: title, text: text);
     }
     //检查是否是iPad
     if (GetPlatform.isIOS && Get.context?.isTablet == true) {
