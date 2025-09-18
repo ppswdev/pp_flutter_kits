@@ -743,6 +743,60 @@ extension SubsPurchaseExtension on SubsPurchase {
     }
     return '';
   }
+
+  /// 获取订阅按钮文本
+  ///
+  /// [product] 产品信息
+  ///
+  /// [languageCode] 语言代码
+  String getSubcriptionButtonText(ProductDetails product, String languageCode) {
+    var buttonType = SubscriptionButtonType.standard;
+    if (Platform.isIOS) {
+      final appStoreProduct = product as AppStoreProductDetails;
+      //介绍性优惠：免费试用，随用随付，提前支付
+      if (appStoreProduct.skProduct.introductoryPrice != null) {
+        switch (appStoreProduct.skProduct.introductoryPrice!.paymentMode) {
+          case SKProductDiscountPaymentMode.freeTrail:
+            buttonType = SubscriptionButtonType.freeTrial;
+            break;
+          case SKProductDiscountPaymentMode.payUpFront:
+            buttonType = SubscriptionButtonType.payUpFront;
+            break;
+          case SKProductDiscountPaymentMode.payAsYouGo:
+            buttonType = SubscriptionButtonType.payAsYouGo;
+            break;
+          default:
+            buttonType = SubscriptionButtonType.standard;
+            break;
+        }
+      }
+
+      //促销优惠：免费试用，随用随付，提前支付
+      if (appStoreProduct.skProduct.discounts.isNotEmpty) {
+        final discount = appStoreProduct.skProduct.discounts.first;
+        switch (discount.paymentMode) {
+          case SKProductDiscountPaymentMode.freeTrail:
+            buttonType = SubscriptionButtonType.freeTrial;
+            break;
+          case SKProductDiscountPaymentMode.payUpFront:
+            buttonType = SubscriptionButtonType.payUpFront;
+            break;
+          case SKProductDiscountPaymentMode.payAsYouGo:
+            buttonType = SubscriptionButtonType.payAsYouGo;
+            break;
+          default:
+            buttonType = SubscriptionButtonType.standard;
+            break;
+        }
+      }
+
+      //终身会员
+      if (_onetimeSubsIds.contains(product.id)) {
+        buttonType = SubscriptionButtonType.lifetime;
+      }
+    }
+    return SubsLocale.subscriptionButtonText(buttonType, languageCode);
+  }
 }
 
 /// iOS 支付队列代理

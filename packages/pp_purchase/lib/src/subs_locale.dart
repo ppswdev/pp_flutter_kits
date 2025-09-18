@@ -1,5 +1,7 @@
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
+import 'subs_enums.dart';
+
 class SubsLocale {
   /// 将StoreKit的周期单位转换为标准单位
   static String getUnit(SKProductSubscriptionPeriodWrapper? period) {
@@ -604,6 +606,10 @@ class SubsLocale {
       duration,
       languageCode,
     );
+
+    if (duration == 'lifetime') {
+      return description;
+    }
 
     // 根据订阅类型和地区文化习惯显示价格
     switch (duration) {
@@ -1369,6 +1375,260 @@ class SubsLocale {
         return '免費試用 $numberOfPeriods $trialPeriodUnit，然後每$productUnit$currencySymbol$price';
       default:
         return 'Free trial $numberOfPeriods $trialPeriodUnit, then $currencySymbol$price/$productUnit';
+    }
+  }
+
+  /// 获取订阅按钮文本
+  static String subscriptionButtonText(
+      SubscriptionButtonType type, String languageCode) {
+    switch (languageCode) {
+      case 'ar':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'اشترك';
+          case SubscriptionButtonType.freeTrial:
+            return 'جرّب مجانًا';
+          case SubscriptionButtonType.payUpFront:
+            return 'ادفع الآن';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'ادفع حسب الاستخدام';
+          case SubscriptionButtonType.lifetime:
+            return 'اشتر مدى الحياة';
+        }
+      case 'de':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Abonnieren';
+          case SubscriptionButtonType.freeTrial:
+            return 'Kostenlos testen';
+          case SubscriptionButtonType.payUpFront:
+            return 'Jetzt bezahlen';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Bezahlen nach Nutzung';
+          case SubscriptionButtonType.lifetime:
+            return 'Lebenslang kaufen';
+        }
+      case 'en':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Subscribe';
+          case SubscriptionButtonType.freeTrial:
+            return 'Start Free Trial';
+          case SubscriptionButtonType.payUpFront:
+            return 'Prepay Now';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Pay As You Go';
+          case SubscriptionButtonType.lifetime:
+            return 'Buy Lifetime';
+        }
+      case 'es':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Suscribirse';
+          case SubscriptionButtonType.freeTrial:
+            return 'Prueba gratis';
+          case SubscriptionButtonType.payUpFront:
+            return 'Pagar ahora';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Pagar por uso';
+          case SubscriptionButtonType.lifetime:
+            return 'Comprar de por vida';
+        }
+      case 'fil':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Mag-subscribe';
+          case SubscriptionButtonType.freeTrial:
+            return 'Subukan nang libre';
+          case SubscriptionButtonType.payUpFront:
+            return 'Magbayad ngayon';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Magbayad ayon sa paggamit';
+          case SubscriptionButtonType.lifetime:
+            return 'Bilhin ang panghabang-buhay';
+        }
+      case 'fr':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'S\'abonner';
+          case SubscriptionButtonType.freeTrial:
+            return 'Essai gratuit';
+          case SubscriptionButtonType.payUpFront:
+            return 'Payer maintenant';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Payer à l\'usage';
+          case SubscriptionButtonType.lifetime:
+            return 'Acheter à vie';
+        }
+      case 'id':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Berlangganan';
+          case SubscriptionButtonType.freeTrial:
+            return 'Coba gratis';
+          case SubscriptionButtonType.payUpFront:
+            return 'Bayar sekarang';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Bayar sesuai pemakaian';
+          case SubscriptionButtonType.lifetime:
+            return 'Beli seumur hidup';
+        }
+      case 'it':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Abbonati';
+          case SubscriptionButtonType.freeTrial:
+            return 'Prova gratuita';
+          case SubscriptionButtonType.payUpFront:
+            return 'Paga ora';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Paga a consumo';
+          case SubscriptionButtonType.lifetime:
+            return 'Acquista a vita';
+        }
+      case 'ja':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return '購読する';
+          case SubscriptionButtonType.freeTrial:
+            return '無料トライアル開始';
+          case SubscriptionButtonType.payUpFront:
+            return '今すぐ支払う';
+          case SubscriptionButtonType.payAsYouGo:
+            return '使った分だけ支払う';
+          case SubscriptionButtonType.lifetime:
+            return '生涯購入';
+        }
+      case 'ko':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return '구독하기';
+          case SubscriptionButtonType.freeTrial:
+            return '무료 체험 시작';
+          case SubscriptionButtonType.payUpFront:
+            return '지금 결제';
+          case SubscriptionButtonType.payAsYouGo:
+            return '사용한 만큼 결제';
+          case SubscriptionButtonType.lifetime:
+            return '평생 구매';
+        }
+      case 'pl':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Subskrybuj';
+          case SubscriptionButtonType.freeTrial:
+            return 'Wypróbuj za darmo';
+          case SubscriptionButtonType.payUpFront:
+            return 'Zapłać teraz';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Płać zgodnie z użyciem';
+          case SubscriptionButtonType.lifetime:
+            return 'Kup na całe życie';
+        }
+      case 'pt':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Assinar';
+          case SubscriptionButtonType.freeTrial:
+            return 'Teste grátis';
+          case SubscriptionButtonType.payUpFront:
+            return 'Pagar agora';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Pagar conforme o uso';
+          case SubscriptionButtonType.lifetime:
+            return 'Comprar vitalício';
+        }
+      case 'ru':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Подписаться';
+          case SubscriptionButtonType.freeTrial:
+            return 'Попробовать бесплатно';
+          case SubscriptionButtonType.payUpFront:
+            return 'Оплатить сейчас';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Оплата по мере использования';
+          case SubscriptionButtonType.lifetime:
+            return 'Купить навсегда';
+        }
+      case 'th':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'สมัครสมาชิก';
+          case SubscriptionButtonType.freeTrial:
+            return 'ทดลองใช้ฟรี';
+          case SubscriptionButtonType.payUpFront:
+            return 'ชำระตอนนี้';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'จ่ายตามการใช้งาน';
+          case SubscriptionButtonType.lifetime:
+            return 'ซื้อตลอดชีพ';
+        }
+      case 'tr':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Abone ol';
+          case SubscriptionButtonType.freeTrial:
+            return 'Ücretsiz dene';
+          case SubscriptionButtonType.payUpFront:
+            return 'Şimdi öde';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Kullandıkça öde';
+          case SubscriptionButtonType.lifetime:
+            return 'Yaşam boyu satın al';
+        }
+      case 'vi':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Đăng ký';
+          case SubscriptionButtonType.freeTrial:
+            return 'Dùng thử miễn phí';
+          case SubscriptionButtonType.payUpFront:
+            return 'Thanh toán ngay';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Trả theo nhu cầu';
+          case SubscriptionButtonType.lifetime:
+            return 'Mua trọn đời';
+        }
+      case 'zh_Hans':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return '订阅';
+          case SubscriptionButtonType.freeTrial:
+            return '开始免费试用';
+          case SubscriptionButtonType.payUpFront:
+            return '立即支付';
+          case SubscriptionButtonType.payAsYouGo:
+            return '按需付费';
+          case SubscriptionButtonType.lifetime:
+            return '购买终身';
+        }
+      case 'zh_Hant':
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return '訂閱';
+          case SubscriptionButtonType.freeTrial:
+            return '開始免費試用';
+          case SubscriptionButtonType.payUpFront:
+            return '立即支付';
+          case SubscriptionButtonType.payAsYouGo:
+            return '按需付費';
+          case SubscriptionButtonType.lifetime:
+            return '購買終身';
+        }
+      default:
+        switch (type) {
+          case SubscriptionButtonType.standard:
+            return 'Subscribe';
+          case SubscriptionButtonType.freeTrial:
+            return 'Start Free Trial';
+          case SubscriptionButtonType.payUpFront:
+            return 'Prepay Now';
+          case SubscriptionButtonType.payAsYouGo:
+            return 'Pay As You Go';
+          case SubscriptionButtonType.lifetime:
+            return 'Buy Lifetime';
+        }
     }
   }
 }

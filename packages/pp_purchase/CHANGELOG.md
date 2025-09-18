@@ -1,3 +1,8 @@
+## 1.0.7
+
+* add `subscriptionButtonText` method
+* add locale manage
+
 ## 1.0.6
 
 * logic optmized

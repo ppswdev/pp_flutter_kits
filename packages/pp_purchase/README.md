@@ -5,6 +5,7 @@ Easy-to-use in-app purchases that can callback results and facilitate operationa
 
 - Configurable
 - Callable function
+- Get Subscription Title,Subtitle,Button text
 
 ## Getting started
 

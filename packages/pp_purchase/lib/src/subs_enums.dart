@@ -6,6 +6,15 @@ enum SubscriptionDuration {
   lifetime,
 }
 
+/// 订阅按钮类型枚举
+enum SubscriptionButtonType {
+  standard, // 默认订阅
+  freeTrial, // 免费试用
+  payUpFront, // 提前预付
+  payAsYouGo, // 按需付费
+  lifetime, // 终身会员
+}
+
 /// 订阅购买状态
 enum IAPPurchaseStatus {
   purchasing,
