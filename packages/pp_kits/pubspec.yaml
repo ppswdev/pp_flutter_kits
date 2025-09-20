@@ -1,11 +1,11 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.1.9
+version: 1.2.0
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_kits
 
 environment:
-  sdk: ^3.8.0
-  flutter: ">=3.32.0"
+  sdk: ^3.9.0
+  flutter: ">=3.35.0"
 
 dependencies:
   flutter:
@@ -19,24 +19,23 @@ dependencies:
   hex: ^0.2.0 #十六进制转换
   encrypt: ^5.0.3 #加密
   archive: ^4.0.7 #压缩和解压缩文件
-  url_launcher: ^6.3.1 #链接启动
+  url_launcher: ^6.3.2 #链接启动
   app_settings: ^6.1.1 #打开系统设置
-  audioplayers: ^6.4.0 #audio播放
-  connectivity_plus: ^6.1.4 #网络连接状态
+  audioplayers: ^6.5.1 #audio播放
+  connectivity_plus: ^7.0.0 #网络连接状态
   file_picker: ^10.1.7 #文件选择
-  adaptive_dialog: ^2.4.2 #对话框
+  adaptive_dialog: ^2.5.0 #对话框
   flutter_easyloading: ^3.0.5 #加载动画
   flutter_screenutil: ^5.9.3 #屏幕适配
   flutter_secure_storage: ^9.2.4 #安全存储
-  flutter_timezone: ^4.1.0 #时区处理
+  flutter_timezone: ^5.0.0 #时区处理
   get_time_ago: ^2.3.1 #时间处理
-  image_cropper: ^9.1.0 #图片裁剪
-  image_picker: ^1.1.2 #图片选择
-  device_info_plus: ^11.3.0 #设备信息
-  #network_info_plus: ^6.1.4 #网络信息
-  package_info_plus: ^8.3.0 #应用包信息
+  image_cropper: ^10.0.0+1 #图片裁剪
+  image_picker: ^1.2.0 #图片选择
+  device_info_plus: ^12.1.0 #设备信息
+  package_info_plus: ^9.0.0 #应用包信息
   path_provider: ^2.1.5 #文件路径提供
-  share_plus: ^11.0.0 #分享功能
+  share_plus: ^12.0.0 #分享功能
   shared_preferences: ^2.5.3 #本地存储
 
 dev_dependencies:
