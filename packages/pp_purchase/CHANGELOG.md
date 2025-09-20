@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Updates minimum supported SDK version to Flutter 3.35.0
+
 ## 1.0.7
 
 * add `subscriptionButtonText` method
