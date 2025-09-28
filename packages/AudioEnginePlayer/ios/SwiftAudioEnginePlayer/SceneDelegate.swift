@@ -20,8 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let winScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: winScene)
         
-        //let vc = EqualizerViewController()
-        let vc = AppleMusicPlayerExampleViewController()
+        let vc = EqualizerViewController()
+        //let vc = AppleMusicPlayerExampleViewController()
         window?.rootViewController = vc
         window?.makeKeyAndVisible()
     }
