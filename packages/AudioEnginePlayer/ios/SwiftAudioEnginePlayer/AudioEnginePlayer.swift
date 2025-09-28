@@ -70,8 +70,6 @@ class AudioEnginePlayer {
     private var playerNode: AVAudioPlayerNode
     /// 播放速度
     private var varispeed: AVAudioUnitVarispeed
-    /// 音量放大器
-    private var volumeBooster: AVAudioUnitEQ
     /// 低音增强器
     private var bassBooster: AVAudioUnitEQ
     /// 均衡器
@@ -101,7 +99,6 @@ class AudioEnginePlayer {
         playerNode = AVAudioPlayerNode()
         audioEngine = AVAudioEngine()
         varispeed = AVAudioUnitVarispeed()
-        volumeBooster = AVAudioUnitEQ(numberOfBands: 3)
         bassBooster = AVAudioUnitEQ(numberOfBands: 3)
         equalizer = AVAudioUnitEQ(numberOfBands: 10)
         reverb = AVAudioUnitReverb()
@@ -154,18 +151,19 @@ class AudioEnginePlayer {
     }
 
     private func setupAudioEngine() {
+        // 按处理顺序附加音频单元
         audioEngine.attach(playerNode)
-        audioEngine.attach(varispeed)
-        audioEngine.attach(volumeBooster)
-        audioEngine.attach(bassBooster)
-        audioEngine.attach(equalizer)
-        audioEngine.attach(reverb)
+        audioEngine.attach(varispeed)      // 1. 变速处理（最先处理）
+        audioEngine.attach(bassBooster)    // 2. 低音增强（在均衡器之前）
+        audioEngine.attach(equalizer)      // 3. 均衡器（主要音色调整）
+        audioEngine.attach(reverb)         // 4. 混响（最后处理）
 
+        // 优化后的音频处理链路：playerNode -> varispeed -> bassBooster -> equalizer -> reverb -> mainMixerNode
         audioEngine.connect(playerNode, to: varispeed, format: nil)
-        audioEngine.connect(varispeed, to: volumeBooster, format: nil)
-        audioEngine.connect(volumeBooster, to: bassBooster, format: nil)
+        audioEngine.connect(varispeed, to: bassBooster, format: nil)
         audioEngine.connect(bassBooster, to: equalizer, format: nil)
-        audioEngine.connect(equalizer, to: audioEngine.mainMixerNode, format: nil)
+        audioEngine.connect(equalizer, to: reverb, format: nil)
+        audioEngine.connect(reverb, to: audioEngine.mainMixerNode, format: nil)
 
         do {
             try audioEngine.start()
@@ -301,6 +299,7 @@ class AudioEnginePlayer {
     }
 
     private func initEqualizer() {
+        // 标准10段均衡器配置 - 基于ISO标准频段
         let frequencies: [Float] = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
         let initialGains: [Float] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -313,54 +312,34 @@ class AudioEnginePlayer {
             band.bypass = false
         }
 
-        // 初始化音量放大器
-        // 优化后的多频段音量增强器配置
-        let volumeBands = volumeBooster.bands
+        // 优化后的低音增强器配置 - 基于低频段科学分布
+        setupBassBooster()
+    }
+    
+    /// 设置低音增强器 - 基于低频段科学分布
+    private func setupBassBooster() {
+        let bassBands = bassBooster.bands
         
-        // 第一频段：中低频增强 (200Hz)
-        volumeBands[0].filterType = .parametric
-        volumeBands[0].frequency = 200
-        volumeBands[0].bandwidth = 1.2
-        volumeBands[0].gain = 0
-        volumeBands[0].bypass = false
+        // 第一频段：超低频 (40Hz) - 重低音基础
+        bassBands[0].filterType = .parametric
+        bassBands[0].frequency = 40
+        bassBands[0].bandwidth = 0.6  // 很窄的带宽，避免共振
+        bassBands[0].gain = 0
+        bassBands[0].bypass = false
         
-        // 第二频段：中频增强 (1000Hz) - 人声和主要乐器
-        volumeBands[1].filterType = .parametric
-        volumeBands[1].frequency = 1000
-        volumeBands[1].bandwidth = 1.0
-        volumeBands[1].gain = 0
-        volumeBands[1].bypass = false
+        // 第二频段：低频 (60Hz) - 主要低音频段
+        bassBands[1].filterType = .parametric
+        bassBands[1].frequency = 60
+        bassBands[1].bandwidth = 0.7  // 窄带宽，精确控制
+        bassBands[1].gain = 0
+        bassBands[1].bypass = false
         
-        // 第三频段：中高频增强 (3000Hz) - 清晰度和细节
-        volumeBands[2].filterType = .parametric
-        volumeBands[2].frequency = 3000
-        volumeBands[2].bandwidth = 1.5
-        volumeBands[2].gain = 0
-        volumeBands[2].bypass = false
-
-        // 多频段低音增强器配置
-       let bassBands = bassBooster.bands
-       
-        // 第一频段：超低频 (50Hz) - 减少重叠
-       bassBands[0].filterType = .parametric
-       bassBands[0].frequency = 50
-       bassBands[0].bandwidth = 0.8  // 减少带宽，避免重叠
-       bassBands[0].gain = 0
-       bassBands[0].bypass = false
-       
-       // 第二频段：低频 (90Hz) - 主要频段
-       bassBands[1].filterType = .parametric
-       bassBands[1].frequency = 90
-       bassBands[1].bandwidth = 0.9  // 减少带宽
-       bassBands[1].gain = 0
-       bassBands[1].bypass = false
-       
-       // 第三频段：中低频 (140Hz) - 使用highShelf减少重叠
-       bassBands[2].filterType = .highShelf  // 改为highShelf，影响140Hz以上
-       bassBands[2].frequency = 140
-       bassBands[2].bandwidth = 1.0
-       bassBands[2].gain = 0
-       bassBands[2].bypass = false
+        // 第三频段：中低频 (100Hz) - 低音过渡频段
+        bassBands[2].filterType = .lowShelf  // 使用lowShelf更合适
+        bassBands[2].frequency = 100
+        bassBands[2].bandwidth = 1.0
+        bassBands[2].gain = 0
+        bassBands[2].bypass = false
     }
 
     private func loadAndPlayAudioFile(from url: URL) {
@@ -828,6 +807,13 @@ class AudioEnginePlayer {
         print("音量设置为：\(clampedVolume)")
     }
 
+     public func setVolumeBoost(_ volume: Float) {
+        let clampedVolume = max(0.0, min(volume, 10.0))
+        self.volume = clampedVolume
+        playerNode.volume = clampedVolume
+        print("音量增强设置为：\(clampedVolume)")
+    }
+
     public func setIsMute(_ isMute: Bool) {
         self.isMute = isMute
         playerNode.volume = isMute ? 0 : 1
@@ -878,8 +864,6 @@ class AudioEnginePlayer {
 
         audioEngine.disconnectNodeInput(varispeed)
         audioEngine.disconnectNodeOutput(varispeed)
-        audioEngine.disconnectNodeInput(volumeBooster)
-        audioEngine.disconnectNodeOutput(volumeBooster)
         audioEngine.disconnectNodeInput(bassBooster)
         audioEngine.disconnectNodeOutput(bassBooster)
         audioEngine.disconnectNodeInput(equalizer)
@@ -887,9 +871,9 @@ class AudioEnginePlayer {
         audioEngine.disconnectNodeInput(reverb)
         audioEngine.disconnectNodeOutput(reverb)
 
+        // 使用优化后的连接顺序
         audioEngine.connect(playerNode, to: varispeed, format: nil)
-        audioEngine.connect(varispeed, to: volumeBooster, format: nil)
-        audioEngine.connect(volumeBooster, to: bassBooster, format: nil)
+        audioEngine.connect(varispeed, to: bassBooster, format: nil)
         audioEngine.connect(bassBooster, to: equalizer, format: nil)
         audioEngine.connect(equalizer, to: reverb, format: nil)
         audioEngine.connect(reverb, to: audioEngine.mainMixerNode, format: nil)
@@ -899,33 +883,28 @@ class AudioEnginePlayer {
         seekTo(milliseconds: recordTime)
     }
 
-    public func setVolumeBoost(_ gain: Float) {
-        let clampedGain = max(0.0, min(gain, 24.0))  // 限制增益范围在 0 dB 到 24 dB 之间
-        volumeBooster.bands[0].gain = clampedGain
-        print("音量放大器增益设置为：\(clampedGain) dB")
-    }
 
     public func setBassBoost(_ gain: Float, smooth: Bool = true, duration: TimeInterval = 0.4) {
         // 限制最大增益，防止失真
-        let clampedGain = max(-15.0, min(gain, 15.0))  // 降低最大增益
+        let clampedGain = max(-12.0, min(gain, 12.0))  // 进一步降低最大增益
         
-        // 获取不同频段的权重（减少权重，防止叠加过高）
+        // 基于频段特性的权重分配
         func getBassBandWeight(_ index: Int) -> Float {
             switch index {
-            case 0: return 0.6  // 超低频权重降低
-            case 1: return 0.8  // 低频权重降低
-            case 2: return 0.4  // 中低频权重降低
+            case 0: return 0.5  // 超低频(40Hz) - 重低音基础
+            case 1: return 0.7  // 低频(60Hz) - 主要低音频段
+            case 2: return 0.3  // 中低频(100Hz) - 过渡频段
             default: return 1.0
             }
         }
         
-        // 计算总增益，如果过高则按比例降低
-        let totalGain = clampedGain * (0.6 + 0.8 + 0.4)  // 1.8倍
-        let maxSafeGain: Float = 12.0  // 安全的最大总增益
+        // 计算安全的总增益
+        let totalWeight: Float = 0.5 + 0.7 + 0.3  // 1.5倍
+        let maxSafeGain: Float = 8.0  // 更保守的安全增益
         
         let finalGain: Float
-        if totalGain > maxSafeGain {
-            finalGain = clampedGain * (maxSafeGain / totalGain)
+        if abs(clampedGain * totalWeight) > maxSafeGain {
+            finalGain = clampedGain * (maxSafeGain / abs(clampedGain * totalWeight))
             print("警告：增益过高，已自动降低到安全范围")
         } else {
             finalGain = clampedGain
@@ -955,21 +934,17 @@ class AudioEnginePlayer {
             }
         }
         
-        // 协同调整中低频（减少协同效果）
-        if equalizer.bands.count > 1 {
+        // 协同调整均衡器的低频段
+        if equalizer.bands.count > 2 {
+            let lowBass = equalizer.bands[0]  // 32Hz频段
             let midBass = equalizer.bands[1]  // 64Hz频段
-            let midBassGain = finalGain * 0.3  // 降低协同增益
-            midBass.gain = midBassGain
+            
+            // 协同增强，但幅度较小
+            let synergyGain = finalGain * 0.2
+            lowBass.gain = synergyGain
+            midBass.gain = synergyGain * 0.5
         }
         
-        // 动态调整音量放大器，防止削波
-        let bassGainThreshold: Float = 6.0
-        if finalGain > bassGainThreshold {
-            let reduce = min((finalGain - bassGainThreshold) * 0.15, 0.4)  // 增加降低幅度
-            let currentVolGain = volumeBooster.bands[0].gain
-            volumeBooster.bands[0].gain = max(0.0, currentVolGain - reduce)
-            print("自动降低音量放大器增益: \(reduce)dB")
-        }
         
         print("优化后的多频段低音增强设置：")
         for (index, band) in bassBooster.bands.enumerated() {
@@ -990,8 +965,6 @@ class AudioEnginePlayer {
 
         audioEngine.disconnectNodeInput(varispeed)
         audioEngine.disconnectNodeOutput(varispeed)
-        audioEngine.disconnectNodeInput(volumeBooster)
-        audioEngine.disconnectNodeOutput(volumeBooster)
         audioEngine.disconnectNodeInput(bassBooster)
         audioEngine.disconnectNodeOutput(bassBooster)
         audioEngine.disconnectNodeInput(equalizer)
@@ -999,9 +972,9 @@ class AudioEnginePlayer {
         audioEngine.disconnectNodeInput(reverb)
         audioEngine.disconnectNodeOutput(reverb)
 
+        // 使用优化后的连接顺序（不包含混响）
         audioEngine.connect(playerNode, to: varispeed, format: nil)
-        audioEngine.connect(varispeed, to: volumeBooster, format: nil)
-        audioEngine.connect(volumeBooster, to: bassBooster, format: nil)
+        audioEngine.connect(varispeed, to: bassBooster, format: nil)
         audioEngine.connect(bassBooster, to: equalizer, format: nil)
         audioEngine.connect(equalizer, to: audioEngine.mainMixerNode, format: nil)
 
@@ -1030,7 +1003,80 @@ class AudioEnginePlayer {
             }
         }
     }
+    
+    // MARK: - 预置配置方法
+    
+    /// 应用预置均衡器配置
+    public func applyEqualizerPreset(_ preset: EqualizerPreset) {
+        let recordTime = playbackProgress
+        if isPlaying {
+            pause()
+        }
+        
+        let gains = preset.gains
+        for i in 0..<min(equalizer.bands.count, gains.count) {
+            equalizer.bands[i].gain = gains[i]
+        }
+        
+        restartEngine()
+        seekTo(milliseconds: recordTime)
+        print("已应用均衡器预置: \(preset.name)")
+    }
+    
+    /// 应用预置音效配置
+    public func applyAudioEffectPreset(_ preset: AudioEffectPreset) {
+        let recordTime = playbackProgress
+        if isPlaying {
+            pause()
+        }
+        
+        // 应用低音增强
+        setBassBoost(preset.bassBoost, smooth: false)
+        
+        // 应用混响
+        if let reverbPreset = preset.reverbPreset {
+            setReverb(id: reverbPreset.rawValue, wetDryMix: preset.reverbMix)
+        }
+        
+        restartEngine()
+        seekTo(milliseconds: recordTime)
+        print("已应用音效预置: \(preset.name)")
+    }
 }
+
+// MARK: - 预置配置结构体
+
+/// 均衡器预置配置
+struct EqualizerPreset {
+    let name: String
+    let gains: [Float]
+    
+    // 标准预置
+    static let flat = EqualizerPreset(name: "平坦", gains: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    static let vocal = EqualizerPreset(name: "人声", gains: [-2, -1, 2, 3, 2, 0, -1, -2, -1, 0])
+    static let bass = EqualizerPreset(name: "低音", gains: [4, 3, 2, 1, 0, 0, 0, 0, 0, 0])
+    static let treble = EqualizerPreset(name: "高音", gains: [0, 0, 0, 0, 0, 0, 1, 2, 3, 4])
+    static let rock = EqualizerPreset(name: "摇滚", gains: [3, 2, 1, 0, 0, 0, 1, 2, 3, 2])
+    static let jazz = EqualizerPreset(name: "爵士", gains: [1, 1, 0, 0, 0, 0, 0, 1, 1, 1])
+    static let classical = EqualizerPreset(name: "古典", gains: [0, 0, 0, 0, 0, 0, 0, 1, 2, 3])
+    static let pop = EqualizerPreset(name: "流行", gains: [1, 2, 2, 1, 0, 0, 0, 0, 1, 2])
+}
+
+/// 音效预置配置
+struct AudioEffectPreset {
+    let name: String
+    let bassBoost: Float
+    let reverbPreset: AVAudioUnitReverbPreset?
+    let reverbMix: Float
+    
+    // 标准预置
+    static let none = AudioEffectPreset(name: "无效果", bassBoost: 0, reverbPreset: nil, reverbMix: 0)
+    static let live = AudioEffectPreset(name: "现场", bassBoost: 1, reverbPreset: .mediumHall, reverbMix: 20)
+    static let club = AudioEffectPreset(name: "俱乐部", bassBoost: 4, reverbPreset: .largeHall, reverbMix: 30)
+    static let studio = AudioEffectPreset(name: "录音棚", bassBoost: 0, reverbPreset: .smallRoom, reverbMix: 10)
+    static let concert = AudioEffectPreset(name: "音乐会", bassBoost: 2, reverbPreset: .cathedral, reverbMix: 25)
+}
+
 
 extension AVAudioFile {
     /// Unit:  Seconds

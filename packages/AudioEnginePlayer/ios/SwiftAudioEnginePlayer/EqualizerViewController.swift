@@ -180,17 +180,20 @@ class EqualizerViewController: UIViewController {
         audioEnginePlayer.setIsMute(sender.isOn)
     }
     
+    @IBAction func speedChanged(_ sender: UISlider) {
+        audioEnginePlayer.setSpeed(sender.value)
+    }
+    
     @IBAction func volumeChanged(_ sender: UISlider) {
         audioEnginePlayer.setVolume(sender.value)
     }
     
     @IBAction func volumeBVChanged(_ sender: UISlider) {
+        //audioEnginePlayer.setVolumeBoost(sender.value)
+        print("volumeBV: \(sender.value)")
         audioEnginePlayer.setVolumeBoost(sender.value)
     }
-    
-    @IBAction func speedChanged(_ sender: UISlider) {
-        audioEnginePlayer.setSpeed(sender.value)
-    }
+  
     @IBAction func bassChanged(_ sender: UISlider) {
         audioEnginePlayer.setBassBoost(sender.value)
     }
