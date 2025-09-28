@@ -43,7 +43,7 @@ class AudioEnginePlayer {
     var enableFadeEffect: Bool = true
     /// 音量控制，限制音量范围在 0.0 到 1.0 之间
     var volume: Float = 1.0
-    /// 音量增强，限制增益范围在 0 dB 到 24 dB 之间
+    /// 音量增强，限制增益范围在 1.0 到 10.0 之间
     var volumeBV: Float = 0.0
     /// 播放速度，限制播放速度范围在 0.25 到 4.0 之间
     var speed: Float = 1.0
@@ -289,10 +289,43 @@ class AudioEnginePlayer {
     }
 
     private func restartEngine() {
+        let wasPlaying = isPlaying
+        let currentTime = playbackProgress
+        
         audioEngine.stop()
         do {
             audioEngine.prepare()
             try audioEngine.start()
+            
+            // 如果之前在播放，需要重新调度音频文件
+            if wasPlaying, let audioFile = self.audioFile {
+                // 计算当前播放位置
+                let currentTimeInSeconds = Double(currentTime) / 1000.0
+                let totalTimeInSeconds = Double(totalDuration) / 1000.0
+                
+                if currentTimeInSeconds < totalTimeInSeconds {
+                    // 计算剩余播放时长
+                    let remainingTime = totalTimeInSeconds - currentTimeInSeconds
+                    let sampleRate = audioFile.processingFormat.sampleRate
+                    let currentFrame = AVAudioFramePosition(currentTimeInSeconds * sampleRate)
+                    let remainingFrames = AVAudioFrameCount(remainingTime * sampleRate)
+                    
+                    // 重新调度音频文件
+                    playerNode.scheduleSegment(
+                        audioFile, 
+                        startingFrame: currentFrame, 
+                        frameCount: remainingFrames, 
+                        at: nil, 
+                        completionHandler: nil
+                    )
+                    
+                    // 恢复播放
+                    playerNode.play()
+                    isPlaying = true
+                    isPaused = false
+                    startProgressUpdateTimer()
+                }
+            }
         } catch {
             print("音频引擎重新启动失败: \(error)")
         }
@@ -316,27 +349,27 @@ class AudioEnginePlayer {
         setupBassBooster()
     }
     
-    /// 设置低音增强器 - 基于低频段科学分布
+    /// 设置低音增强器 - 基于手机扬声器特性优化
     private func setupBassBooster() {
         let bassBands = bassBooster.bands
         
-        // 第一频段：超低频 (40Hz) - 重低音基础
+        // 第一频段：中低频 (150Hz) - 手机扬声器容易响应的频段
         bassBands[0].filterType = .parametric
-        bassBands[0].frequency = 40
-        bassBands[0].bandwidth = 0.6  // 很窄的带宽，避免共振
+        bassBands[0].frequency = 150
+        bassBands[0].bandwidth = 2.0  // 更宽的带宽
         bassBands[0].gain = 0
         bassBands[0].bypass = false
         
-        // 第二频段：低频 (60Hz) - 主要低音频段
+        // 第二频段：中频 (250Hz) - 主要低音频段
         bassBands[1].filterType = .parametric
-        bassBands[1].frequency = 60
-        bassBands[1].bandwidth = 0.7  // 窄带宽，精确控制
+        bassBands[1].frequency = 250
+        bassBands[1].bandwidth = 2.5  // 更宽的带宽
         bassBands[1].gain = 0
         bassBands[1].bypass = false
         
-        // 第三频段：中低频 (100Hz) - 低音过渡频段
-        bassBands[2].filterType = .lowShelf  // 使用lowShelf更合适
-        bassBands[2].frequency = 100
+        // 第三频段：中频 (400Hz) - 低音过渡频段，使用lowShelf
+        bassBands[2].filterType = .lowShelf
+        bassBands[2].frequency = 400
         bassBands[2].bandwidth = 1.0
         bassBands[2].gain = 0
         bassBands[2].bypass = false
@@ -840,7 +873,6 @@ class AudioEnginePlayer {
         }
         let clampedGain = max(-12.0, min(gain, 12.0))  // 限制增益范围在 -12 dB 到 +12 dB 之间
         equalizer.bands[bandIndex].gain = clampedGain
-        restartEngine()
 
         if !isPlaying {
             play()
@@ -885,22 +917,22 @@ class AudioEnginePlayer {
 
 
     public func setBassBoost(_ gain: Float, smooth: Bool = true, duration: TimeInterval = 0.4) {
-        // 限制最大增益，防止失真
-        let clampedGain = max(-12.0, min(gain, 12.0))  // 进一步降低最大增益
+        // 增加最大增益，让效果更明显
+        let clampedGain = max(-20.0, min(gain, 20.0))
         
-        // 基于频段特性的权重分配
+        // 基于手机扬声器特性的权重分配
         func getBassBandWeight(_ index: Int) -> Float {
             switch index {
-            case 0: return 0.5  // 超低频(40Hz) - 重低音基础
-            case 1: return 0.7  // 低频(60Hz) - 主要低音频段
-            case 2: return 0.3  // 中低频(100Hz) - 过渡频段
+            case 0: return 1.0  // 中低频(150Hz) - 手机扬声器容易响应的频段
+            case 1: return 1.2  // 中频(250Hz) - 主要低音频段
+            case 2: return 0.8  // 中频(400Hz) - 过渡频段
             default: return 1.0
             }
         }
         
-        // 计算安全的总增益
-        let totalWeight: Float = 0.5 + 0.7 + 0.3  // 1.5倍
-        let maxSafeGain: Float = 8.0  // 更保守的安全增益
+        // 计算更直接的总增益
+        let totalWeight: Float = 1.0 + 1.2 + 0.8  // 3.0倍
+        let maxSafeGain: Float = 15.0  // 增加安全增益
         
         let finalGain: Float
         if abs(clampedGain * totalWeight) > maxSafeGain {
@@ -940,16 +972,43 @@ class AudioEnginePlayer {
             let midBass = equalizer.bands[1]  // 64Hz频段
             
             // 协同增强，但幅度较小
-            let synergyGain = finalGain * 0.2
+            let synergyGain = finalGain * 0.3
             lowBass.gain = synergyGain
-            midBass.gain = synergyGain * 0.5
+            midBass.gain = synergyGain * 0.7
         }
-        
         
         print("优化后的多频段低音增强设置：")
         for (index, band) in bassBooster.bands.enumerated() {
             print("  频段\(index): \(band.frequency)Hz, 增益=\(band.gain)dB")
         }
+    }
+    
+    /// 简单的低音增强测试方法
+    public func setSimpleBassBoost(_ gain: Float) {
+        let clampedGain = max(-20.0, min(gain, 20.0))
+        
+        let bands = bassBooster.bands
+        
+        // 直接设置增益，不使用权重分配
+        bands[0].gain = clampedGain * 1.0  // 150Hz
+        bands[1].gain = clampedGain * 1.2  // 250Hz (主要)
+        bands[2].gain = clampedGain * 0.8  // 400Hz
+        
+        print("简单低音增强设置：150Hz=\(bands[0].gain)dB, 250Hz=\(bands[1].gain)dB, 400Hz=\(bands[2].gain)dB")
+    }
+    
+    /// 手机扬声器专用低音增强测试
+    public func setPhoneSpeakerBassBoost(_ gain: Float) {
+        let clampedGain = max(-25.0, min(gain, 25.0))
+        
+        let bands = bassBooster.bands
+        
+        // 针对手机扬声器优化的频段和增益
+        bands[0].gain = clampedGain * 1.5  // 150Hz - 手机扬声器容易响应的频段
+        bands[1].gain = clampedGain * 2.0  // 250Hz - 主要增强频段
+        bands[2].gain = clampedGain * 1.0  // 400Hz - 辅助频段
+        
+        print("手机扬声器低音增强：150Hz=\(bands[0].gain)dB, 250Hz=\(bands[1].gain)dB, 400Hz=\(bands[2].gain)dB")
     }
 
     public func resetAll() {

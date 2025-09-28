@@ -195,6 +195,8 @@ class EqualizerViewController: UIViewController {
     }
   
     @IBAction func bassChanged(_ sender: UISlider) {
-        audioEnginePlayer.setBassBoost(sender.value)
+        //audioEnginePlayer.setBassBoost(sender.value)
+        audioEnginePlayer.setSimpleBassBoost(sender.value)
+        //audioEnginePlayer.setPhoneSpeakerBassBoost(sender.value)
     }
 }
