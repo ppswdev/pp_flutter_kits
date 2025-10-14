@@ -91,13 +91,22 @@ class RealTimeIndicator extends StatelessWidget {
 
   const RealTimeIndicator({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final currentDecibel = (data['currentDecibel'] as num?)?.toDouble() ?? 0.0;
-    final leq = (data['leq'] as num?)?.toDouble() ?? 0.0;
-    final min = (data['min'] as num?)?.toDouble() ?? 0.0;
-    final max = (data['max'] as num?)?.toDouble() ?? 0.0;
-    final peak = (data['peak'] as num?)?.toDouble() ?? 0.0;
+    final currentDecibel = _safeToDouble(data['currentDecibel']);
+    final leq = _safeToDouble(data['leq']);
+    final min = _safeToDouble(data['min']);
+    final max = _safeToDouble(data['max']);
+    final peak = _safeToDouble(data['peak']);
     final weightingDisplay = data['weightingDisplay'] as String? ?? 'dB(A)F';
 
     return Container(
@@ -182,12 +191,21 @@ class SpectrumChart extends StatelessWidget {
 
   const SpectrumChart({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataPoints = (data['dataPoints'] as List?) ?? [];
     final chartData = dataPoints.map((point) {
-      final frequency = (point['frequency'] as num?)?.toDouble() ?? 0.0;
-      final magnitude = (point['magnitude'] as num?)?.toDouble() ?? 0.0;
+      final frequency = _safeToDouble(point['frequency']);
+      final magnitude = _safeToDouble(point['magnitude']);
       return ChartData(frequency.toString(), magnitude);
     }).toList();
 
@@ -262,18 +280,27 @@ class StatisticalDistributionChart extends StatelessWidget {
 
   const StatisticalDistributionChart({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataPoints = (data['dataPoints'] as List?) ?? [];
     final chartData = dataPoints.map((point) {
-      final percentile = (point['percentile'] as num?)?.toDouble() ?? 0.0;
-      final decibel = (point['decibel'] as num?)?.toDouble() ?? 0.0;
+      final percentile = _safeToDouble(point['percentile']);
+      final decibel = _safeToDouble(point['decibel']);
       return ChartData('${percentile.toInt()}%', decibel);
     }).toList();
 
-    final l10 = (data['l10'] as num?)?.toDouble() ?? 0.0;
-    final l50 = (data['l50'] as num?)?.toDouble() ?? 0.0;
-    final l90 = (data['l90'] as num?)?.toDouble() ?? 0.0;
+    final l10 = _safeToDouble(data['l10']);
+    final l50 = _safeToDouble(data['l50']);
+    final l90 = _safeToDouble(data['l90']);
 
     return Container(
       height: 200,
@@ -312,16 +339,25 @@ class LEQTrendChart extends StatelessWidget {
 
   const LEQTrendChart({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataPoints = (data['dataPoints'] as List?) ?? [];
     final chartData = dataPoints.map((point) {
       final timestamp = point['timestamp'] as String? ?? '';
-      final leq = (point['leq'] as num?)?.toDouble() ?? 0.0;
+      final leq = _safeToDouble(point['leq']);
       return ChartData(timestamp, leq);
     }).toList();
 
-    final currentLeq = (data['currentLeq'] as num?)?.toDouble() ?? 0.0;
+    final currentLeq = _safeToDouble(data['currentLeq']);
 
     return Container(
       height: 200,
@@ -360,18 +396,26 @@ class DoseAccumulationChart extends StatelessWidget {
 
   const DoseAccumulationChart({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataPoints = (data['dataPoints'] as List?) ?? [];
     final chartData = dataPoints.map((point) {
       final timestamp = point['timestamp'] as String? ?? '';
-      final cumulativeDose =
-          (point['cumulativeDose'] as num?)?.toDouble() ?? 0.0;
+      final cumulativeDose = _safeToDouble(point['cumulativeDose']);
       return ChartData(timestamp, cumulativeDose);
     }).toList();
 
-    final currentDose = (data['currentDose'] as num?)?.toDouble() ?? 0.0;
-    final limitLine = (data['limitLine'] as num?)?.toDouble() ?? 100.0;
+    final currentDose = _safeToDouble(data['currentDose']);
+    final limitLine = _safeToDouble(data['limitLine']);
 
     return Container(
       height: 200,
@@ -461,17 +505,26 @@ class TWATrendChart extends StatelessWidget {
 
   const TWATrendChart({super.key, required this.data});
 
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataPoints = (data['dataPoints'] as List?) ?? [];
     final chartData = dataPoints.map((point) {
       final timestamp = point['timestamp'] as String? ?? '';
-      final twa = (point['twa'] as num?)?.toDouble() ?? 0.0;
+      final twa = _safeToDouble(point['twa']);
       return ChartData(timestamp, twa);
     }).toList();
 
-    final currentTWA = (data['currentTWA'] as num?)?.toDouble() ?? 0.0;
-    final limitLine = (data['limitLine'] as num?)?.toDouble() ?? 85.0;
+    final currentTWA = _safeToDouble(data['currentTWA']);
+    final limitLine = _safeToDouble(data['limitLine']);
 
     return Container(
       height: 200,

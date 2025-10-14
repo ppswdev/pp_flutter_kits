@@ -47,6 +47,18 @@ enum MeasurementState: Equatable {
             return false
         }
     }
+    
+    /// 获取状态的字符串表示
+    var stringValue: String {
+        switch self {
+        case .idle:
+            return "idle"
+        case .measuring:
+            return "measuring"
+        case .error(let message):
+            return "error:\(message)"
+        }
+    }
 }
 
 /// 时间权重类型

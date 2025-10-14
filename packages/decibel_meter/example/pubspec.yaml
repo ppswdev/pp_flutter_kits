@@ -32,6 +32,9 @@ dependencies:
   # 图表库
   syncfusion_flutter_charts: ^26.2.14
   
+  # 状态管理和路由管理
+  get: ^4.7.2
+  
 
 dev_dependencies:
   integration_test:

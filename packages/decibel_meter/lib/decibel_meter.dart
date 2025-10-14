@@ -41,6 +41,20 @@ class DecibelMeter {
     return DecibelMeterPlatform.instance.getPlatformVersion();
   }
 
+  Stream<(String, Map<String, dynamic>)> get onDecibelMeterEvents {
+    return DecibelMeterPlatform.instance.onEventStream
+        .where((event) => event['event'] != null)
+        .map((event) {
+          try {
+            final eventType = event['event'] as String;
+            final eventData = Map<String, dynamic>.from(event)..remove('event');
+            return (eventType, eventData);
+          } catch (e) {
+            return ('error', {'desc': e.toString()});
+          }
+        });
+  }
+
   // MARK: - 核心测量方法
 
   /// 开始测量

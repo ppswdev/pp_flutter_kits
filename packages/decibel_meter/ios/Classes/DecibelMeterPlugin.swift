@@ -3,13 +3,15 @@ import UIKit
 
 public class DecibelMeterPlugin: NSObject, FlutterPlugin {
   
-  // 分贝测量管理器实例
   private let manager = DecibelMeterManager.shared
+  private var eventSink: FlutterEventSink?
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "decibel_meter", binaryMessenger: registrar.messenger())
+    let eventChannel = FlutterEventChannel(name: "decibel_meter_events", binaryMessenger: registrar.messenger())
     let instance = DecibelMeterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
+    eventChannel.setStreamHandler(instance)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -283,11 +285,38 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
         default:
           result(FlutterMethodNotImplemented)
     }
+
   }
   
-  // MARK: - 辅助转换方法
+  // MARK: - 回调设置
   
-  /// 将测量状态转换为字符串
+  private func setupCallbacks() {
+      manager.onMeasurementUpdate = { [weak self] measurement in
+          guard let self = self, let eventSink = self.eventSink else { return }
+          eventSink(["event": "measurementUpdate", "measurement": measurement.toMap()])
+      }
+      
+      manager.onStateChange = { [weak self] state in
+          guard let self = self, let eventSink = self.eventSink else { return }
+          eventSink(["event": "stateChange", "state": state.stringValue])
+      }
+      
+      manager.onDecibelUpdate = { [weak self] decibel in
+          guard let self = self, let eventSink = self.eventSink else { return }
+          eventSink(["event": "decibelUpdate", "decibel": decibel])
+      }
+      
+      manager.onStatisticsUpdate = { [weak self] current, max, min in
+          guard let self = self, let eventSink = self.eventSink else { return }
+          eventSink(["event": "statisticsUpdate", "current": current, "max": max, "min": min])
+      }
+
+      manager.onAdvancedStatisticsUpdate = { [weak self] current, peak, min, max in
+          guard let self = self, let eventSink = self.eventSink else { return }
+          eventSink(["event": "advancedStatisticsUpdate", "current": current, "peak": peak, "min": min, "max": max])
+      }
+  }
+
   private func convertMeasurementStateToString(_ state: MeasurementState) -> String {
     switch state {
     case .idle:
@@ -350,4 +379,17 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
         guard let str = str else { return nil }
         return NoiseStandard.allCases.first { $0.rawValue == str }
       }
+}
+
+extension DecibelMeterPlugin: FlutterStreamHandler {
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        self.eventSink = events
+        setupCallbacks()
+        return nil
+    }
+    
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        self.eventSink = nil
+        return nil
+    }
 }

@@ -26,6 +26,8 @@ abstract class DecibelMeterPlatform extends PlatformInterface {
 
   // MARK: - 基础方法
 
+  Stream<Map<String, dynamic>> get onEventStream;
+
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:decibel_meter/decibel_meter.dart';
 
 class ReportPage extends StatefulWidget {
-  const ReportPage({super.key});
+  final Map<String, dynamic>? reportData;
+
+  const ReportPage({super.key, this.reportData});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -18,7 +20,11 @@ class _ReportPageState extends State<ReportPage> {
   @override
   void initState() {
     super.initState();
-    _generateReport();
+    if (widget.reportData != null) {
+      _reportData = widget.reportData;
+    } else {
+      _generateReport();
+    }
   }
 
   Future<void> _generateReport() async {
@@ -55,6 +61,15 @@ class _ReportPageState extends State<ReportPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
+  }
+
+  /// 安全的数字转换方法，处理int和double类型
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    return 0.0;
   }
 
   @override
@@ -344,7 +359,7 @@ class _ReportPageState extends State<ReportPage> {
   Widget _buildComplianceConclusion() {
     final doseData = _reportData!['doseData'];
     final isExceeding = doseData['isExceeding'] as bool;
-    final dosePercentage = doseData['dosePercentage'] as double;
+    final dosePercentage = _safeToDouble(doseData['dosePercentage']);
 
     return Card(
       child: Padding(

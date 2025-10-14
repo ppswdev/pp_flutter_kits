@@ -9,8 +9,18 @@ class MethodChannelDecibelMeter extends DecibelMeterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('decibel_meter');
+  final eventChannel = const EventChannel('decibel_meter_events');
+
+  Stream<Map<String, dynamic>>? _eventStream;
 
   // MARK: - 基础方法
+  @override
+  Stream<Map<String, dynamic>> get onEventStream {
+    _eventStream ??= eventChannel.receiveBroadcastStream().map(
+      (event) => Map<String, dynamic>.from(event),
+    );
+    return _eventStream!;
+  }
 
   @override
   Future<String?> getPlatformVersion() async {
