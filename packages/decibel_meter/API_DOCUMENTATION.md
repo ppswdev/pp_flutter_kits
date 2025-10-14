@@ -27,6 +27,7 @@ await decibelMeter.stopMeasurement();
 ### 1. 核心测量方法 (2个)
 
 #### `startMeasurement()`
+
 开始测量，启动音频采集和分贝计算。
 
 ```dart
@@ -36,6 +37,7 @@ Future<bool> startMeasurement()
 **返回**: `true` 表示成功启动
 
 **示例**:
+
 ```dart
 final started = await decibelMeter.startMeasurement();
 if (started) {
@@ -44,6 +46,7 @@ if (started) {
 ```
 
 #### `stopMeasurement()`
+
 停止测量，计算最终统计信息。
 
 ```dart
@@ -57,6 +60,7 @@ Future<bool> stopMeasurement()
 ### 2. 状态和数据获取方法 (8个)
 
 #### `getCurrentState()`
+
 获取当前测量状态。
 
 ```dart
@@ -64,11 +68,13 @@ Future<String> getCurrentState()
 ```
 
 **返回值**:
+
 - `"idle"` - 停止状态
 - `"measuring"` - 测量中
 - `"error: xxx"` - 错误状态（包含错误信息）
 
 #### `getCurrentDecibel()`
+
 获取当前分贝值（已应用权重和校准）。
 
 ```dart
@@ -78,6 +84,7 @@ Future<double> getCurrentDecibel()
 **返回**: 当前分贝值（dB）
 
 #### `getCurrentMeasurement()`
+
 获取当前测量数据（包含完整信息）。
 
 ```dart
@@ -85,6 +92,7 @@ Future<DecibelMeasurement?> getCurrentMeasurement()
 ```
 
 **返回**: `DecibelMeasurement` 对象，包含：
+
 - `timestamp` - 时间戳
 - `rawDecibel` - 原始分贝值
 - `aWeightedDecibel` - A权重分贝值
@@ -96,6 +104,7 @@ Future<DecibelMeasurement?> getCurrentMeasurement()
 - `levelColor` - 等级颜色
 
 #### `getStatistics()`
+
 获取基本统计信息。
 
 ```dart
@@ -103,11 +112,13 @@ Future<Map<String, double>> getStatistics()
 ```
 
 **返回**: 包含以下键的 Map：
+
 - `"current"` - 当前分贝值
 - `"max"` - 最大分贝值
 - `"min"` - 最小分贝值
 
 #### `getMeasurementHistory()`
+
 获取测量历史记录（最多1000条）。
 
 ```dart
@@ -117,6 +128,7 @@ Future<List<DecibelMeasurement>> getMeasurementHistory()
 **返回**: `DecibelMeasurement` 数组
 
 #### `getCurrentStatistics()`
+
 获取完整统计信息。
 
 ```dart
@@ -124,6 +136,7 @@ Future<DecibelStatistics?> getCurrentStatistics()
 ```
 
 **返回**: `DecibelStatistics` 对象，包含：
+
 - `avgDecibel` - 平均值
 - `minDecibel` - 最小值
 - `maxDecibel` - 最大值
@@ -137,6 +150,7 @@ Future<DecibelStatistics?> getCurrentStatistics()
 - `measurementDuration` - 测量时长
 
 #### `getRealTimeLeq()`
+
 获取实时LEQ值（等效连续声级）。
 
 ```dart
@@ -146,6 +160,7 @@ Future<double> getRealTimeLeq()
 **返回**: LEQ值（dB）
 
 #### `getCurrentPeak()`
+
 获取当前峰值（不应用时间权重）。
 
 ```dart
@@ -159,6 +174,7 @@ Future<double> getCurrentPeak()
 ### 3. 校准方法 (2个)
 
 #### `setCalibrationOffset(double offset)`
+
 设置校准偏移值。
 
 ```dart
@@ -166,15 +182,18 @@ Future<bool> setCalibrationOffset(double offset)
 ```
 
 **参数**:
+
 - `offset` - 校准偏移值（dB），正值增加，负值减少
 
 **示例**:
+
 ```dart
 // 增加3dB
 await decibelMeter.setCalibrationOffset(3.0);
 ```
 
 #### `getCalibrationOffset()`
+
 获取当前校准偏移值。
 
 ```dart
@@ -188,6 +207,7 @@ Future<double> getCalibrationOffset()
 ### 4. 频率权重方法 (5个)
 
 #### `getCurrentFrequencyWeighting()`
+
 获取当前频率权重。
 
 ```dart
@@ -195,13 +215,15 @@ Future<String> getCurrentFrequencyWeighting()
 ```
 
 **返回值**:
-- `"A-weight"` - A权重（最常用）
-- `"B-weight"` - B权重（已弃用）
-- `"C-weight"` - C权重
-- `"Z-weight"` - Z权重（无修正）
+
+- `"dB-A"` - A权重（最常用）
+- `"dB-B"` - B权重（已弃用）
+- `"dB-C"` - C权重
+- `"dB-Z"` - Z权重（无修正）
 - `"ITU-R 468"` - ITU-R 468权重
 
 #### `setFrequencyWeighting(String weighting)`
+
 设置频率权重。
 
 ```dart
@@ -209,9 +231,11 @@ Future<bool> setFrequencyWeighting(String weighting)
 ```
 
 **参数**:
-- `weighting` - 频率权重类型（如 `"A-weight"`, `"C-weight"`）
+
+- `weighting` - 频率权重类型（如 `"dB-A"`, `"dB-C"`）
 
 #### `getAvailableFrequencyWeightings()`
+
 获取所有可用的频率权重列表。
 
 ```dart
@@ -221,6 +245,7 @@ Future<List<String>> getAvailableFrequencyWeightings()
 **返回**: 频率权重类型数组
 
 #### `getFrequencyWeightingCurve(String weighting)`
+
 获取频率权重曲线数据。
 
 ```dart
@@ -228,11 +253,13 @@ Future<List<double>> getFrequencyWeightingCurve(String weighting)
 ```
 
 **参数**:
+
 - `weighting` - 频率权重类型
 
 **返回**: 频率响应曲线数据数组
 
 #### `getFrequencyWeightingsList()`
+
 获取频率权重列表（JSON格式）。
 
 ```dart
@@ -246,6 +273,7 @@ Future<String> getFrequencyWeightingsList()
 ### 5. 时间权重方法 (4个)
 
 #### `getCurrentTimeWeighting()`
+
 获取当前时间权重。
 
 ```dart
@@ -253,11 +281,13 @@ Future<String> getCurrentTimeWeighting()
 ```
 
 **返回值**:
+
 - `"Fast"` - 快响应（125ms）
 - `"Slow"` - 慢响应（1000ms）
 - `"Impulse"` - 脉冲响应（35ms↑/1500ms↓）
 
 #### `setTimeWeighting(String weighting)`
+
 设置时间权重。
 
 ```dart
@@ -265,9 +295,11 @@ Future<bool> setTimeWeighting(String weighting)
 ```
 
 **参数**:
+
 - `weighting` - 时间权重类型（如 `"Fast"`, `"Slow"`, `"Impulse"`）
 
 #### `getAvailableTimeWeightings()`
+
 获取所有可用的时间权重列表。
 
 ```dart
@@ -277,6 +309,7 @@ Future<List<String>> getAvailableTimeWeightings()
 **返回**: 时间权重类型数组
 
 #### `getTimeWeightingsList()`
+
 获取时间权重列表（JSON格式）。
 
 ```dart
@@ -290,6 +323,7 @@ Future<String> getTimeWeightingsList()
 ### 6. 扩展的公共获取方法 (6个)
 
 #### `getFormattedMeasurementDuration()`
+
 获取格式化的测量时长。
 
 ```dart
@@ -299,6 +333,7 @@ Future<String> getFormattedMeasurementDuration()
 **返回**: 格式如 `"00:05:23"` 的时长字符串
 
 #### `getMeasurementDuration()`
+
 获取测量时长（秒）。
 
 ```dart
@@ -308,6 +343,7 @@ Future<double> getMeasurementDuration()
 **返回**: 测量时长（秒）
 
 #### `getWeightingDisplayText()`
+
 获取权重显示文本。
 
 ```dart
@@ -317,6 +353,7 @@ Future<String> getWeightingDisplayText()
 **返回**: 格式如 `"dB(A)F"` 的权重显示文本
 
 #### `getMinDecibel()`
+
 获取最小分贝值（应用时间权重）。
 
 ```dart
@@ -326,6 +363,7 @@ Future<double> getMinDecibel()
 **返回**: 最小分贝值（dB）
 
 #### `getMaxDecibel()`
+
 获取最大分贝值（应用时间权重）。
 
 ```dart
@@ -335,6 +373,7 @@ Future<double> getMaxDecibel()
 **返回**: 最大分贝值（dB）
 
 #### `getLeqDecibel()`
+
 获取LEQ值（等效连续声级）。
 
 ```dart
@@ -348,6 +387,7 @@ Future<double> getLeqDecibel()
 ### 7. 图表数据获取方法 (5个)
 
 #### `getTimeHistoryChartData({double timeRange = 60.0})`
+
 获取时间历程图数据（JSON格式）。
 
 ```dart
@@ -355,9 +395,11 @@ Future<String> getTimeHistoryChartData({double timeRange = 60.0})
 ```
 
 **参数**:
+
 - `timeRange` - 时间范围（秒），默认60秒
 
 **返回**: JSON字符串，包含：
+
 - `dataPoints` - 数据点数组
 - `timeRange` - 时间范围
 - `minDecibel` - 最小分贝值
@@ -365,6 +407,7 @@ Future<String> getTimeHistoryChartData({double timeRange = 60.0})
 - `title` - 图表标题
 
 #### `getRealTimeIndicatorData()`
+
 获取实时指示器数据（JSON格式）。
 
 ```dart
@@ -372,6 +415,7 @@ Future<String> getRealTimeIndicatorData()
 ```
 
 **返回**: JSON字符串，包含：
+
 - `currentDecibel` - 当前分贝值
 - `leq` - LEQ值
 - `min` - 最小值
@@ -381,6 +425,7 @@ Future<String> getRealTimeIndicatorData()
 - `timestamp` - 时间戳
 
 #### `getSpectrumChartData({String bandType = '1/3'})`
+
 获取频谱分析图数据（JSON格式）。
 
 ```dart
@@ -388,6 +433,7 @@ Future<String> getSpectrumChartData({String bandType = '1/3'})
 ```
 
 **参数**:
+
 - `bandType` - 倍频程类型
   - `"1/1"` - 1/1倍频程（10个频点）
   - `"1/3"` - 1/3倍频程（30个频点，默认）
@@ -395,6 +441,7 @@ Future<String> getSpectrumChartData({String bandType = '1/3'})
 **返回**: JSON字符串，包含各频率点的声压级数据
 
 #### `getStatisticalDistributionChartData()`
+
 获取统计分布图数据（JSON格式）。
 
 ```dart
@@ -402,12 +449,14 @@ Future<String> getStatisticalDistributionChartData()
 ```
 
 **返回**: JSON字符串，包含：
+
 - `l10` - L10值（噪声峰值特征）
 - `l50` - L50值（中位数）
 - `l90` - L90值（背景噪声水平）
 - `dataPoints` - 数据点数组
 
 #### `getLEQTrendChartData({double interval = 10.0})`
+
 获取LEQ趋势图数据（JSON格式）。
 
 ```dart
@@ -415,9 +464,11 @@ Future<String> getLEQTrendChartData({double interval = 10.0})
 ```
 
 **参数**:
+
 - `interval` - 采样间隔（秒），默认10秒
 
 **返回**: JSON字符串，包含：
+
 - `currentLeq` - 当前LEQ值
 - `timeRange` - 时间范围
 - `dataPoints` - 数据点数组（包含时段LEQ和累积LEQ）
@@ -427,6 +478,7 @@ Future<String> getLEQTrendChartData({double interval = 10.0})
 ### 8. 设置方法 (2个)
 
 #### `resetAllData()`
+
 重置所有数据。
 
 ```dart
@@ -434,6 +486,7 @@ Future<bool> resetAllData()
 ```
 
 **功能**:
+
 - 停止测量
 - 清除所有历史数据
 - 重置统计值
@@ -442,6 +495,7 @@ Future<bool> resetAllData()
 **注意**: 此操作不可恢复
 
 #### `clearHistory()`
+
 清除历史记录。
 
 ```dart
@@ -449,6 +503,7 @@ Future<bool> clearHistory()
 ```
 
 **功能**:
+
 - 清除所有测量历史数据
 - 保留当前测量状态和校准设置
 
@@ -457,6 +512,7 @@ Future<bool> clearHistory()
 ## 数据模型
 
 ### DecibelMeasurement
+
 单次分贝测量结果。
 
 ```dart
@@ -475,6 +531,7 @@ class DecibelMeasurement {
 ```
 
 ### DecibelStatistics
+
 完整统计信息。
 
 ```dart
@@ -497,6 +554,7 @@ class DecibelStatistics {
 ```
 
 ### MeasurementState
+
 测量状态枚举。
 
 ```dart
@@ -522,7 +580,7 @@ void main() async {
   await decibelMeter.startMeasurement();
 
   // 2. 设置权重
-  await decibelMeter.setFrequencyWeighting('A-weight');
+  await decibelMeter.setFrequencyWeighting('dB-A');
   await decibelMeter.setTimeWeighting('Fast');
 
   // 3. 等待测量
@@ -580,12 +638,15 @@ Future<Map<String, dynamic>> getNoiseDoseData({String? standard})
 **功能**：获取完整的噪声剂量数据，包含剂量、TWA、预测时间等完整信息。
 
 **参数**：
+
 - `standard`：噪声限值标准（可选），如 'niosh', 'osha', 'gbz', 'eu'
 
 **返回值**：
+
 - `Map<String, dynamic>`：包含剂量百分比、剂量率、TWA值、暴露时长、是否超标、限值余量、风险等级等
 
 **使用示例**：
+
 ```dart
 final doseData = await decibelMeter.getNoiseDoseData(standard: 'niosh');
 print('剂量: ${doseData["dosePercentage"]}%');
@@ -602,12 +663,15 @@ Future<bool> isExceedingLimit(String standard)
 **功能**：检查当前TWA或剂量是否超过指定标准的限值。
 
 **参数**：
+
 - `standard`：噪声限值标准
 
 **返回值**：
+
 - `bool`：是否超过限值
 
 **使用示例**：
+
 ```dart
 final isExceeding = await decibelMeter.isExceedingLimit('niosh');
 if (isExceeding) {
@@ -624,12 +688,15 @@ Future<Map<String, dynamic>> getLimitComparisonResult(String standard)
 **功能**：返回与指定标准的详细比较结果，包括余量、风险等级、建议措施。
 
 **参数**：
+
 - `standard`：噪声限值标准
 
 **返回值**：
+
 - `Map<String, dynamic>`：包含当前TWA、TWA限值、当前剂量、是否超标、限值余量、建议措施等
 
 **使用示例**：
+
 ```dart
 final result = await decibelMeter.getLimitComparisonResult('niosh');
 print('TWA: ${result["currentTWA"]} dB, 限值: ${result["twaLimit"]} dB');
@@ -649,13 +716,16 @@ Future<String> getDoseAccumulationChartData({
 **功能**：返回剂量随时间累积的数据，用于绘制剂量累积图。
 
 **参数**：
+
 - `interval`：采样间隔（秒），默认60秒
 - `standard`：噪声限值标准（可选）
 
 **返回值**：
+
 - `String`：JSON格式的图表数据
 
 **使用示例**：
+
 ```dart
 final chartJson = await decibelMeter.getDoseAccumulationChartData(
   interval: 60.0,
@@ -677,13 +747,16 @@ Future<String> getTWATrendChartData({
 **功能**：返回TWA随时间变化的数据，用于绘制TWA趋势图。
 
 **参数**：
+
 - `interval`：采样间隔（秒），默认60秒
 - `standard`：噪声限值标准（可选）
 
 **返回值**：
+
 - `String`：JSON格式的图表数据
 
 **使用示例**：
+
 ```dart
 final chartJson = await decibelMeter.getTWATrendChartData(
   interval: 60.0,
@@ -702,12 +775,15 @@ Future<bool> setNoiseStandard(String standard)
 **功能**：切换使用的噪声限值标准（OSHA、NIOSH、GBZ、EU）。
 
 **参数**：
+
 - `standard`：要设置的标准
 
 **返回值**：
+
 - `bool`：操作是否成功
 
 **使用示例**：
+
 ```dart
 await decibelMeter.setNoiseStandard('niosh');
 ```
@@ -721,9 +797,11 @@ Future<String> getCurrentNoiseStandard()
 **功能**：获取当前使用的噪声限值标准。
 
 **返回值**：
+
 - `String`：当前标准名称
 
 **使用示例**：
+
 ```dart
 final standard = await decibelMeter.getCurrentNoiseStandard();
 print('当前标准: $standard');
@@ -738,9 +816,11 @@ Future<List<String>> getAvailableNoiseStandards()
 **功能**：获取所有可用的噪声限值标准列表。
 
 **返回值**：
+
 - `List<String>`：所有标准的数组
 
 **使用示例**：
+
 ```dart
 final standards = await decibelMeter.getAvailableNoiseStandards();
 print('可用标准: $standards');
@@ -755,12 +835,15 @@ Future<String?> generateNoiseDosimeterReport({String? standard})
 **功能**：生成包含所有关键数据的完整报告，用于法规符合性评估。
 
 **参数**：
+
 - `standard`：噪声限值标准（可选）
 
 **返回值**：
+
 - `String?`：JSON格式的报告数据，如果未开始测量则返回null
 
 **使用示例**：
+
 ```dart
 final reportJson = await decibelMeter.generateNoiseDosimeterReport(standard: 'niosh');
 if (reportJson != null) {
@@ -780,12 +863,15 @@ Future<String> getPermissibleExposureDurationTable({String? standard})
 **功能**：根据当前测量数据生成允许暴露时长表，包含每个声级的累计暴露时间和剂量。
 
 **参数**：
+
 - `standard`：噪声限值标准（可选）
 
 **返回值**：
+
 - `String`：JSON格式的暴露时长表数据
 
 **使用示例**：
+
 ```dart
 final tableJson = await decibelMeter.getPermissibleExposureDurationTable(standard: 'niosh');
 final table = jsonDecode(tableJson);
@@ -796,24 +882,28 @@ print('超标声级数: ${table["exceedingLevelsCount"]}');
 ### 9.11 噪声限值标准说明
 
 #### 9.11.1 OSHA标准
+
 - **TWA限值**：90 dB(A)
 - **行动值**：85 dB(A)
 - **交换率**：5 dB
 - **适用**：美国职业安全与健康管理局标准
 
 #### 9.11.2 NIOSH标准
+
 - **TWA限值**：85 dB(A)
 - **行动值**：85 dB(A)
 - **交换率**：3 dB（更保守）
 - **适用**：美国国家职业安全与健康研究所标准
 
 #### 9.11.3 GBZ标准
+
 - **TWA限值**：85 dB(A)
 - **行动值**：80 dB(A)
 - **交换率**：3 dB
 - **适用**：中国国家标准
 
 #### 9.11.4 EU标准
+
 - **TWA限值**：87 dB(A)
 - **行动值**：80 dB(A)
 - **交换率**：3 dB
@@ -840,4 +930,3 @@ print('超标声级数: ${table["exceedingLevelsCount"]}');
 ## 许可证
 
 请查看 LICENSE 文件了解详情。
-

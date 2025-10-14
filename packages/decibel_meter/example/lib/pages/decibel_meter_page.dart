@@ -22,16 +22,16 @@ class DecibelMeterPage extends StatelessWidget {
             _buildControlSection(controller),
             const SizedBox(height: 24),
 
+            // 操作按钮
+            _buildActionButtons(controller),
+            const SizedBox(height: 24),
+
             // 基本数据显示
             _buildBasicDataSection(controller),
             const SizedBox(height: 24),
 
             // 权重设置
             _buildWeightingSection(controller),
-            const SizedBox(height: 24),
-
-            // 操作按钮
-            _buildActionButtons(controller),
             const SizedBox(height: 24),
 
             // 图表区域

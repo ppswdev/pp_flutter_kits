@@ -141,7 +141,7 @@ class MethodChannelDecibelMeter extends DecibelMeterPlatform {
     final result = await methodChannel.invokeMethod<String>(
       'getCurrentFrequencyWeighting',
     );
-    return result ?? 'A-weight';
+    return result ?? 'dB-A';
   }
 
   @override

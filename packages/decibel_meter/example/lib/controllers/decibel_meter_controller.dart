@@ -185,14 +185,8 @@ class DecibelMeterController extends GetxController {
       case 'stateChange':
         _handleStateChange(eventData);
         break;
-      case 'decibelUpdate':
-        _handleDecibelUpdate(eventData);
-        break;
-      case 'statisticsUpdate':
-        _handleStatisticsUpdate(eventData);
-        break;
-      case 'advancedStatisticsUpdate':
-        _handleAdvancedStatisticsUpdate(eventData);
+      case 'meterDataUpdate':
+        _handleMeterDataUpdate(eventData);
         break;
       case 'noiseDosimeterUpdate':
         _handleNoiseDosimeterUpdate(eventData);
@@ -208,7 +202,7 @@ class DecibelMeterController extends GetxController {
   /// 处理测量更新事件
   void _handleMeasurementUpdate(Map<String, dynamic> eventData) {
     try {
-      final measurement = eventData['measurement'] as Map<String, dynamic>?;
+      final measurement = eventData['measurement'];
       if (measurement != null) {
         _currentDecibel.value = _safeToDouble(measurement['displayDecibel']);
 
@@ -246,36 +240,16 @@ class DecibelMeterController extends GetxController {
     }
   }
 
-  /// 处理分贝更新事件
-  void _handleDecibelUpdate(Map<String, dynamic> eventData) {
-    try {
-      final decibel = _safeToDouble(eventData['decibel']);
-      _currentDecibel.value = decibel;
-    } catch (e) {
-      print('处理分贝更新事件失败: $e');
-    }
-  }
-
-  /// 处理统计更新事件
-  void _handleStatisticsUpdate(Map<String, dynamic> eventData) {
-    try {
-      _currentDecibel.value = _safeToDouble(eventData['current']);
-      _maxDecibel.value = _safeToDouble(eventData['max']);
-      _minDecibel.value = _safeToDouble(eventData['min']);
-    } catch (e) {
-      print('处理统计更新事件失败: $e');
-    }
-  }
-
-  /// 处理高级统计更新事件
-  void _handleAdvancedStatisticsUpdate(Map<String, dynamic> eventData) {
+  /// 处理仪表数据更新事件
+  void _handleMeterDataUpdate(Map<String, dynamic> eventData) {
     try {
       _currentDecibel.value = _safeToDouble(eventData['current']);
       _maxDecibel.value = _safeToDouble(eventData['max']);
       _minDecibel.value = _safeToDouble(eventData['min']);
       _peakDecibel.value = _safeToDouble(eventData['peak']);
+      _avgDecibel.value = _safeToDouble(eventData['leq']); // 添加LEQ值处理
     } catch (e) {
-      print('处理高级统计更新事件失败: $e');
+      print('处理仪表数据更新事件失败: $e');
     }
   }
 
@@ -377,16 +351,21 @@ class DecibelMeterController extends GetxController {
 
   /// 获取频率权重简写
   String _getFrequencyWeightingShort(String weighting) {
-    switch (weighting.toLowerCase()) {
-      case 'a-weight':
-      case 'a':
+    switch (weighting) {
+      case 'dB-A':
+      case 'A':
         return 'A';
-      case 'c-weight':
-      case 'c':
+      case 'dB-B':
+      case 'B':
+        return 'B';
+      case 'dB-C':
+      case 'C':
         return 'C';
-      case 'z-weight':
-      case 'z':
+      case 'dB-Z':
+      case 'Z':
         return 'Z';
+      case 'ITU-R 468':
+        return 'ITU';
       default:
         return weighting.isNotEmpty ? weighting[0].toUpperCase() : 'A';
     }
@@ -474,10 +453,14 @@ class DecibelMeterController extends GetxController {
   /// 更新统计数据
   Future<void> _updateStatisticsData() async {
     try {
+      // LEQ值现在通过meterDataUpdate事件流更新，这里只作为备用更新
+      // 如果事件流没有及时更新，这里可以确保数据同步
       final statistics = await _decibelMeter.getStatistics();
 
-      // 只更新事件流中没有包含的统计数据
-      _avgDecibel.value = statistics['avg'] ?? 0.0;
+      // 只有在事件流没有更新LEQ值时才使用API数据
+      if (_avgDecibel.value == 0.0) {
+        _avgDecibel.value = statistics['avg'] ?? 0.0;
+      }
     } catch (e) {
       print('更新统计数据失败: $e');
     }
@@ -487,10 +470,11 @@ class DecibelMeterController extends GetxController {
   Future<void> _updateChartData() async {
     try {
       // 更新实时指示器数据
-      final realTimeIndicator = await _decibelMeter.getRealTimeIndicatorData();
-      _realTimeIndicatorData.assignAll(
-        realTimeIndicator as Map<String, dynamic>,
-      );
+      final realTimeIndicatorJson = await _decibelMeter
+          .getRealTimeIndicatorData();
+      final realTimeIndicator =
+          jsonDecode(realTimeIndicatorJson) as Map<String, dynamic>;
+      _realTimeIndicatorData.assignAll(realTimeIndicator);
 
       // 更新实时图表数据（减少频率，避免过度更新）
       if (_realTimeChartData.length < 60) {

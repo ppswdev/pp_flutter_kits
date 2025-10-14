@@ -156,16 +156,16 @@ enum TimeWeighting: String, CaseIterable {
 /// 频率权重模拟人耳对不同频率声音的敏感度差异
 enum FrequencyWeighting: String, CaseIterable {
     /// A权重：模拟人耳在40 phon等响度曲线下的响应，最常用
-    case aWeight = "A-weight"
+    case aWeight = "dB-A"
     
     /// B权重：模拟人耳在70 phon等响度曲线下的响应，已较少使用
-    case bWeight = "B-weight"
+    case bWeight = "dB-B"
     
     /// C权重：模拟人耳在100 phon等响度曲线下的响应，适用于高声级
-    case cWeight = "C-weight"
+    case cWeight = "dB-C"
     
     /// Z权重：无频率修正，保持原始频率响应
-    case zWeight = "Z-weight"
+    case zWeight = "dB-Z"
     
     /// ITU-R 468权重：专门用于广播音频设备的噪声测量
     case ituR468 = "ITU-R 468"
@@ -174,15 +174,15 @@ enum FrequencyWeighting: String, CaseIterable {
     var description: String {
         switch self {
         case .zWeight:
-            return "Z权重 - 无频率修正"
+            return "Z权重 - 无频率修正, 保持原始频率响应"
         case .aWeight:
-            return "A权重 - 环境噪声标准"
+            return "A权重 - 环境噪声标准, 模拟人耳在40 phon等响度曲线下的响应"
         case .bWeight:
-            return "B权重 - 中等响度（已弃用）"
+            return "B权重 - 中等响度（已弃用）, 模拟人耳在70 phon等响度曲线下的响应"
         case .cWeight:
             return "C权重 - 高声级测量"
         case .ituR468:
-            return "ITU-R 468 - 广播音频标准"
+            return "ITU-R 468 - 广播音频标准, 专门用于广播音频设备的噪声测量"
         }
     }
     
@@ -286,14 +286,8 @@ class DecibelMeterManager: NSObject {
     /// 测量状态变化回调。当测量状态（空闲/测量中/错误）发生改变时触发，参数为当前测量状态
     var onStateChange: ((MeasurementState) -> Void)?
     
-    /// 实时分贝值更新回调。当有新的分贝数值时调用，参数为最新的分贝值（Double 类型，已校准）
-    var onDecibelUpdate: ((Double) -> Void)?
-    
-    /// 当前分贝、最大分贝、最小分贝
-    var onStatisticsUpdate: ((Double, Double, Double) -> Void)?
-    
-    /// 当前分贝值，PEAK, MAX, MIN
-    var onAdvancedStatisticsUpdate: ((Double, Double, Double, Double) -> Void)?
+    /// 分贝计数据更新回调。当有新的分贝数值时调用，参数为：当前分贝值，PEAK, MAX, MIN，LEQ
+    var onMeterDataUpdate: ((Double, Double, Double, Double, Double) -> Void)?
     
     // MARK: - 音频相关属性
     
@@ -882,7 +876,7 @@ class DecibelMeterManager: NSObject {
     /// ```swift
     /// // 1/1倍频程
     /// let spectrum1_1 = manager.getSpectrumChartData(bandType: "1/1")
-    /// 
+    ///
     /// // 1/3倍频程
     /// let spectrum1_3 = manager.getSpectrumChartData(bandType: "1/3")
     /// print("频率点数量: \(spectrum1_3.dataPoints.count)")
@@ -1042,7 +1036,7 @@ class DecibelMeterManager: NSObject {
     /// let leqTrend = manager.getLEQTrendChartData(interval: 10.0)
     /// print("当前LEQ: \(leqTrend.currentLeq) dB")
     /// print("数据点数量: \(leqTrend.dataPoints.count)")
-    /// 
+    ///
     /// for point in leqTrend.dataPoints {
     ///     print("时段LEQ: \(point.leq) dB, 累积LEQ: \(point.cumulativeLeq) dB")
     /// }
@@ -1875,7 +1869,6 @@ class DecibelMeterManager: NSObject {
         // 验证并限制分贝值在合理范围内
         let validatedDecibel = validateDecibelValue(newDecibel)
         currentDecibel = validatedDecibel
-        onDecibelUpdate?(validatedDecibel)
         
         // 更新MAX值（使用时间权重后的值）
         let validatedTimeWeighted = validateDecibelValue(timeWeightedDecibel)
@@ -1893,9 +1886,11 @@ class DecibelMeterManager: NSObject {
         if peakDecibel < 0 || validatedRaw > peakDecibel {
             peakDecibel = validatedRaw
         }
+        // 计算当前LEQ值
+        let currentLeq = getRealTimeLeq()
         
-        onStatisticsUpdate?(currentDecibel, maxDecibel, minDecibel)
-        onAdvancedStatisticsUpdate?(currentDecibel, peakDecibel, maxDecibel, minDecibel)
+        print("updateDecibel currentDecibel: \(currentDecibel), maxDecibel: \(maxDecibel), minDecibel: \(minDecibel), peakDecibel: \(peakDecibel), leq: \(currentLeq)")
+        onMeterDataUpdate?(currentDecibel, peakDecibel, maxDecibel, minDecibel, currentLeq)
     }
     
     /// 更新测量数据并通知回调
@@ -1962,8 +1957,8 @@ class DecibelMeterManager: NSObject {
         do {
             // 配置音频会话支持后台录制
             try audioSession.setCategory(
-                .record, 
-                mode: .measurement, 
+                .record,
+                mode: .measurement,
                 options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]
             )
             
@@ -2346,8 +2341,8 @@ class FrequencyWeightingFilter {
         let f4 = 12194.2
         
         let numerator = pow(f4, 2) * pow(f, 4)
-        let denominator = (pow(f, 2) + pow(f1, 2)) * 
-                         sqrt((pow(f, 2) + pow(f2, 2)) * (pow(f, 2) + pow(f3, 2))) * 
+        let denominator = (pow(f, 2) + pow(f1, 2)) *
+                         sqrt((pow(f, 2) + pow(f2, 2)) * (pow(f, 2) + pow(f3, 2))) *
                          (pow(f, 2) + pow(f4, 2))
         
         return numerator / denominator
@@ -2361,8 +2356,8 @@ class FrequencyWeightingFilter {
         let f3 = 12194.2
         
         let numerator = pow(f3, 2) * pow(f, 3)
-        let denominator = (pow(f, 2) + pow(f1, 2)) * 
-                         sqrt(pow(f, 2) + pow(f2, 2)) * 
+        let denominator = (pow(f, 2) + pow(f1, 2)) *
+                         sqrt(pow(f, 2) + pow(f2, 2)) *
                          (pow(f, 2) + pow(f3, 2))
         
         return numerator / denominator

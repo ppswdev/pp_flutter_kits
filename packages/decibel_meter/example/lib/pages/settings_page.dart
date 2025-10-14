@@ -13,7 +13,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // 设置项
   double _calibrationOffset = 0.0;
-  String _currentFrequencyWeighting = 'A-weight';
+  String _currentFrequencyWeighting = 'dB-A';
   String _currentTimeWeighting = 'Fast';
   String _currentNoiseStandard = 'niosh';
 
@@ -358,7 +358,13 @@ class _SettingsPageState extends State<SettingsPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );
@@ -366,13 +372,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _getFrequencyWeightingDisplayName(String weighting) {
     switch (weighting) {
-      case 'A-weight':
+      case 'dB-A':
         return 'A权重';
-      case 'B-weight':
+      case 'dB-B':
         return 'B权重';
-      case 'C-weight':
+      case 'dB-C':
         return 'C权重';
-      case 'Z-weight':
+      case 'dB-Z':
         return 'Z权重';
       case 'ITU-R 468':
         return 'ITU-R 468';
@@ -383,13 +389,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _getFrequencyWeightingDescription(String weighting) {
     switch (weighting) {
-      case 'A-weight':
+      case 'dB-A':
         return 'A权重：模拟人耳在40 phon等响度曲线下的响应，最常用';
-      case 'B-weight':
+      case 'dB-B':
         return 'B权重：模拟人耳在70 phon等响度曲线下的响应，已较少使用';
-      case 'C-weight':
+      case 'dB-C':
         return 'C权重：模拟人耳在100 phon等响度曲线下的响应，适用于高声级';
-      case 'Z-weight':
+      case 'dB-Z':
         return 'Z权重：无频率修正，保持原始频率响应';
       case 'ITU-R 468':
         return 'ITU-R 468权重：专门用于广播音频设备的噪声测量';

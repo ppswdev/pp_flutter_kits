@@ -99,7 +99,7 @@ class DecibelMeterUsageExample {
     print('当前频率权重: $current');
 
     // 设置为C权重
-    await _decibelMeter.setFrequencyWeighting('C-weight');
+    await _decibelMeter.setFrequencyWeighting('dB-C');
     final newWeighting = await _decibelMeter.getCurrentFrequencyWeighting();
     print('新频率权重: $newWeighting');
 

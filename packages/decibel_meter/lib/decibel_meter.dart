@@ -176,10 +176,10 @@ class DecibelMeter {
   /// 获取当前频率权重
   ///
   /// 返回值：
-  /// - "A-weight" - A权重（最常用）
-  /// - "B-weight" - B权重（已弃用）
-  /// - "C-weight" - C权重
-  /// - "Z-weight" - Z权重（无修正）
+  /// - "dB-A" - A权重（最常用）
+  /// - "dB-B" - B权重（已弃用）
+  /// - "dB-C" - C权重
+  /// - "dB-Z" - Z权重（无修正）
   /// - "ITU-R 468" - ITU-R 468权重
   Future<String> getCurrentFrequencyWeighting() {
     return DecibelMeterPlatform.instance.getCurrentFrequencyWeighting();
@@ -188,7 +188,7 @@ class DecibelMeter {
   /// 设置频率权重
   ///
   /// 参数：
-  /// - weighting: 频率权重类型（如 "A-weight", "C-weight"）
+  /// - weighting: 频率权重类型（如 "dB-A", "dB-C"）
   Future<bool> setFrequencyWeighting(String weighting) {
     return DecibelMeterPlatform.instance.setFrequencyWeighting(weighting);
   }

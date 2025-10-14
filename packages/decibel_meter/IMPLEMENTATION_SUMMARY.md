@@ -251,7 +251,7 @@ await decibelMeter.stopMeasurement();
 
 ```dart
 // 设置权重
-await decibelMeter.setFrequencyWeighting('A-weight');
+await decibelMeter.setFrequencyWeighting('dB-A');
 await decibelMeter.setTimeWeighting('Fast');
 
 // 获取统计信息

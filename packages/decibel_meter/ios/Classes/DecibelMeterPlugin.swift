@@ -209,7 +209,7 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
           let standardStr = args?["standard"] as? String
           let standard = convertStringToNoiseStandard(standardStr)
           let doseData = manager.getNoiseDoseData(standard: standard)
-          result(doseData.toMap())
+          result(doseData.toMap() as [String: Any])
 
         case "isExceedingLimit":
           guard let args = call.arguments as? [String: Any],
@@ -229,7 +229,7 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
             return
           }
           let comparisonResult = manager.getLimitComparisonResult(standard: standard)
-          result(comparisonResult.toMap())
+          result(comparisonResult.toMap() as [String: Any])
 
         case "getDoseAccumulationChartData":
           let args = call.arguments as? [String: Any]
@@ -291,30 +291,21 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
   // MARK: - 回调设置
   
   private func setupCallbacks() {
-      manager.onMeasurementUpdate = { [weak self] measurement in
-          guard let self = self, let eventSink = self.eventSink else { return }
-          eventSink(["event": "measurementUpdate", "measurement": measurement.toMap()])
-      }
+       manager.onMeasurementUpdate = { [weak self] measurement in
+           guard let self = self, let eventSink = self.eventSink else { return }
+           let measurementMap = measurement.toMap() as [String: Any]
+           eventSink(["event": "measurementUpdate", "measurement": measurementMap])
+       }
       
       manager.onStateChange = { [weak self] state in
           guard let self = self, let eventSink = self.eventSink else { return }
-          eventSink(["event": "stateChange", "state": state.stringValue])
+          eventSink(["event": "stateChange", "state": state.stringValue] as [String: Any])
       }
-      
-      manager.onDecibelUpdate = { [weak self] decibel in
-          guard let self = self, let eventSink = self.eventSink else { return }
-          eventSink(["event": "decibelUpdate", "decibel": decibel])
-      }
-      
-      manager.onStatisticsUpdate = { [weak self] current, max, min in
-          guard let self = self, let eventSink = self.eventSink else { return }
-          eventSink(["event": "statisticsUpdate", "current": current, "max": max, "min": min])
-      }
-
-      manager.onAdvancedStatisticsUpdate = { [weak self] current, peak, min, max in
-          guard let self = self, let eventSink = self.eventSink else { return }
-          eventSink(["event": "advancedStatisticsUpdate", "current": current, "peak": peak, "min": min, "max": max])
-      }
+    
+       manager.onMeterDataUpdate = { [weak self] current, peak, max, min, leq in
+           guard let self = self, let eventSink = self.eventSink else { return }
+           eventSink(["event": "meterDataUpdate", "current": current, "peak": peak, "max": max, "min": min, "leq": leq] as [String: Any])
+       }
   }
 
   private func convertMeasurementStateToString(_ state: MeasurementState) -> String {
