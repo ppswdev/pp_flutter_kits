@@ -344,16 +344,16 @@ class NoiseDosimeterPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${soundLevel.toStringAsFixed(1)} dB(A)${isCeilingLimit ? ' (天花板限值)' : ''}',
+                                    '${soundLevel.toStringAsFixed(0)}dB',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
-                                    '允许: ${allowedDuration.toStringAsFixed(1)}h',
+                                    '允许: ${allowedDuration.toStringAsFixed(1)}s',
                                   ),
                                   Text(
-                                    '已暴露: ${accumulatedDuration.toStringAsFixed(1)}h',
+                                    '已暴露: ${accumulatedDuration.toStringAsFixed(1)}s',
                                   ),
                                 ],
                               ),

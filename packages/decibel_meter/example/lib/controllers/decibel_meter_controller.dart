@@ -185,11 +185,12 @@ class DecibelMeterController extends GetxController {
       case 'stateChange':
         _handleStateChange(eventData);
         break;
-      case 'meterDataUpdate':
-        _handleMeterDataUpdate(eventData);
+      case 'decibelMeterDataUpdate':
+        _handleDecibelMeterDataUpdate(eventData);
         break;
-      case 'noiseDosimeterUpdate':
-        _handleNoiseDosimeterUpdate(eventData);
+      case 'noiseMeterDataUpdate':
+        //_handleNoiseDosimeterUpdate(eventData);
+        updateNoiseDosimeterData();
         break;
       case 'error':
         print('接收到错误事件: ${eventData['desc']}');
@@ -241,7 +242,7 @@ class DecibelMeterController extends GetxController {
   }
 
   /// 处理仪表数据更新事件
-  void _handleMeterDataUpdate(Map<String, dynamic> eventData) {
+  void _handleDecibelMeterDataUpdate(Map<String, dynamic> eventData) {
     try {
       _currentDecibel.value = _safeToDouble(eventData['current']);
       _maxDecibel.value = _safeToDouble(eventData['max']);
@@ -254,30 +255,33 @@ class DecibelMeterController extends GetxController {
   }
 
   /// 处理噪音测量计更新事件
-  void _handleNoiseDosimeterUpdate(Map<String, dynamic> eventData) {
+  void _handleNoiseDosimeterUpdate(Map<String, dynamic> eventData) async {
     try {
+      final noiseMeterData = await _decibelMeter.getNoiseDoseData(
+        standard: _currentStandard.value,
+      );
       // 更新TWA值
-      if (eventData.containsKey('twa')) {
-        _twa.value = _safeToDouble(eventData['twa']);
+      if (noiseMeterData.containsKey('twa')) {
+        _twa.value = _safeToDouble(noiseMeterData['twa']);
       }
 
       // 更新剂量数据
-      if (eventData.containsKey('totalDose')) {
-        _totalDose.value = _safeToDouble(eventData['totalDose']);
+      if (noiseMeterData.containsKey('totalDose')) {
+        _totalDose.value = _safeToDouble(noiseMeterData['totalDose']);
       }
 
-      if (eventData.containsKey('doseRate')) {
-        _doseRate.value = _safeToDouble(eventData['doseRate']);
+      if (noiseMeterData.containsKey('doseRate')) {
+        _doseRate.value = _safeToDouble(noiseMeterData['doseRate']);
       }
 
       // 更新超标状态
-      if (eventData.containsKey('isExceeding')) {
-        _isExceeding.value = eventData['isExceeding'] as bool? ?? false;
+      if (noiseMeterData.containsKey('isExceeding')) {
+        _isExceeding.value = noiseMeterData['isExceeding'] as bool? ?? false;
       }
 
       // 更新风险等级
-      if (eventData.containsKey('riskLevel')) {
-        _riskLevel.value = eventData['riskLevel'] as String? ?? 'low';
+      if (noiseMeterData.containsKey('riskLevel')) {
+        _riskLevel.value = noiseMeterData['riskLevel'] as String? ?? 'low';
       }
     } catch (e) {
       print('处理噪音测量计更新事件失败: $e');
@@ -619,6 +623,30 @@ class DecibelMeterController extends GetxController {
       final comparisonResult = await _decibelMeter.getLimitComparisonResult(
         _currentStandard.value,
       );
+
+      // 更新TWA值
+      if (doseData.containsKey('twa')) {
+        _twa.value = _safeToDouble(doseData['twa']);
+      }
+
+      // 更新剂量数据
+      if (doseData.containsKey('totalDose')) {
+        _totalDose.value = _safeToDouble(doseData['totalDose']);
+      }
+
+      if (doseData.containsKey('doseRate')) {
+        _doseRate.value = _safeToDouble(doseData['doseRate']);
+      }
+
+      // 更新超标状态
+      if (doseData.containsKey('isExceeding')) {
+        _isExceeding.value = doseData['isExceeding'] as bool? ?? false;
+      }
+
+      // 更新风险等级
+      if (doseData.containsKey('riskLevel')) {
+        _riskLevel.value = doseData['riskLevel'] as String? ?? 'low';
+      }
 
       // 允许暴露时长表
       final durationTableJson = await _decibelMeter

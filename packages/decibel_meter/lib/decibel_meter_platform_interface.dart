@@ -69,9 +69,9 @@ abstract class DecibelMeterPlatform extends PlatformInterface {
   }
 
   /// 获取测量历史
-  Future<List<DecibelMeasurement>> getMeasurementHistory() {
+  Future<List<DecibelMeasurement>> getDecibelMeterHistory() {
     throw UnimplementedError(
-      'getMeasurementHistory() has not been implemented.',
+      'getDecibelMeterHistory() has not been implemented.',
     );
   }
 

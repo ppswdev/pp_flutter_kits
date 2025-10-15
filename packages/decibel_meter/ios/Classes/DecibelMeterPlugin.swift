@@ -56,8 +56,8 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
         "min": stats.min
       ])
       
-    case "getMeasurementHistory":
-      let history = manager.getMeasurementHistory()
+    case "getDecibelMeterHistory":
+      let history = manager.getDecibelMeterHistory()
       result(history.map { convertMeasurementToDict($0) })
       
     case "getCurrentStatistics":
@@ -302,9 +302,14 @@ public class DecibelMeterPlugin: NSObject, FlutterPlugin {
           eventSink(["event": "stateChange", "state": state.stringValue] as [String: Any])
       }
     
-       manager.onMeterDataUpdate = { [weak self] current, peak, max, min, leq in
+       manager.onDecibelMeterDataUpdate = { [weak self] current, peak, max, min, leq in
            guard let self = self, let eventSink = self.eventSink else { return }
-           eventSink(["event": "meterDataUpdate", "current": current, "peak": peak, "max": max, "min": min, "leq": leq] as [String: Any])
+           eventSink(["event": "decibelMeterDataUpdate", "current": current, "peak": peak, "max": max, "min": min, "leq": leq] as [String: Any])
+       }
+
+        manager.onNoiseMeterDataUpdate = { [weak self] current, peak, max, min, leq in
+           guard let self = self, let eventSink = self.eventSink else { return }
+           eventSink(["event": "noiseMeterDataUpdate", "current": current, "peak": peak, "max": max, "min": min, "leq": leq] as [String: Any])
        }
   }
 

@@ -386,7 +386,7 @@ struct RealTimeIndicatorData: Codable {
 /// 表示单个权重选项的详细信息，包括显示名称、符号、描述和标准
 /// 用于在UI中展示可选的频率权重或时间权重列表
 struct WeightingOption: Codable, Identifiable {
-    /// 唯一标识符，通常为权重的rawValue，如"dB-A"、"Fast"
+    /// 唯一标识符，通常为权重的rawValue，如"A-weight"、"Fast"
     let id: String
     
     /// 显示名称，如"dB-A"、"F"
@@ -438,7 +438,7 @@ struct WeightingOptionsList: Codable {
     /// 所有可用的权重选项数组
     let options: [WeightingOption]
     
-    /// 当前选择的权重ID，如"dB-A"、"Fast"
+    /// 当前选择的权重ID，如"A-weight"、"Fast"
     let currentSelection: String
     
     /// 转换为JSON字符串

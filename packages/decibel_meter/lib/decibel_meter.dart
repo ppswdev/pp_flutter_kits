@@ -127,8 +127,8 @@ class DecibelMeter {
   /// 获取测量历史记录
   ///
   /// 返回所有历史测量数据的数组（最多1000条）
-  Future<List<DecibelMeasurement>> getMeasurementHistory() {
-    return DecibelMeterPlatform.instance.getMeasurementHistory();
+  Future<List<DecibelMeasurement>> getDecibelMeterHistory() {
+    return DecibelMeterPlatform.instance.getDecibelMeterHistory();
   }
 
   /// 获取当前完整统计信息

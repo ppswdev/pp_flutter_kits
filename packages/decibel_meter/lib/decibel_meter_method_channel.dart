@@ -81,9 +81,9 @@ class MethodChannelDecibelMeter extends DecibelMeterPlatform {
   }
 
   @override
-  Future<List<DecibelMeasurement>> getMeasurementHistory() async {
+  Future<List<DecibelMeasurement>> getDecibelMeterHistory() async {
     final result = await methodChannel.invokeMethod<List>(
-      'getMeasurementHistory',
+      'getDecibelMeterHistory',
     );
     if (result == null) return [];
     return result

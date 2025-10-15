@@ -287,7 +287,10 @@ class DecibelMeterManager: NSObject {
     var onStateChange: ((MeasurementState) -> Void)?
     
     /// 分贝计数据更新回调。当有新的分贝数值时调用，参数为：当前分贝值，PEAK, MAX, MIN，LEQ
-    var onMeterDataUpdate: ((Double, Double, Double, Double, Double) -> Void)?
+    var onDecibelMeterDataUpdate: ((Double, Double, Double, Double, Double) -> Void)?
+    
+    /// 噪音测量计数据更新回调。当有新的分贝数值时调用，参数为：当前分贝值，PEAK, MAX, MIN，LEQ
+    var onNoiseMeterDataUpdate: ((Double, Double, Double, Double, Double) -> Void)?
     
     // MARK: - 音频相关属性
     
@@ -313,8 +316,11 @@ class DecibelMeterManager: NSObject {
     
     // MARK: - 测量相关属性
     
-    /// 测量历史记录数组，存储所有的测量结果（最多1000条）
-    private var measurementHistory: [DecibelMeasurement] = []
+    /// 分贝计测量历史记录数组，存储分贝计的所有测量结果（最多1000条）
+    private var decibelMeterHistory: [DecibelMeasurement] = []
+    
+    /// 噪音测量计测量历史记录数组，存储噪音测量计的所有测量结果（最多1000条）
+    private var noiseMeterHistory: [DecibelMeasurement] = []
     
     /// 时间权重滤波器，用于应用Fast、Slow、Impulse时间权重
     private var timeWeightingFilter: TimeWeightingFilter?
@@ -325,8 +331,11 @@ class DecibelMeterManager: NSObject {
     /// 校准偏移值（dB），用于补偿设备差异
     private var calibrationOffset: Double = 0.0
     
-    /// 当前频率权重，默认为A权重（最常用）
-    private var currentFrequencyWeighting: FrequencyWeighting = .aWeight
+    /// 分贝计当前频率权重，默认为A权重（最常用），可自由切换
+    private var decibelMeterFrequencyWeighting: FrequencyWeighting = .aWeight
+    
+    /// 噪音测量计频率权重，锁定为A权重（符合职业健康标准）
+    private var noiseMeterFrequencyWeighting: FrequencyWeighting = .aWeight
     
     // MARK: - 统计相关属性
     
@@ -449,8 +458,8 @@ class DecibelMeterManager: NSObject {
         endBackgroundTask()
         
         // 计算最终统计信息
-        if !measurementHistory.isEmpty {
-            currentStatistics = calculateStatistics(from: measurementHistory)
+        if !decibelMeterHistory.isEmpty {
+            currentStatistics = calculateStatistics(from: decibelMeterHistory)
         }
         
         updateState(.idle)
@@ -477,24 +486,45 @@ class DecibelMeterManager: NSObject {
         return (currentDecibel, maxDecibel, minDecibel)
     }
     
-    /// 获取测量历史
-    func getMeasurementHistory() -> [DecibelMeasurement] {
-        return measurementHistory
+    /// 获取分贝计测量历史
+    func getDecibelMeterHistory() -> [DecibelMeasurement] {
+        return decibelMeterHistory
     }
+    
+    /// 获取噪音测量计测量历史
+    func getNoiseMeterHistory() -> [DecibelMeasurement] {
+        return noiseMeterHistory
+    }
+    
     
     /// 设置校准偏移
     func setCalibrationOffset(_ offset: Double) {
         calibrationOffset = offset
     }
     
-    /// 获取当前频率权重
-    func getCurrentFrequencyWeighting() -> FrequencyWeighting {
-        return currentFrequencyWeighting
+    /// 获取分贝计当前频率权重
+    func getDecibelMeterFrequencyWeighting() -> FrequencyWeighting {
+        return decibelMeterFrequencyWeighting
     }
     
-    /// 设置频率权重
+    /// 设置分贝计频率权重
+    func setDecibelMeterFrequencyWeighting(_ weighting: FrequencyWeighting) {
+        decibelMeterFrequencyWeighting = weighting
+    }
+    
+    /// 获取噪音测量计频率权重（始终为A权重）
+    func getNoiseMeterFrequencyWeighting() -> FrequencyWeighting {
+        return noiseMeterFrequencyWeighting
+    }
+    
+    /// 获取当前频率权重（兼容性方法，返回分贝计的权重）
+    func getCurrentFrequencyWeighting() -> FrequencyWeighting {
+        return decibelMeterFrequencyWeighting
+    }
+    
+    /// 设置频率权重（兼容性方法，设置分贝计的权重）
     func setFrequencyWeighting(_ weighting: FrequencyWeighting) {
-        currentFrequencyWeighting = weighting
+        decibelMeterFrequencyWeighting = weighting
     }
     
     /// 获取所有可用的频率权重
@@ -528,16 +558,46 @@ class DecibelMeterManager: NSObject {
         return currentStatistics
     }
     
-    /// 获取实时LEQ值
-    func getRealTimeLeq() -> Double {
-        guard !measurementHistory.isEmpty else { return 0.0 }
-        let decibelValues = measurementHistory.map { $0.calibratedDecibel }
+    /// 获取分贝计实时LEQ值
+    func getDecibelMeterRealTimeLeq() -> Double {
+        guard !decibelMeterHistory.isEmpty else { return 0.0 }
+        let decibelValues = decibelMeterHistory.map { $0.calibratedDecibel }
         return calculateLeq(from: decibelValues)
+    }
+    
+    /// 获取噪音测量计实时LEQ值
+    func getNoiseMeterRealTimeLeq() -> Double {
+        guard !noiseMeterHistory.isEmpty else { return 0.0 }
+        let decibelValues = noiseMeterHistory.map { $0.calibratedDecibel }
+        return calculateLeq(from: decibelValues)
+    }
+    
+    /// 获取实时LEQ值（兼容性方法，返回分贝计的LEQ）
+    func getRealTimeLeq() -> Double {
+        return getDecibelMeterRealTimeLeq()
     }
     
     /// 获取当前峰值
     func getCurrentPeak() -> Double {
         return peakDecibel
+    }
+    
+    /// 获取噪音测量计最大值
+    func getNoiseMeterMax() -> Double {
+        guard !noiseMeterHistory.isEmpty else { return -1.0 }
+        return noiseMeterHistory.map { $0.fastDecibel }.max() ?? -1.0
+    }
+    
+    /// 获取噪音测量计最小值
+    func getNoiseMeterMin() -> Double {
+        guard !noiseMeterHistory.isEmpty else { return -1.0 }
+        return noiseMeterHistory.map { $0.fastDecibel }.min() ?? -1.0
+    }
+    
+    /// 获取噪音测量计峰值
+    func getNoiseMeterPeak() -> Double {
+        guard !noiseMeterHistory.isEmpty else { return -1.0 }
+        return noiseMeterHistory.map { $0.rawDecibel }.max() ?? -1.0
     }
     
     // MARK: - 扩展的公共获取方法
@@ -573,7 +633,7 @@ class DecibelMeterManager: NSObject {
         return Date().timeIntervalSince(startTime)
     }
     
-    /// 获取当前频率时间权重简写文本
+    /// 获取分贝计频率时间权重简写文本
     ///
     /// 返回符合国际标准的权重显示格式，组合频率权重和时间权重
     ///
@@ -586,12 +646,24 @@ class DecibelMeterManager: NSObject {
     ///
     /// **使用示例**：
     /// ```swift
-    /// let text = manager.getWeightingDisplayText() // "dB(A)F"
+    /// let text = manager.getDecibelMeterWeightingDisplayText() // "dB(A)F"
     /// ```
-    func getWeightingDisplayText() -> String {
-        let freqSymbol = currentFrequencyWeighting.displaySymbol
+    func getDecibelMeterWeightingDisplayText() -> String {
+        let freqSymbol = decibelMeterFrequencyWeighting.displaySymbol
         let timeSymbol = currentTimeWeighting.displaySymbol
         return "dB(\(freqSymbol))\(timeSymbol)"
+    }
+    
+    /// 获取噪音测量计频率时间权重简写文本（始终为dB(A)F）
+    func getNoiseMeterWeightingDisplayText() -> String {
+        let freqSymbol = noiseMeterFrequencyWeighting.displaySymbol
+        let timeSymbol = currentTimeWeighting.displaySymbol
+        return "dB(\(freqSymbol))\(timeSymbol)"
+    }
+    
+    /// 获取当前频率时间权重简写文本（兼容性方法，返回分贝计的权重）
+    func getWeightingDisplayText() -> String {
+        return getDecibelMeterWeightingDisplayText()
     }
     
     /// 获取校准偏移值
@@ -657,7 +729,7 @@ class DecibelMeterManager: NSObject {
     /// let leq = manager.getLeqDecibel() // 70.3
     /// ```
     func getLeqDecibel() -> Double {
-        return getRealTimeLeq()
+        return getDecibelMeterRealTimeLeq()
     }
     
     // MARK: - 权重列表获取方法
@@ -700,7 +772,7 @@ class DecibelMeterManager: NSObject {
         }
         return WeightingOptionsList(
             options: options,
-            currentSelection: currentFrequencyWeighting.rawValue
+            currentSelection: decibelMeterFrequencyWeighting.rawValue
         )
     }
     
@@ -779,7 +851,7 @@ class DecibelMeterManager: NSObject {
         let startTime = now.addingTimeInterval(-timeRange)
         
         // 过滤指定时间范围内的数据
-        let filteredMeasurements = measurementHistory.filter { measurement in
+        let filteredMeasurements = decibelMeterHistory.filter { measurement in
             measurement.timestamp >= startTime
         }
         
@@ -802,7 +874,7 @@ class DecibelMeterManager: NSObject {
             timeRange: timeRange,
             minDecibel: minDb,
             maxDecibel: maxDb,
-            title: "实时分贝曲线 - \(getWeightingDisplayText())"
+            title: "实时分贝曲线 - \(getDecibelMeterWeightingDisplayText())"
         )
     }
     
@@ -838,11 +910,11 @@ class DecibelMeterManager: NSObject {
     func getRealTimeIndicatorData() -> RealTimeIndicatorData {
         return RealTimeIndicatorData(
             currentDecibel: currentDecibel,
-            leq: getRealTimeLeq(),
+            leq: getDecibelMeterRealTimeLeq(),
             min: minDecibel < 0 ? 0.0 : minDecibel,
             max: maxDecibel < 0 ? 0.0 : maxDecibel,
             peak: peakDecibel < 0 ? 0.0 : peakDecibel,
-            weightingDisplay: getWeightingDisplayText(),
+            weightingDisplay: getDecibelMeterWeightingDisplayText(),
             timestamp: Date()
         )
     }
@@ -901,7 +973,7 @@ class DecibelMeterManager: NSObject {
                 magnitude = 20.0 * log10(spectrum[index] + 1e-10) + currentDecibel
             } else {
                 // 模拟数据：基于当前分贝值和频率权重
-                let weightCompensation = frequencyWeightingFilter?.getWeightingdB(currentFrequencyWeighting, frequency: frequency) ?? 0.0
+                let weightCompensation = frequencyWeightingFilter?.getWeightingdB(decibelMeterFrequencyWeighting, frequency: frequency) ?? 0.0
                 magnitude = currentDecibel + weightCompensation + Double.random(in: -5...5)
             }
             
@@ -916,7 +988,7 @@ class DecibelMeterManager: NSObject {
             dataPoints: dataPoints,
             bandType: bandType == "1/1" ? "1/1倍频程" : "1/3倍频程",
             frequencyRange: (min: frequencies.first ?? 20, max: frequencies.last ?? 20000),
-            title: "频谱分析 - \(getWeightingDisplayText())"
+            title: "频谱分析 - \(getDecibelMeterWeightingDisplayText())"
         )
     }
     
@@ -953,7 +1025,7 @@ class DecibelMeterManager: NSObject {
     /// print("L90: \(distribution.l90) dB") // 背景噪声
     /// ```
     func getStatisticalDistributionChartData() -> StatisticalDistributionChartData {
-        guard !measurementHistory.isEmpty else {
+        guard !decibelMeterHistory.isEmpty else {
             return StatisticalDistributionChartData(
                 dataPoints: [],
                 l10: 0.0,
@@ -963,7 +1035,7 @@ class DecibelMeterManager: NSObject {
             )
         }
         
-        let decibelValues = measurementHistory.map { $0.calibratedDecibel }.sorted()
+        let decibelValues = decibelMeterHistory.map { $0.calibratedDecibel }.sorted()
         
         // 计算各百分位数
         let percentiles: [Double] = [10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -1042,7 +1114,7 @@ class DecibelMeterManager: NSObject {
     /// }
     /// ```
     func getLEQTrendChartData(interval: TimeInterval = 10.0) -> LEQTrendChartData {
-        guard !measurementHistory.isEmpty else {
+        guard !decibelMeterHistory.isEmpty else {
             return LEQTrendChartData(
                 dataPoints: [],
                 timeRange: 0.0,
@@ -1055,14 +1127,14 @@ class DecibelMeterManager: NSObject {
         var dataPoints: [LEQTrendDataPoint] = []
         var cumulativeLeq = 0.0
         
-        let startTime = measurementHistory.first!.timestamp
-        let endTime = measurementHistory.last!.timestamp
+        let startTime = decibelMeterHistory.first!.timestamp
+        let endTime = decibelMeterHistory.last!.timestamp
         let totalDuration = endTime.timeIntervalSince(startTime)
         
         var currentTime = startTime
         var currentGroup: [DecibelMeasurement] = []
         
-        for measurement in measurementHistory {
+        for measurement in decibelMeterHistory {
             if measurement.timestamp.timeIntervalSince(currentTime) >= interval {
                 // 计算当前组的LEQ
                 if !currentGroup.isEmpty {
@@ -1070,7 +1142,7 @@ class DecibelMeterManager: NSObject {
                     let groupLeq = calculateLeq(from: groupDecibelValues)
                     
                     // 计算累积LEQ
-                    let allPreviousValues = measurementHistory
+                    let allPreviousValues = decibelMeterHistory
                         .filter { $0.timestamp <= measurement.timestamp }
                         .map { $0.calibratedDecibel }
                     cumulativeLeq = calculateLeq(from: allPreviousValues)
@@ -1093,7 +1165,7 @@ class DecibelMeterManager: NSObject {
         if !currentGroup.isEmpty {
             let groupDecibelValues = currentGroup.map { $0.calibratedDecibel }
             let groupLeq = calculateLeq(from: groupDecibelValues)
-            cumulativeLeq = getRealTimeLeq()
+            cumulativeLeq = getDecibelMeterRealTimeLeq()
             
             dataPoints.append(LEQTrendDataPoint(
                 timestamp: currentTime,
@@ -1105,8 +1177,8 @@ class DecibelMeterManager: NSObject {
         return LEQTrendChartData(
             dataPoints: dataPoints,
             timeRange: totalDuration,
-            currentLeq: getRealTimeLeq(),
-            title: "LEQ趋势图 - 当前LEQ: \(String(format: "%.1f", getRealTimeLeq())) dB"
+            currentLeq: getDecibelMeterRealTimeLeq(),
+            title: "LEQ趋势图 - 当前LEQ: \(String(format: "%.1f", getDecibelMeterRealTimeLeq())) dB"
         )
     }
     
@@ -1143,7 +1215,8 @@ class DecibelMeterManager: NSObject {
         }
         
         // 清除所有数据
-        measurementHistory.removeAll()
+        decibelMeterHistory.removeAll()
+        noiseMeterHistory.removeAll()
         currentMeasurement = nil
         currentStatistics = nil
         measurementStartTime = nil
@@ -1228,7 +1301,7 @@ class DecibelMeterManager: NSObject {
     /// ```
     func getNoiseDoseData(standard: NoiseStandard? = nil) -> NoiseDoseData {
         let useStandard = standard ?? currentNoiseStandard
-        let leq = getRealTimeLeq()
+        let leq = getDecibelMeterRealTimeLeq()
         let duration = getMeasurementDuration()
         
         // 计算TWA
@@ -1358,7 +1431,7 @@ class DecibelMeterManager: NSObject {
     func getDoseAccumulationChartData(interval: TimeInterval = 60.0, standard: NoiseStandard? = nil) -> DoseAccumulationChartData {
         let useStandard = standard ?? currentNoiseStandard
         
-        guard !measurementHistory.isEmpty else {
+        guard !noiseMeterHistory.isEmpty else {
             return DoseAccumulationChartData(
                 dataPoints: [],
                 currentDose: 0.0,
@@ -1370,15 +1443,15 @@ class DecibelMeterManager: NSObject {
         }
         
         var dataPoints: [DoseAccumulationPoint] = []
-        let startTime = measurementHistory.first!.timestamp
+        let startTime = noiseMeterHistory.first!.timestamp
         var currentTime = startTime
         var currentGroup: [DecibelMeasurement] = []
         
-        for measurement in measurementHistory {
+        for measurement in noiseMeterHistory {
             if measurement.timestamp.timeIntervalSince(currentTime) >= interval {
                 // 计算当前时间点的累积剂量
                 if !currentGroup.isEmpty {
-                    let allPreviousValues = measurementHistory
+                    let allPreviousValues = noiseMeterHistory
                         .filter { $0.timestamp <= measurement.timestamp }
                         .map { $0.calibratedDecibel }
                     
@@ -1404,7 +1477,7 @@ class DecibelMeterManager: NSObject {
         
         // 添加最后一个点
         if !currentGroup.isEmpty {
-            let leq = getRealTimeLeq()
+            let leq = getDecibelMeterRealTimeLeq()
             let duration = getMeasurementDuration()
             let twa = calculateTWA(leq: leq, duration: duration)
             let dose = calculateNoiseDose(twa: twa, standard: useStandard)
@@ -1452,7 +1525,7 @@ class DecibelMeterManager: NSObject {
     func getTWATrendChartData(interval: TimeInterval = 60.0, standard: NoiseStandard? = nil) -> TWATrendChartData {
         let useStandard = standard ?? currentNoiseStandard
         
-        guard !measurementHistory.isEmpty else {
+        guard !noiseMeterHistory.isEmpty else {
             return TWATrendChartData(
                 dataPoints: [],
                 currentTWA: 0.0,
@@ -1464,15 +1537,15 @@ class DecibelMeterManager: NSObject {
         }
         
         var dataPoints: [TWATrendDataPoint] = []
-        let startTime = measurementHistory.first!.timestamp
+        let startTime = noiseMeterHistory.first!.timestamp
         var currentTime = startTime
         var currentGroup: [DecibelMeasurement] = []
         
-        for measurement in measurementHistory {
+        for measurement in noiseMeterHistory {
             if measurement.timestamp.timeIntervalSince(currentTime) >= interval {
                 // 计算当前时间点的TWA
                 if !currentGroup.isEmpty {
-                    let allPreviousValues = measurementHistory
+                    let allPreviousValues = noiseMeterHistory
                         .filter { $0.timestamp <= measurement.timestamp }
                         .map { $0.calibratedDecibel }
                     
@@ -1498,7 +1571,7 @@ class DecibelMeterManager: NSObject {
         
         // 添加最后一个点
         if !currentGroup.isEmpty {
-            let leq = getRealTimeLeq()
+            let leq = getDecibelMeterRealTimeLeq()
             let duration = getMeasurementDuration()
             let twa = calculateTWA(leq: leq, duration: duration)
             let dose = calculateNoiseDose(twa: twa, standard: useStandard)
@@ -1583,7 +1656,7 @@ class DecibelMeterManager: NSObject {
             standard: useStandard,
             doseData: doseData,
             comparisonResult: comparisonResult,
-            leq: getRealTimeLeq(),
+            leq: getDecibelMeterRealTimeLeq(),
             statistics: ReportStatistics(
                 avg: statistics?.avgDecibel ?? 0.0,
                 min: statistics?.minDecibel ?? 0.0,
@@ -1644,7 +1717,7 @@ class DecibelMeterManager: NSObject {
         // 使用字典存储每个声级范围的累计时间
         var levelDurations: [Double: TimeInterval] = [:]
         
-        for measurement in measurementHistory {
+        for measurement in noiseMeterHistory {
             let level = measurement.calibratedDecibel
             
             // 找到小于或等于当前分贝值的最接近的限值
@@ -1843,14 +1916,24 @@ class DecibelMeterManager: NSObject {
         )
     }
     
-    /// 清除测量历史
-    func clearHistory() {
-        measurementHistory.removeAll()
-        maxDecibel = 0.0
+    /// 清除分贝计测量历史
+    func clearDecibelMeterHistory() {
+        decibelMeterHistory.removeAll()
+        maxDecibel = -1.0
         minDecibel = -1.0   // 重置为未初始化状态
-        peakDecibel = 0.0
+        peakDecibel = -1.0
         currentStatistics = nil
         measurementStartTime = nil
+    }
+    
+    /// 清除噪音测量计测量历史
+    func clearNoiseMeterHistory() {
+        noiseMeterHistory.removeAll()
+    }
+    
+    /// 清除测量历史（兼容性方法，清除分贝计历史）
+    func clearHistory() {
+        clearDecibelMeterHistory()
     }
     
     /// 验证分贝值是否在合理范围内
@@ -1864,14 +1947,14 @@ class DecibelMeterManager: NSObject {
         onStateChange?(newState)
     }
     
-    /// 更新分贝值并通知回调
-    private func updateDecibel(_ newDecibel: Double, timeWeightedDecibel: Double, rawDecibel: Double) {
+    /// 更新分贝计数据并通知回调
+    private func updateDecibelMeterData(_ measurement: DecibelMeasurement) {
         // 验证并限制分贝值在合理范围内
-        let validatedDecibel = validateDecibelValue(newDecibel)
+        let validatedDecibel = validateDecibelValue(measurement.calibratedDecibel)
         currentDecibel = validatedDecibel
         
         // 更新MAX值（使用时间权重后的值）
-        let validatedTimeWeighted = validateDecibelValue(timeWeightedDecibel)
+        let validatedTimeWeighted = validateDecibelValue(measurement.fastDecibel)
         if maxDecibel < 0 || validatedTimeWeighted > maxDecibel {
             maxDecibel = validatedTimeWeighted
         }
@@ -1882,15 +1965,30 @@ class DecibelMeterManager: NSObject {
         }
         
         // 更新PEAK值（使用原始未加权的瞬时峰值）
-        let validatedRaw = validateDecibelValue(rawDecibel)
+        let validatedRaw = validateDecibelValue(measurement.rawDecibel)
         if peakDecibel < 0 || validatedRaw > peakDecibel {
             peakDecibel = validatedRaw
         }
-        // 计算当前LEQ值
-        let currentLeq = getRealTimeLeq()
         
-        print("updateDecibel currentDecibel: \(currentDecibel), maxDecibel: \(maxDecibel), minDecibel: \(minDecibel), peakDecibel: \(peakDecibel), leq: \(currentLeq)")
-        onMeterDataUpdate?(currentDecibel, peakDecibel, maxDecibel, minDecibel, currentLeq)
+        // 计算当前LEQ值（基于分贝计历史）
+        let currentLeq = getDecibelMeterRealTimeLeq()
+        
+        //print("updateDecibelMeterData currentDecibel: \(currentDecibel), maxDecibel: \(maxDecibel), minDecibel: \(minDecibel), peakDecibel: \(peakDecibel), leq: \(currentLeq)")
+        onDecibelMeterDataUpdate?(currentDecibel, peakDecibel, maxDecibel, minDecibel, currentLeq)
+    }
+    
+    /// 更新噪音测量计数据并通知回调
+    private func updateNoiseMeterData(_ measurement: DecibelMeasurement) {
+        // 计算当前LEQ值（基于噪音测量计历史）
+        let currentLeq = getNoiseMeterRealTimeLeq()
+        
+        // 获取噪音测量计的统计值
+        let noiseMax = getNoiseMeterMax()
+        let noiseMin = getNoiseMeterMin()
+        let noisePeak = getNoiseMeterPeak()
+        
+        //print("updateNoiseMeterData currentDecibel: \(measurement.calibratedDecibel), maxDecibel: \(noiseMax), minDecibel: \(noiseMin), peakDecibel: \(noisePeak), leq: \(currentLeq)")
+        onNoiseMeterDataUpdate?(measurement.calibratedDecibel, noisePeak, noiseMax, noiseMin, currentLeq)
     }
     
     /// 更新测量数据并通知回调
@@ -2095,39 +2193,72 @@ class DecibelMeterManager: NSObject {
         // 转换为数组
         let samples = Array(UnsafeBufferPointer(start: channelData, count: frameCount))
         
-        // 计算分贝值
-        let measurement = calculateDecibelMeasurement(from: samples)
+        // 同时计算分贝计和噪音测量计的数据
+        let decibelMeterMeasurement = calculateDecibelMeterMeasurement(from: samples)
+        let noiseMeterMeasurement = calculateNoiseMeterMeasurement(from: samples)
         
-        // 获取用于MAX和PEAK计算的值
-        let currentTimeWeightedDecibel = timeWeightingFilter?.applyWeighting(currentTimeWeighting, currentValue: measurement.aWeightedDecibel) ?? measurement.aWeightedDecibel
-        let rawDecibel = measurement.rawDecibel
+        // 更新分贝计数据
+        updateDecibelMeterData(decibelMeterMeasurement)
         
-        // 更新测量数据并通知回调
-        updateMeasurement(measurement)
-        updateDecibel(
-            measurement.calibratedDecibel,
-            timeWeightedDecibel: currentTimeWeightedDecibel,
-            rawDecibel: rawDecibel
-        )
+        // 更新噪音测量计数据
+        updateNoiseMeterData(noiseMeterMeasurement)
         
-        // 添加到历史记录
-        measurementHistory.append(measurement)
+        // 添加到各自的历史记录
+        decibelMeterHistory.append(decibelMeterMeasurement)
+        noiseMeterHistory.append(noiseMeterMeasurement)
         
         // 限制历史记录长度
-        if measurementHistory.count > 1000 {
-            measurementHistory.removeFirst()
+        if decibelMeterHistory.count > 1000 {
+            decibelMeterHistory.removeFirst()
+        }
+        if noiseMeterHistory.count > 1000 {
+            noiseMeterHistory.removeFirst()
         }
     }
     
-    /// 计算分贝测量结果
-    private func calculateDecibelMeasurement(from samples: [Float]) -> DecibelMeasurement {
+    /// 计算分贝计测量结果
+    private func calculateDecibelMeterMeasurement(from samples: [Float]) -> DecibelMeasurement {
         let timestamp = Date()
         
         // 计算原始分贝值
         let rawDecibel = calculateRawDecibel(from: samples)
         
-        // 计算当前权重分贝值
-        let weightedDecibel = calculateWeightedDecibel(from: samples, weighting: currentFrequencyWeighting)
+        // 计算分贝计当前权重分贝值（可自由切换）
+        let weightedDecibel = calculateWeightedDecibel(from: samples, weighting: decibelMeterFrequencyWeighting)
+        
+        // 应用当前时间权重
+        let currentTimeWeightedDecibel = timeWeightingFilter?.applyWeighting(currentTimeWeighting, currentValue: weightedDecibel) ?? weightedDecibel
+        
+        // 计算所有时间权重的值（用于存储和比较）
+        let fastDecibel = timeWeightingFilter?.applyFastWeighting(weightedDecibel) ?? weightedDecibel
+        let slowDecibel = timeWeightingFilter?.applySlowWeighting(weightedDecibel) ?? weightedDecibel
+        
+        // 应用校准
+        let calibratedDecibel = currentTimeWeightedDecibel + calibrationOffset
+        
+        // 计算频谱（简化版）
+        let frequencySpectrum = calculateFrequencySpectrum(from: samples)
+        
+        return DecibelMeasurement(
+            timestamp: timestamp,
+            rawDecibel: rawDecibel,
+            aWeightedDecibel: weightedDecibel,
+            fastDecibel: fastDecibel,
+            slowDecibel: slowDecibel,
+            calibratedDecibel: calibratedDecibel,
+            frequencySpectrum: frequencySpectrum
+        )
+    }
+    
+    /// 计算噪音测量计测量结果
+    private func calculateNoiseMeterMeasurement(from samples: [Float]) -> DecibelMeasurement {
+        let timestamp = Date()
+        
+        // 计算原始分贝值
+        let rawDecibel = calculateRawDecibel(from: samples)
+        
+        // 计算噪音测量计权重分贝值（强制使用A权重）
+        let weightedDecibel = calculateWeightedDecibel(from: samples, weighting: noiseMeterFrequencyWeighting)
         
         // 应用当前时间权重
         let currentTimeWeightedDecibel = timeWeightingFilter?.applyWeighting(currentTimeWeighting, currentValue: weightedDecibel) ?? weightedDecibel
