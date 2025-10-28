@@ -8,7 +8,7 @@ export 'common/events.dart';
 export 'common/functions.dart';
 export 'common/isolate_task.dart';
 export 'common/logger.dart';
-export 'common/network.dart';
+
 export 'common/polling_task.dart';
 
 // PP Extensions
@@ -30,6 +30,7 @@ export 'utils/encrypt_util.dart';
 export 'utils/json_util.dart';
 export 'utils/keyboard_util.dart';
 export 'utils/keychain_util.dart';
+export 'utils/network_util.dart';
 export 'utils/path_util.dart';
 export 'utils/screen_util.dart';
 export 'utils/sharep_util.dart';

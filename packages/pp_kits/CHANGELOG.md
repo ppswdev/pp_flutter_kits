@@ -1,3 +1,7 @@
+## 1.2.1
+
+* `BREAKING FEAT`: network_util migration
+
 ## 1.2.0
 
 * Requirements: Flutter 3.35.0+, Dart 3.9.0+
