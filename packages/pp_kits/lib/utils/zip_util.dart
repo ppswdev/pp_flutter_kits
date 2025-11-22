@@ -3,46 +3,49 @@ import 'package:archive/archive.dart';
 
 /// 压缩解压工具类
 ///
-/// 使用示例:
+/// 使用示例：
 ///
-/// ``` dart
-/// // 压缩文件（不加密）
+/// ```dart
+/// // 压缩（无密码）
 /// try {
 ///   final zipPath = await ZipUtil.zip(
-///     '/path/to/source',
-///     '/path/to/output.zip'
+///     '/your/source/folder_or_file',
+///     '/your/target/output.zip',
 ///   );
 ///   print('压缩成功：$zipPath');
 /// } catch (e) {
 ///   print('压缩失败：$e');
 /// }
-/// // 加密压缩
+///
+/// // 压缩（有密码）
 /// try {
 ///   final zipPath = await ZipUtil.zipWithPassword(
-///     '/path/to/source',
-///     '/path/to/encrypted.zip',
-///     'your_password'
+///     '/your/source/folder_or_file',
+///     '/your/target/encrypted.zip',
+///     '123456',
 ///   );
 ///   print('加密压缩成功：$zipPath');
 /// } catch (e) {
 ///   print('加密压缩失败：$e');
 /// }
-/// // 解压文件（不需要密码）
+///
+/// // 解压（无密码）
 /// try {
 ///   final files = await ZipUtil.unzip(
-///     '/path/to/archive.zip',
-///     '/path/to/extract'
+///     '/your/source/output.zip',
+///     '/your/target/dir',
 ///   );
 ///   print('解压成功，文件列表：$files');
 /// } catch (e) {
 ///   print('解压失败：$e');
 /// }
-/// // 解密并解压
+///
+/// // 解压（有密码）
 /// try {
 ///   final files = await ZipUtil.unzipWithPassword(
-///     '/path/to/encrypted.zip',
-///     '/path/to/extract',
-///     'your_password'
+///     '/your/source/encrypted.zip',
+///     '/your/target/dir',
+///     '123456',
 ///   );
 ///   print('解密解压成功，文件列表：$files');
 /// } catch (e) {
@@ -50,15 +53,24 @@ import 'package:archive/archive.dart';
 /// }
 /// ```
 class ZipUtil {
-  /// 压缩文件/文件夹（不加密）
-  /// [sourcePath] 源文件/文件夹路径
-  /// [targetPath] 目标zip文件路径
+  /// 压缩文件/文件夹为zip包（不加密）
+  ///
+  /// [sourcePath]   源文件/文件夹路径
+  /// [targetPath]   输出 zip 文件路径
+  ///
+  /// 示例：
+  /// ```dart
+  /// String zipFile = await ZipUtil.zip('a.txt', 'a.zip');
+  /// ```
+  ///
+  /// 返回结果：
+  ///   [String] 返回生成的zip文件路径
   static Future<String> zip(String sourcePath, String targetPath) async {
     try {
       final sourceDir = Directory(sourcePath);
       final archive = Archive();
 
-      // 如果是目录，递归添加文件
+      // 如果是目录，递归添加目录下所有文件
       if (await sourceDir.exists()) {
         await for (final file in sourceDir.list(recursive: true)) {
           if (file is File) {
@@ -72,12 +84,12 @@ class ZipUtil {
           }
         }
       }
-      // 如果是单个文件
+      // 如果仅为单个文件
       else if (await File(sourcePath).exists()) {
         final file = File(sourcePath);
         final data = await file.readAsBytes();
         archive.addFile(ArchiveFile(
-          file.path.split('/').last,
+          file.path.split(Platform.pathSeparator).last,
           data.length,
           data,
         ));
@@ -85,10 +97,10 @@ class ZipUtil {
         throw Exception('源文件/文件夹不存在');
       }
 
-      // 压缩并保存
+      // 开始压缩
       final zipData = ZipEncoder().encode(archive);
       final zipFile = File(targetPath);
-      await zipFile.writeAsBytes(zipData);
+      await zipFile.writeAsBytes(zipData!); // zipData 不会为null
       await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
@@ -96,13 +108,19 @@ class ZipUtil {
     }
   }
 
-  /// 使用密码压缩文件/文件夹
+  /// 使用密码压缩文件/文件夹为 zip 包
   ///
-  /// [sourcePath] 源文件/文件夹路径
+  /// [sourcePath]   源文件/文件夹路径
+  /// [targetPath]   输出 zip 文件路径
+  /// [password]     压缩密码
   ///
-  /// [targetPath] 目标zip文件路径
+  /// 示例：
+  /// ```dart
+  /// String zipFile = await ZipUtil.zipWithPassword('a.txt', 'a.enc.zip', '123456');
+  /// ```
   ///
-  /// [password] 压缩密码
+  /// 返回结果：
+  ///   [String] 返回生成的zip文件路径
   static Future<String> zipWithPassword(
     String sourcePath,
     String targetPath,
@@ -131,7 +149,7 @@ class ZipUtil {
         final file = File(sourcePath);
         final data = await file.readAsBytes();
         archive.addFile(ArchiveFile(
-          file.path.split('/').last,
+          file.path.split(Platform.pathSeparator).last,
           data.length,
           data,
         ));
@@ -139,10 +157,10 @@ class ZipUtil {
         throw Exception('源文件/文件夹不存在');
       }
 
-      // 使用密码压缩并保存
+      // 开始加密压缩
       final zipData = ZipEncoder(password: password).encode(archive);
       final zipFile = File(targetPath);
-      await zipFile.writeAsBytes(zipData);
+      await zipFile.writeAsBytes(zipData!); // zipData 不会为null
       await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
@@ -150,12 +168,18 @@ class ZipUtil {
     }
   }
 
-  /// 解压缩（不需要密码）
+  /// 解压zip文件到目标路径（不加密/无密码zip）
   ///
-  /// [zipPath] zip文件路径
+  /// [zipPath]     zip文件路径
+  /// [targetPath]  解压目标路径
   ///
-  /// [targetPath] 解压目标路径
+  /// 示例：
+  /// ```dart
+  /// List<String> files = await ZipUtil.unzip('a.zip', './output');
+  /// ```
   ///
+  /// 返回结果：
+  ///   [List<String>] 返回解压出的全部文件路径列表
   static Future<List<String>> unzip(String zipPath, String targetPath) async {
     try {
       final bytes = await File(zipPath).readAsBytes();
@@ -166,7 +190,7 @@ class ZipUtil {
         final filename = file.name;
         if (file.isFile) {
           final data = file.content as List<int>;
-          final filePath = '$targetPath/$filename';
+          final filePath = '$targetPath${Platform.pathSeparator}$filename';
           final outFile = File(filePath);
           await outFile.parent.create(recursive: true);
           await outFile.writeAsBytes(data);
@@ -180,13 +204,21 @@ class ZipUtil {
     }
   }
 
-  /// 使用密码解压缩
+  /// 解压加密zip文件到目标路径
   ///
-  /// [zipPath] zip文件路径
+  /// [zipPath]     zip文件路径
+  /// [targetPath]  解压目标路径
+  /// [password]    解压密码
   ///
-  /// [targetPath] 解压目标路径
+  /// 示例：
+  /// ```dart
+  /// List<String> files = await ZipUtil.unzipWithPassword('a.enc.zip', './output', '123456');
+  /// ```
   ///
-  /// [password] 解压密码
+  /// 返回结果：
+  ///   [List<String>] 返回解压出的全部文件路径列表
+  ///
+  /// 若解压密码错误，异常信息包含“密码错误”
   static Future<List<String>> unzipWithPassword(
     String zipPath,
     String targetPath,
@@ -201,7 +233,7 @@ class ZipUtil {
         final filename = file.name;
         if (file.isFile) {
           final data = file.content as List<int>;
-          final filePath = '$targetPath/$filename';
+          final filePath = '$targetPath${Platform.pathSeparator}$filename';
           final outFile = File(filePath);
           await outFile.parent.create(recursive: true);
           await outFile.writeAsBytes(data);

@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 
 extension ButtonExtension on ElevatedButton {
-  /// 创建一个自定义的ElevatedButton。
+  /// 创建一个自定义的 [ElevatedButton]，用于简化具有特定样式和行为按钮的创建。
   ///
-  /// 这个方法提供了一种简便的方式來创建具有特定样式和行为的ElevatedButton。
-  /// 通过指定不同的参数，可以定制按钮的文本、颜色、形状、大小等外观属性。
+  /// 通过该方法，可以自定义按钮的文本内容、样式、颜色、尺寸和行为等属性，方便统一风格管理和代码复用。
   ///
-  /// 参数:
-  ///  - text: 按钮上显示的文本。这个文本应该简短而有意义。
-  ///  - onPressed: 按钮被按下时执行的回调函数。
-  ///  - backgroundColor: 按钮的背景颜色，默认为蓝色。
-  ///  - borderRadius: 按钮的圆角半径，默认为25.0。
-  ///  - padding: 按钮内部的填充，默认为左右26.0的对称填充。
-  ///  - fixedSize: 按钮的固定大小，默认高度为50。
-  ///  - textStyle: 按钮文本的样式，默认字体大小为16，加粗。
+  /// 参数说明:
+  /// - [text] 按钮上显示的文本，建议简洁明了。
+  /// - [onPressed] 按钮点击时的回调函数，不能为空。
+  /// - [backgroundColor] 按钮背景色，默认为 [Colors.blue]。
+  /// - [borderRadius] 按钮圆角半径，默认为 25.0。
+  /// - [padding] 按钮内部填充，默认为左右各 26.0 的对称填充。
+  /// - [fixedSize] 按钮固定尺寸，默认高度为 50。
+  /// - [textStyle] 按钮文字样式，默认大小为 16，加粗。
+  ///
+  /// 返回值:
+  /// 返回一个自定义样式的 [ElevatedButton]，其样式和功能由传入参数决定。
+  ///
+  /// 示例代码：
+  /// ```dart
+  /// ElevatedButton myBtn = ButtonExtension.normal(
+  ///   text: '提交',
+  ///   onPressed: () { print('按钮点击'); },
+  ///   backgroundColor: Colors.green,
+  /// );
+  ///
+  /// // 直接用于Widget树
+  /// Widget build(BuildContext context) {
+  ///   return Center(
+  ///     child: ButtonExtension.normal(
+  ///       text: '点击',
+  ///       onPressed: () {
+  ///         // 执行操作
+  ///       },
+  ///     ),
+  ///   );
+  /// }
+  /// ```
   static ElevatedButton normal({
     required String text,
     required VoidCallback onPressed,

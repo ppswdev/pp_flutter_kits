@@ -11,19 +11,29 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 /// 应用工具类
-/// 提供一些常用的应用信息获取方法
+/// 提供一些常用的应用信息获取、设置和分享等方法
 class AppUtil {
-  /// 获取钥匙串中存储的应用UUID
+  /// 获取钥匙串中存储的应用唯一UUID，如果没有则自动生成并写入
+  ///
+  /// 返回值:
+  ///   [Future<String>]: 应用的唯一标识UUID字符串
+  ///
+  /// 示例:
+  /// ```dart
+  /// String uuid = await AppUtil.getAppUUID();
+  /// print('App UUID: $uuid');
+  /// ```
+  ///
+  /// 返回示例:
+  /// '018fc816-330b-7dab-b1f4-61109d8e9bc6'
   static Future<String> getAppUUID() async {
     final appInfo = await getAppInfo();
     String? value;
-
     try {
       value = await KeychainUtil.read(key: '${appInfo.packageName}.appUUID');
     } catch (e) {
       Logger.trace('Failed to read UUID from keychain: $e');
     }
-
     if (value == null) {
       value = const Uuid().v7();
       try {
@@ -44,14 +54,29 @@ class AppUtil {
     return value;
   }
 
-  /// 获取应用信息
-  /// 返回 (应用名称, 包名, 版本号, 构建号)
+  /// 获取应用的基础信息
+  ///
+  /// 返回值:
+  ///   [Future<({String appName, String packageName, String version, String buildNumber})>]
+  ///     应用的名称、包名、版本号和构建号
+  ///
+  /// 示例:
+  /// ```dart
+  /// final info = await AppUtil.getAppInfo();
+  /// print('${info.appName} ${info.packageName} ${info.version} ${info.buildNumber}');
+  /// ```
+  ///
+  /// 返回示例:
+  /// (
+  ///   appName: "My App",
+  ///   packageName: "com.example.myapp",
+  ///   version: "1.0.0",
+  ///   buildNumber: "1"
+  /// )
   static Future<
-    ({String appName, String packageName, String version, String buildNumber})
-  >
-  getAppInfo() async {
+      ({String appName, String packageName, String version, String buildNumber})>
+      getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
     return (
       appName: packageInfo.appName,
       packageName: packageInfo.packageName,
@@ -62,9 +87,15 @@ class AppUtil {
 
   /// 设置状态栏样式
   ///
-  /// @param isDark 是否为深色模式
+  /// 参数:
+  ///   [isDark] 是否使用深色主题，默认为false。
+  ///   [isTransparent] 状态栏是否透明，默认为true。
   ///
-  /// @param isTransparent 是否透明
+  /// 示例:
+  /// ```dart
+  /// // 设置深色且透明状态栏
+  /// AppUtil.setStatusBarStyle(isDark: true, isTransparent: true);
+  /// ```
   static void setStatusBarStyle({
     bool isDark = false,
     bool isTransparent = true,
@@ -76,7 +107,6 @@ class AppUtil {
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
         );
       }
-
       // 设置状态栏内容颜色
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
@@ -84,18 +114,23 @@ class AppUtil {
           statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
         ),
       );
-    } else if (GetPlatform.isIOS) {}
+    } else if (GetPlatform.isIOS) {
+      // iOS暂未实现
+    }
   }
 
-  /// 打开链接或者跳转到其他App
-  /// @param url 链接
+  /// 打开链接或跳转到指定App
   ///
-  /// 使用示例
-  /// ``` dart
-  /// void example() {
-  ///   AppUtil.openLink('https://www.apple.com');
-  /// }
+  /// 参数:
+  ///   [url] 必填，目标链接（如"https://www.apple.com"）。
+  ///
+  /// 示例:
+  /// ```dart
+  /// AppUtil.openLink('https://www.apple.com');
   /// ```
+  ///
+  /// 返回:
+  ///   无返回值，打开失败则在日志输出异常
   static void openLink(String url) async {
     if (GetUtils.isURL(url)) {
       try {
@@ -111,30 +146,63 @@ class AppUtil {
     }
   }
 
-  /// 打开应用设置
+  /// 打开系统的应用设置页面
+  ///
+  /// 示例:
+  /// ```dart
+  /// AppUtil.openAppSettings();
+  /// ```
+  ///
+  /// 返回:
+  ///   无返回值，直接调用原生应用设置
   static void openAppSettings() {
     AppSettings.openAppSettings();
   }
 
-  /// 方向是否是rtl
-  /// 从右向左的语言：阿拉伯语、希伯来语(以色列)、波斯语、乌尔都语（巴基斯坦、印度）、叙利亚语、库尔德语(伊拉克)
-  /// 默认为false
+  /// 判断当前环境是否为从右向左（RTL）方向语言
+  ///
+  /// 支持RTL的常用语种：阿拉伯语、希伯来语、波斯语、乌尔都语、叙利亚语等
+  ///
+  /// 示例:
+  /// ```dart
+  /// bool isRtl = AppUtil.isRTL();
+  /// print(isRtl ? "RTL" : "LTR");
+  /// ```
+  ///
+  /// 返回:
+  ///   [bool] true表示RTL语言环境，否则为false
   static bool isRTL() {
     return Directionality.of(Get.context!) == TextDirection.rtl;
   }
 
-  /// 分享
+  /// 分享内容到系统分享面板（文本、链接、图片等）
   ///
-  /// @param subject 主题, 邮箱标题
+  /// 参数:
+  ///   [subject] 分享主题或邮件主题，默认空字符串
+  ///   [title] 分享标题，默认空字符串
+  ///   [text] 分享文本，默认空字符串
+  ///   [url] 分享链接，默认空字符串
+  ///   [files] 要分享的文件列表，通常为图片，默认空
   ///
-  /// @param title 标题
+  /// 示例:
+  /// ```dart
+  /// // 分享文本
+  /// await AppUtil.share(text: "Hello, world!");
   ///
-  /// @param text 文本
+  /// // 分享链接
+  /// await AppUtil.share(url: "https://www.apple.com", title: "苹果官网");
   ///
-  /// @param url 链接 https://www.apple.com
+  /// // 分享文件
+  /// List<XFile> images = [XFile('/path/to/image.jpg')];
+  /// await AppUtil.share(files: images);
+  /// ```
   ///
-  /// @param files 文件 [XFile('${directory.path}/image1.jpg')...]
+  /// 返回值:
+  ///   [Future<bool>] 分享是否被正常弹出（仅窗口关闭会返回false）
   ///
+  /// 返回示例:
+  ///   true  // 用户点击"分享"
+  ///   false // 用户主动关闭分享面板
   static Future<bool> share({
     String subject = '',
     String title = '',
@@ -152,15 +220,14 @@ class AppUtil {
     } else {
       shareParams = ShareParams(subject: subject, title: title, text: text);
     }
-    //检查是否是iPad
+    // 检查是否是iPad并调整分享浮窗位置
     if (GetPlatform.isIOS && Get.context?.isTablet == true) {
-      // 获取屏幕尺寸
       final Size screenSize = MediaQuery.of(Get.context!).size;
-      // 自定义固定值的 sharePositionOrigin
+      // 屏幕中心位置的一半宽/高的矩形区域
       final Rect sharePositionOrigin = Rect.fromCenter(
-        center: Offset(screenSize.width / 2, screenSize.height / 2), // 屏幕中心点
-        width: screenSize.width / 2, // 屏幕宽度的一半
-        height: screenSize.height / 2, // 屏幕高度的一半
+        center: Offset(screenSize.width / 2, screenSize.height / 2),
+        width: screenSize.width / 2,
+        height: screenSize.height / 2,
       );
       if (files.isNotEmpty) {
         shareParams = ShareParams(files: files);

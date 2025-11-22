@@ -38,6 +38,8 @@ dart pub global activate dartdoc
 dart pub global run dartdoc
 ```
 
+AI提示词：按照Dart正确的语法规则增加类和方法的说明，代码示例，有返回值的说明返回结果
+
 ## pp_kits插件说明
 
 pp_kits: 我的工具箱(Published)

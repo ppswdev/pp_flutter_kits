@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Code comments suggest optimization and improvement.
+
 ## 1.2.1
 
 * `BREAKING FEAT`: network_util migration

@@ -1,31 +1,32 @@
 import 'package:get/get.dart';
 
+/// 为 [GetInterface] 增加 findOrPut 方法，便捷安全地获取依赖对象。
 extension GetXFindOrPut on GetInterface {
-  /// Finds a dependency of type [T], or creates and registers it if it's not found.
+  /// 查找类型为 [T] 的依赖；如未找到，则使用 [creator] 创建并注册后返回。
   ///
-  /// This is a safe way to get a dependency, as it will instantiate and register
-  /// it using the provided [creator] function if it's not already available.
-  /// This prevents "not found" errors and ensures a singleton instance.
+  /// 此方法用于安全获取依赖。如果依赖未被注册，则调用 [creator] 创建实例，
+  /// 并通过 [put] 注册为单例，防止“未找到”错误并确保全局唯一。
   ///
-  /// - [creator]: A function that returns a new instance of the dependency.
-  ///   It's only called if the dependency is not already registered.
-  /// - [tag]: Optional tag to distinguish between different instances of the same type.
+  /// 参数说明:
+  /// - [creator]：返回类型为 [T] 的工厂函数，仅在依赖未注册时调用一次进行实例化。
+  /// - [tag]：可选的标签，可用于区分相同类型的多个依赖实例。
   ///
-  /// Returns the existing or newly created instance of [T].
+  /// 返回结果:
+  /// 返回已注册（或新创建并注册）的 [T] 类型对象实例。
   ///
-  /// Example:
+  /// 示例代码：
   /// ```dart
+  /// // 假设有一个控制器 MyController
   /// final controller = Get.findOrPut(() => MyController());
+  /// // 若 MyController 已注册，则直接获取；否则先创建再注册再返回
   /// ```
   T findOrPut<T extends Object>(T Function() creator, {String? tag}) {
-    // 检查此类型的依赖是否已经被注册
+    // 检查此类型的依赖是否已被注册
     if (isRegistered<T>(tag: tag)) {
-      // 如果已注册，直接find并返回
+      // 已注册，则直接查找返回
       return find<T>(tag: tag);
     } else {
-      // 如果未注册，通过creator创建一个新实例，
-      // 然后使用put注册它，并返回这个新实例。
-      // Get.put()会返回它刚刚创建的实例。
+      // 未注册，则创建、注册并返回该依赖
       return put<T>(creator(), tag: tag);
     }
   }

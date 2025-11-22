@@ -1,6 +1,6 @@
 name: pp_purchase
 description: "Easy-to-use in-app purchases that can callback results and facilitate operational tracking."
-version: 1.0.8
+version: 1.0.9
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_purchase
 
 environment:
@@ -13,7 +13,7 @@ dependencies:
 
   dio: ^5.9.0
   in_app_purchase: ^3.2.3
-  in_app_purchase_storekit: ^0.4.4+1
+  in_app_purchase_storekit: ^0.4.6
   in_app_purchase_android: ^0.4.0
   in_app_purchase_platform_interface: ^1.4.0
 

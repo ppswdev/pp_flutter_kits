@@ -1,6 +1,12 @@
+## 1.0.9
+
+* Update StoreKit2 logic
+*
+
 ## 1.0.8
 
 * Updates minimum supported SDK version to Flutter 3.35.0
+* Support iOS StoreKit2
 
 ## 1.0.7
 
