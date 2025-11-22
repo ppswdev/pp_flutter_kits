@@ -60,9 +60,7 @@ class BlurBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius!),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(radius!)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius!),
         child: BackdropFilter(
