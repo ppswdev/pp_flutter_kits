@@ -68,7 +68,7 @@ class PPAlert {
     if (timeoutSeconds != null) {
       Future.delayed(Duration(seconds: timeoutSeconds), () {
         if (isLoading) {
-          hideLoading();
+          dismiss();
           if (onTimeout != null) {
             onTimeout();
           }
@@ -358,10 +358,7 @@ class PPAlert {
       title: title,
       message: message.isNotEmpty ? message : null,
       textFields: [
-        DialogTextField(
-          initialText: initialText,
-          hintText: hintText,
-        ),
+        DialogTextField(initialText: initialText, hintText: hintText),
       ],
     );
     // 返回结果：用户输入的内容，或空字符串（取消/关闭时）
@@ -404,15 +401,17 @@ class PPAlert {
           initialText: initialTexts != null && initialTexts.isNotEmpty
               ? initialTexts[0]
               : '',
-          hintText:
-              hintTexts != null && hintTexts.isNotEmpty ? hintTexts[0] : '',
+          hintText: hintTexts != null && hintTexts.isNotEmpty
+              ? hintTexts[0]
+              : '',
         ),
         DialogTextField(
           initialText: initialTexts != null && initialTexts.length > 1
               ? initialTexts[1]
               : '',
-          hintText:
-              hintTexts != null && hintTexts.length > 1 ? hintTexts[1] : '',
+          hintText: hintTexts != null && hintTexts.length > 1
+              ? hintTexts[1]
+              : '',
         ),
       ],
     );

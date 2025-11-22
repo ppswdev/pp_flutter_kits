@@ -76,11 +76,7 @@ class ZipUtil {
           if (file is File) {
             final relativePath = file.path.substring(sourcePath.length);
             final data = await file.readAsBytes();
-            archive.addFile(ArchiveFile(
-              relativePath,
-              data.length,
-              data,
-            ));
+            archive.addFile(ArchiveFile(relativePath, data.length, data));
           }
         }
       }
@@ -88,11 +84,13 @@ class ZipUtil {
       else if (await File(sourcePath).exists()) {
         final file = File(sourcePath);
         final data = await file.readAsBytes();
-        archive.addFile(ArchiveFile(
-          file.path.split(Platform.pathSeparator).last,
-          data.length,
-          data,
-        ));
+        archive.addFile(
+          ArchiveFile(
+            file.path.split(Platform.pathSeparator).last,
+            data.length,
+            data,
+          ),
+        );
       } else {
         throw Exception('源文件/文件夹不存在');
       }
@@ -100,7 +98,7 @@ class ZipUtil {
       // 开始压缩
       final zipData = ZipEncoder().encode(archive);
       final zipFile = File(targetPath);
-      await zipFile.writeAsBytes(zipData!); // zipData 不会为null
+      await zipFile.writeAsBytes(zipData);
       await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
@@ -136,11 +134,7 @@ class ZipUtil {
           if (file is File) {
             final relativePath = file.path.substring(sourcePath.length);
             final data = await file.readAsBytes();
-            archive.addFile(ArchiveFile(
-              relativePath,
-              data.length,
-              data,
-            ));
+            archive.addFile(ArchiveFile(relativePath, data.length, data));
           }
         }
       }
@@ -148,11 +142,13 @@ class ZipUtil {
       else if (await File(sourcePath).exists()) {
         final file = File(sourcePath);
         final data = await file.readAsBytes();
-        archive.addFile(ArchiveFile(
-          file.path.split(Platform.pathSeparator).last,
-          data.length,
-          data,
-        ));
+        archive.addFile(
+          ArchiveFile(
+            file.path.split(Platform.pathSeparator).last,
+            data.length,
+            data,
+          ),
+        );
       } else {
         throw Exception('源文件/文件夹不存在');
       }
@@ -160,7 +156,7 @@ class ZipUtil {
       // 开始加密压缩
       final zipData = ZipEncoder(password: password).encode(archive);
       final zipFile = File(targetPath);
-      await zipFile.writeAsBytes(zipData!); // zipData 不会为null
+      await zipFile.writeAsBytes(zipData);
       await Future.delayed(const Duration(milliseconds: 100));
       return targetPath;
     } catch (e) {
