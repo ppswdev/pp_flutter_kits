@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 /// 列表扩展
@@ -34,5 +35,18 @@ extension ListExtension<T> on List<T> {
     final random = Random();
     final index = random.nextInt(length);
     return this[index];
+  }
+
+  /// 将列表转换为 JSON 字符串。
+  ///
+  /// 返回结果：
+  ///   返回列表的 JSON 字符串。
+  ///
+  /// 示例代码：
+  /// ```dart
+  /// final list = [1, 2, 3];
+  /// print(list.toJsonString()); // 例如：'[1,2,3]'
+  String toJsonString() {
+    return jsonEncode(this);
   }
 }
