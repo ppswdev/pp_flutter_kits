@@ -1,10 +1,10 @@
 name: inapp_purchase
 description: "A new Flutter plugin project."
-version: 0.0.1
-homepage:
+version: 1.0.0
+homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/inapp_purchase
 
 environment:
-  sdk: ^3.10.1
+  sdk: ^3.9.0
   flutter: '>=3.3.0'
 
 dependencies:
