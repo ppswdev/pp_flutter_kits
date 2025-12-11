@@ -1,177 +1,75 @@
-/// 订阅周期单位枚举
-enum SubscriptionPeriodUnit { day, week, month, year, unknown }
-
-/// 订阅优惠类型枚举
-enum SubscriptionOfferType { introductory, promotional, winBack, unknown }
-
-/// 订阅优惠支付模式枚举
-enum SubscriptionOfferPaymentMode { payAsYouGo, payUpFront, freeTrial, unknown }
-
-/// 订阅周期信息类
-class SubscriptionPeriod {
-  final int? value;
-  final SubscriptionPeriodUnit? unit;
-
-  SubscriptionPeriod({this.value, this.unit});
-
-  factory SubscriptionPeriod.fromMap(Map<String, dynamic> map) {
-    return SubscriptionPeriod(
-      value: map['value'] as int?,
-      unit: _stringToSubscriptionPeriodUnit(map['unit'] as String?),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {'value': value, 'unit': _subscriptionPeriodUnitToString(unit)};
-  }
-
-  static SubscriptionPeriodUnit? _stringToSubscriptionPeriodUnit(String? unit) {
-    switch (unit) {
-      case 'day':
-        return SubscriptionPeriodUnit.day;
-      case 'week':
-        return SubscriptionPeriodUnit.week;
-      case 'month':
-        return SubscriptionPeriodUnit.month;
-      case 'year':
-        return SubscriptionPeriodUnit.year;
-      default:
-        return SubscriptionPeriodUnit.unknown;
-    }
-  }
-
-  static String? _subscriptionPeriodUnitToString(SubscriptionPeriodUnit? unit) {
-    switch (unit) {
-      case SubscriptionPeriodUnit.day:
-        return 'day';
-      case SubscriptionPeriodUnit.week:
-        return 'week';
-      case SubscriptionPeriodUnit.month:
-        return 'month';
-      case SubscriptionPeriodUnit.year:
-        return 'year';
-      default:
-        return 'unknown';
-    }
-  }
-}
+import 'package:inapp_purchase/src/enums.dart';
 
 /// 订阅优惠信息类
 class SubscriptionOffer {
   final String? id;
   final SubscriptionOfferType? type;
-  final String? displayPrice;
+  final int? offerPeriodCount;
   final double? price;
+  final String? displayPrice;
   final SubscriptionOfferPaymentMode? paymentMode;
-  final SubscriptionPeriod? period;
   final int? periodCount;
+  final SubscriptionPeriodUnit? periodUnit;
 
   SubscriptionOffer({
     this.id,
     this.type,
-    this.displayPrice,
+    this.offerPeriodCount,
     this.price,
+    this.displayPrice,
     this.paymentMode,
-    this.period,
     this.periodCount,
+    this.periodUnit,
   });
 
   factory SubscriptionOffer.fromMap(Map<String, dynamic> map) {
     return SubscriptionOffer(
       id: map['id'] as String?,
-      type: _stringToSubscriptionOfferType(map['type'] as String?),
-      displayPrice: map['displayPrice'] as String?,
+      type: SubscriptionOfferTypeConverter.fromString(map['type'] as String?),
+      offerPeriodCount: map['offerPeriodCount'] as int?,
       price: map['price'] as double?,
-      paymentMode: _stringToSubscriptionOfferPaymentMode(
+      displayPrice: map['displayPrice'] as String?,
+      paymentMode: SubscriptionOfferPaymentModeConverter.fromString(
         map['paymentMode'] as String?,
       ),
-      period: map['period'] != null
-          ? SubscriptionPeriod.fromMap(map['period'] as Map<String, dynamic>)
-          : null,
       periodCount: map['periodCount'] as int?,
+      periodUnit: SubscriptionPeriodUnitConverter.fromString(
+        map['periodUnit'] as String?,
+      ),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': _subscriptionOfferTypeToString(type),
-      'displayPrice': displayPrice,
+      'type': SubscriptionOfferTypeConverter.toStringValue(type),
+      'offerPeriodCount': offerPeriodCount,
       'price': price,
-      'paymentMode': _subscriptionOfferPaymentModeToString(paymentMode),
-      'period': period?.toMap(),
+      'displayPrice': displayPrice,
+      'paymentMode': SubscriptionOfferPaymentModeConverter.toStringValue(
+        paymentMode,
+      ),
       'periodCount': periodCount,
+      'periodUnit': SubscriptionPeriodUnitConverter.toStringValue(periodUnit),
     };
   }
 
-  static SubscriptionOfferType? _stringToSubscriptionOfferType(String? type) {
-    switch (type) {
-      case 'introductory':
-        return SubscriptionOfferType.introductory;
-      case 'promotional':
-        return SubscriptionOfferType.promotional;
-      case 'winBack':
-        return SubscriptionOfferType.winBack;
-      default:
-        return SubscriptionOfferType.unknown;
-    }
-  }
-
-  static String? _subscriptionOfferTypeToString(SubscriptionOfferType? type) {
-    switch (type) {
-      case SubscriptionOfferType.introductory:
-        return 'introductory';
-      case SubscriptionOfferType.promotional:
-        return 'promotional';
-      case SubscriptionOfferType.winBack:
-        return 'winBack';
-      default:
-        return 'unknown';
-    }
-  }
-
-  static SubscriptionOfferPaymentMode? _stringToSubscriptionOfferPaymentMode(
-    String? mode,
-  ) {
-    switch (mode) {
-      case 'payAsYouGo':
-        return SubscriptionOfferPaymentMode.payAsYouGo;
-      case 'payUpFront':
-        return SubscriptionOfferPaymentMode.payUpFront;
-      case 'freeTrial':
-        return SubscriptionOfferPaymentMode.freeTrial;
-      default:
-        return SubscriptionOfferPaymentMode.unknown;
-    }
-  }
-
-  static String? _subscriptionOfferPaymentModeToString(
-    SubscriptionOfferPaymentMode? mode,
-  ) {
-    switch (mode) {
-      case SubscriptionOfferPaymentMode.payAsYouGo:
-        return 'payAsYouGo';
-      case SubscriptionOfferPaymentMode.payUpFront:
-        return 'payUpFront';
-      case SubscriptionOfferPaymentMode.freeTrial:
-        return 'freeTrial';
-      default:
-        return 'unknown';
-    }
-  }
+  // 使用enums.dart中的转换器类
 }
 
 /// 订阅信息类
 class SubscriptionInfo {
   final String? subscriptionGroupID;
-  final SubscriptionPeriod? subscriptionPeriod;
+  final int? subscriptionPeriodCount;
+  final SubscriptionPeriodUnit? subscriptionPeriodUnit;
   final SubscriptionOffer? introductoryOffer;
   final List<SubscriptionOffer>? promotionalOffers;
   final List<SubscriptionOffer>? winBackOffers;
 
   SubscriptionInfo({
     this.subscriptionGroupID,
-    this.subscriptionPeriod,
+    this.subscriptionPeriodCount,
+    this.subscriptionPeriodUnit,
     this.introductoryOffer,
     this.promotionalOffers,
     this.winBackOffers,
@@ -180,11 +78,10 @@ class SubscriptionInfo {
   factory SubscriptionInfo.fromMap(Map<String, dynamic> map) {
     return SubscriptionInfo(
       subscriptionGroupID: map['subscriptionGroupID'] as String?,
-      subscriptionPeriod: map['subscriptionPeriod'] != null
-          ? SubscriptionPeriod.fromMap(
-              map['subscriptionPeriod'] as Map<String, dynamic>,
-            )
-          : null,
+      subscriptionPeriodCount: map['subscriptionPeriodCount'] as int?,
+      subscriptionPeriodUnit: SubscriptionPeriodUnitConverter.fromString(
+        map['subscriptionPeriodUnit'] as String?,
+      ),
       introductoryOffer: map['introductoryOffer'] != null
           ? SubscriptionOffer.fromMap(
               map['introductoryOffer'] as Map<String, dynamic>,
@@ -212,7 +109,10 @@ class SubscriptionInfo {
   Map<String, dynamic> toMap() {
     return {
       'subscriptionGroupID': subscriptionGroupID,
-      'subscriptionPeriod': subscriptionPeriod?.toMap(),
+      'subscriptionPeriodCount': subscriptionPeriodCount,
+      'subscriptionPeriodUnit': SubscriptionPeriodUnitConverter.toStringValue(
+        subscriptionPeriodUnit,
+      ),
       'introductoryOffer': introductoryOffer?.toMap(),
       'promotionalOffers': promotionalOffers
           ?.map((offer) => offer.toMap())

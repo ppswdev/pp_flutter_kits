@@ -1,183 +1,185 @@
+import 'package:inapp_purchase/src/enums.dart';
+
+/// 交易信息类
 class Transaction {
-  final String? transactionId;
-  final String? originalTransactionId;
-  final String? productId;
-  final String? productType;
-  final String? purchaseDate;
-  final int? purchaseDateTimestamp;
-  final String? originalPurchaseDate;
-  final int? originalPurchaseDateTimestamp;
-  final String? expiresDate;
-  final int? expiresDateTimestamp;
-  final bool? isPurchased;
-  final bool? isRevoked;
-  final bool? isRestored;
-  final bool? isExpired;
-  final bool? isRenewed;
-  final bool? isConsumed;
+  final String? id;
+  final String? productID;
+  final ProductType? productType;
+  final OwnershipType? ownershipType;
+  final double? price;
+  final String? currency;
+  final String? originalID;
+  final int? originalPurchaseDate;
+  final int? purchaseDate;
+  final int? purchasedQuantity;
+  final PurchaseReason? purchaseReason;
+  final String? subscriptionGroupID;
+  final int? expirationDate;
   final bool? isUpgraded;
-  final String? storefront;
-  final String? storefrontCountryCode;
-  final String? cancellationReason;
-  final String? revocationDate;
-  final int? revocationDateTimestamp;
-  final String? revocationReason;
-  final int? quantity;
-  final String? appAccountToken;
-  final String? webOrderLineItemId;
-  final Map<String, dynamic>? subscriptionGroup;
-  final Map<String, dynamic>? subscriptionPeriod;
-  final Map<String, dynamic>? introductoryOfferEligibility;
-  final Map<String, dynamic>? renewalInfo;
-  final String? renewalState;
-  final bool? willAutoRenew;
-  final String? promotionalOfferId;
-  final String? type;
-  final Map<String, dynamic>? verificationData;
-  final String? signature;
-  final String? receipt;
-  final Map<String, dynamic>? transactionReceipt;
+  final bool? hasRevocation;
+  final int? revocationDate;
+  final int? revocationReason;
   final String? environment;
-  final Map<String, dynamic>? offerDetails;
-  final Map<String, dynamic>? renewalOfferDetails;
-  final bool? isFamilyShareable;
+  final String? appAccountToken;
+  final String? appBundleID;
+  final String? appTransactionID;
+  final int? signedDate;
+  final String? storefrontId;
+  final String? storefrontCountryCode;
+  final String? storefrontCurrency;
+  final String? webOrderLineItemID;
+  final String? deviceVerificationNonce;
+  final String? deviceVerification;
+  final TransactionOffer? offer;
 
   Transaction({
-    this.transactionId,
-    this.originalTransactionId,
-    this.productId,
+    this.id,
+    this.productID,
     this.productType,
-    this.purchaseDate,
-    this.purchaseDateTimestamp,
+    this.ownershipType,
+    this.price,
+    this.currency,
+    this.originalID,
     this.originalPurchaseDate,
-    this.originalPurchaseDateTimestamp,
-    this.expiresDate,
-    this.expiresDateTimestamp,
-    this.isPurchased,
-    this.isRevoked,
-    this.isRestored,
-    this.isExpired,
-    this.isRenewed,
-    this.isConsumed,
+    this.purchaseDate,
+    this.purchasedQuantity,
+    this.purchaseReason,
+    this.subscriptionGroupID,
+    this.expirationDate,
     this.isUpgraded,
-    this.storefront,
-    this.storefrontCountryCode,
-    this.cancellationReason,
+    this.hasRevocation,
     this.revocationDate,
-    this.revocationDateTimestamp,
     this.revocationReason,
-    this.quantity,
-    this.appAccountToken,
-    this.webOrderLineItemId,
-    this.subscriptionGroup,
-    this.subscriptionPeriod,
-    this.introductoryOfferEligibility,
-    this.renewalInfo,
-    this.renewalState,
-    this.willAutoRenew,
-    this.promotionalOfferId,
-    this.type,
-    this.verificationData,
-    this.signature,
-    this.receipt,
-    this.transactionReceipt,
     this.environment,
-    this.offerDetails,
-    this.renewalOfferDetails,
-    this.isFamilyShareable,
+    this.appAccountToken,
+    this.appBundleID,
+    this.appTransactionID,
+    this.signedDate,
+    this.storefrontId,
+    this.storefrontCountryCode,
+    this.storefrontCurrency,
+    this.webOrderLineItemID,
+    this.deviceVerificationNonce,
+    this.deviceVerification,
+    this.offer,
   });
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
-      transactionId: map['transactionId'] as String?,
-      originalTransactionId: map['originalTransactionId'] as String?,
-      productId: map['productId'] as String?,
-      productType: map['productType'] as String?,
-      purchaseDate: map['purchaseDate'] as String?,
-      purchaseDateTimestamp: map['purchaseDateTimestamp'] as int?,
-      originalPurchaseDate: map['originalPurchaseDate'] as String?,
-      originalPurchaseDateTimestamp: map['originalPurchaseDateTimestamp'] as int?,
-      expiresDate: map['expiresDate'] as String?,
-      expiresDateTimestamp: map['expiresDateTimestamp'] as int?,
-      isPurchased: map['isPurchased'] as bool?,
-      isRevoked: map['isRevoked'] as bool?,
-      isRestored: map['isRestored'] as bool?,
-      isExpired: map['isExpired'] as bool?,
-      isRenewed: map['isRenewed'] as bool?,
-      isConsumed: map['isConsumed'] as bool?,
+      id: map['id'] as String?,
+      productID: map['productID'] as String?,
+      productType: ProductTypeConverter.fromString(
+        map['productType'] as String?,
+      ),
+      ownershipType: OwnershipTypeConverter.fromString(
+        map['ownershipType'] as String?,
+      ),
+      price: map['price'] as double?,
+      currency: map['currency'] as String?,
+      originalID: map['originalID'] as String?,
+      originalPurchaseDate: map['originalPurchaseDate'] as int?,
+      purchaseDate: map['purchaseDate'] as int?,
+      purchasedQuantity: map['purchasedQuantity'] as int?,
+      purchaseReason: PurchaseReasonConverter.fromString(
+        map['purchaseReason'] as String?,
+      ),
+      subscriptionGroupID: map['subscriptionGroupID'] as String?,
+      expirationDate: map['expirationDate'] as int?,
       isUpgraded: map['isUpgraded'] as bool?,
-      storefront: map['storefront'] as String?,
-      storefrontCountryCode: map['storefrontCountryCode'] as String?,
-      cancellationReason: map['cancellationReason'] as String?,
-      revocationDate: map['revocationDate'] as String?,
-      revocationDateTimestamp: map['revocationDateTimestamp'] as int?,
-      revocationReason: map['revocationReason'] as String?,
-      quantity: map['quantity'] as int?,
-      appAccountToken: map['appAccountToken'] as String?,
-      webOrderLineItemId: map['webOrderLineItemId'] as String?,
-      subscriptionGroup: map['subscriptionGroup'] as Map<String, dynamic>?,
-      subscriptionPeriod: map['subscriptionPeriod'] as Map<String, dynamic>?,
-      introductoryOfferEligibility: map['introductoryOfferEligibility'] as Map<String, dynamic>?,
-      renewalInfo: map['renewalInfo'] as Map<String, dynamic>?,
-      renewalState: map['renewalState'] as String?,
-      willAutoRenew: map['willAutoRenew'] as bool?,
-      promotionalOfferId: map['promotionalOfferId'] as String?,
-      type: map['type'] as String?,
-      verificationData: map['verificationData'] as Map<String, dynamic>?,
-      signature: map['signature'] as String?,
-      receipt: map['receipt'] as String?,
-      transactionReceipt: map['transactionReceipt'] as Map<String, dynamic>?,
+      hasRevocation: map['hasRevocation'] as bool?,
+      revocationDate: map['revocationDate'] as int?,
+      revocationReason: map['revocationReason'] as int?,
       environment: map['environment'] as String?,
-      offerDetails: map['offerDetails'] as Map<String, dynamic>?,
-      renewalOfferDetails: map['renewalOfferDetails'] as Map<String, dynamic>?,
-      isFamilyShareable: map['isFamilyShareable'] as bool?,
+      appAccountToken: map['appAccountToken'] as String?,
+      appBundleID: map['appBundleID'] as String?,
+      appTransactionID: map['appTransactionID'] as String?,
+      signedDate: map['signedDate'] as int?,
+      storefrontId: map['storefrontId'] as String?,
+      storefrontCountryCode: map['storefrontCountryCode'] as String?,
+      storefrontCurrency: map['storefrontCurrency'] as String?,
+      webOrderLineItemID: map['webOrderLineItemID'] as String?,
+      deviceVerificationNonce: map['deviceVerificationNonce'] as String?,
+      deviceVerification: map['deviceVerification'] as String?,
+      offer: map['offer'] != null
+          ? TransactionOffer.fromMap(map['offer'] as Map<String, dynamic>)
+          : null,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'transactionId': transactionId,
-      'originalTransactionId': originalTransactionId,
-      'productId': productId,
-      'productType': productType,
-      'purchaseDate': purchaseDate,
-      'purchaseDateTimestamp': purchaseDateTimestamp,
+      'id': id,
+      'productID': productID,
+      'productType': ProductTypeConverter.toStringValue(productType),
+      'ownershipType': OwnershipTypeConverter.toStringValue(ownershipType),
+      'price': price,
+      'currency': currency,
+      'originalID': originalID,
       'originalPurchaseDate': originalPurchaseDate,
-      'originalPurchaseDateTimestamp': originalPurchaseDateTimestamp,
-      'expiresDate': expiresDate,
-      'expiresDateTimestamp': expiresDateTimestamp,
-      'isPurchased': isPurchased,
-      'isRevoked': isRevoked,
-      'isRestored': isRestored,
-      'isExpired': isExpired,
-      'isRenewed': isRenewed,
-      'isConsumed': isConsumed,
+      'purchaseDate': purchaseDate,
+      'purchasedQuantity': purchasedQuantity,
+      'purchaseReason': PurchaseReasonConverter.toStringValue(purchaseReason),
+      'subscriptionGroupID': subscriptionGroupID,
+      'expirationDate': expirationDate,
       'isUpgraded': isUpgraded,
-      'storefront': storefront,
-      'storefrontCountryCode': storefrontCountryCode,
-      'cancellationReason': cancellationReason,
+      'hasRevocation': hasRevocation,
       'revocationDate': revocationDate,
-      'revocationDateTimestamp': revocationDateTimestamp,
       'revocationReason': revocationReason,
-      'quantity': quantity,
-      'appAccountToken': appAccountToken,
-      'webOrderLineItemId': webOrderLineItemId,
-      'subscriptionGroup': subscriptionGroup,
-      'subscriptionPeriod': subscriptionPeriod,
-      'introductoryOfferEligibility': introductoryOfferEligibility,
-      'renewalInfo': renewalInfo,
-      'renewalState': renewalState,
-      'willAutoRenew': willAutoRenew,
-      'promotionalOfferId': promotionalOfferId,
-      'type': type,
-      'verificationData': verificationData,
-      'signature': signature,
-      'receipt': receipt,
-      'transactionReceipt': transactionReceipt,
       'environment': environment,
-      'offerDetails': offerDetails,
-      'renewalOfferDetails': renewalOfferDetails,
-      'isFamilyShareable': isFamilyShareable,
+      'appAccountToken': appAccountToken,
+      'appBundleID': appBundleID,
+      'appTransactionID': appTransactionID,
+      'signedDate': signedDate,
+      'storefrontId': storefrontId,
+      'storefrontCountryCode': storefrontCountryCode,
+      'storefrontCurrency': storefrontCurrency,
+      'webOrderLineItemID': webOrderLineItemID,
+      'deviceVerificationNonce': deviceVerificationNonce,
+      'deviceVerification': deviceVerification,
+      'offer': offer?.toMap(),
+    };
+  }
+}
+
+/// 交易优惠信息类
+class TransactionOffer {
+  final String? id;
+  final SubscriptionOfferType? type;
+  final SubscriptionOfferPaymentMode? paymentMode;
+  final SubscriptionPeriodUnit? periodUnit;
+  final int? periodCount;
+
+  TransactionOffer({
+    this.id,
+    this.type,
+    this.paymentMode,
+    this.periodUnit,
+    this.periodCount,
+  });
+
+  factory TransactionOffer.fromMap(Map<String, dynamic> map) {
+    return TransactionOffer(
+      id: map['id'] as String?,
+      type: SubscriptionOfferTypeConverter.fromString(map['type'] as String?),
+      paymentMode: SubscriptionOfferPaymentModeConverter.fromString(
+        map['paymentMode'] as String?,
+      ),
+      periodUnit: SubscriptionPeriodUnitConverter.fromString(
+        map['periodUnit'] as String?,
+      ),
+      periodCount: map['periodCount'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'type': SubscriptionOfferTypeConverter.toStringValue(type),
+      'paymentMode': SubscriptionOfferPaymentModeConverter.toStringValue(
+        paymentMode,
+      ),
+      'periodUnit': SubscriptionPeriodUnitConverter.toStringValue(periodUnit),
+      'periodCount': periodCount,
     };
   }
 }

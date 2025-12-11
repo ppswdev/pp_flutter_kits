@@ -1,9 +1,10 @@
 import 'package:test/test.dart';
+import 'package:inapp_purchase/src/enums.dart';
 import 'package:inapp_purchase/src/product.dart';
 
 void main() {
   test('Product.fromMap should correctly parse Swift JSON structure', () {
-    // Swift JSON structure provided by the user
+    // Updated JSON structure to match product.json format
     final Map<String, dynamic> swiftJson = {
       "displayPrice": "\$9.99",
       "type": "autoRenewable",
@@ -16,43 +17,48 @@ void main() {
       "price": 9.99,
       "subscription": {
         "subscriptionGroupID": "732E29F2",
+        "subscriptionPeriodCount": 1,
+        "subscriptionPeriodUnit": "week",
         "introductoryOffer": {
           "id": null,
-          "displayPrice": "\$0.00",
-          "price": 0.0,
-          "periodCount": 1,
           "type": "introductory",
+          "offerPeriodCount": 1,
+          "price": 0.0,
+          "displayPrice": "\$0.00",
           "paymentMode": "freeTrial",
-          "period": {"value": 3, "unit": "day"},
+          "periodCount": 3,
+          "periodUnit": "day",
         },
-        "subscriptionPeriod": {"unit": "week", "value": 1},
         "promotionalOffers": [
           {
-            "period": {"value": 1, "unit": "week"},
-            "periodCount": 1,
             "id": "free1week",
-            "displayPrice": "\$0.00",
+            "type": "promotional",
+            "offerPeriodCount": 1,
             "price": 0.0,
-            "type": "promotional",
+            "displayPrice": "\$0.00",
             "paymentMode": "freeTrial",
+            "periodCount": 1,
+            "periodUnit": "week",
           },
           {
-            "paymentMode": "payAsYouGo",
-            "price": 1.9899999999999998,
-            "type": "promotional",
             "id": "payasyougo1week",
-            "period": {"value": 1, "unit": "week"},
-            "periodCount": 1,
+            "type": "promotional",
+            "offerPeriodCount": 1,
+            "price": 1.99,
             "displayPrice": "\$1.99",
+            "paymentMode": "payAsYouGo",
+            "periodCount": 1,
+            "periodUnit": "week",
           },
           {
-            "paymentMode": "payUpFront",
-            "displayPrice": "\$5.99",
-            "periodCount": 1,
             "id": "payupfront1month",
-            "period": {"value": 1, "unit": "month"},
             "type": "promotional",
+            "offerPeriodCount": 1,
             "price": 5.99,
+            "displayPrice": "\$5.99",
+            "paymentMode": "payUpFront",
+            "periodCount": 1,
+            "periodUnit": "month",
           },
         ],
         "winBackOffers": [],
@@ -77,10 +83,9 @@ void main() {
     expect(product.subscription?.subscriptionGroupID, equals("732E29F2"));
 
     // Verify subscription period
-    expect(product.subscription?.subscriptionPeriod, isNotNull);
-    expect(product.subscription?.subscriptionPeriod?.value, equals(1));
+    expect(product.subscription?.subscriptionPeriodCount, equals(1));
     expect(
-      product.subscription?.subscriptionPeriod?.unit,
+      product.subscription?.subscriptionPeriodUnit,
       equals(SubscriptionPeriodUnit.week),
     );
 
@@ -88,23 +93,25 @@ void main() {
     expect(product.subscription?.introductoryOffer, isNotNull);
     expect(product.subscription?.introductoryOffer?.id, isNull);
     expect(
-      product.subscription?.introductoryOffer?.displayPrice,
-      equals("\$0.00"),
-    );
-    expect(product.subscription?.introductoryOffer?.price, equals(0.0));
-    expect(product.subscription?.introductoryOffer?.periodCount, equals(1));
-    expect(
       product.subscription?.introductoryOffer?.type,
       equals(SubscriptionOfferType.introductory),
+    );
+    expect(
+      product.subscription?.introductoryOffer?.offerPeriodCount,
+      equals(1),
+    );
+    expect(product.subscription?.introductoryOffer?.price, equals(0.0));
+    expect(
+      product.subscription?.introductoryOffer?.displayPrice,
+      equals("\$0.00"),
     );
     expect(
       product.subscription?.introductoryOffer?.paymentMode,
       equals(SubscriptionOfferPaymentMode.freeTrial),
     );
-    expect(product.subscription?.introductoryOffer?.period, isNotNull);
-    expect(product.subscription?.introductoryOffer?.period?.value, equals(3));
+    expect(product.subscription?.introductoryOffer?.periodCount, equals(3));
     expect(
-      product.subscription?.introductoryOffer?.period?.unit,
+      product.subscription?.introductoryOffer?.periodUnit,
       equals(SubscriptionPeriodUnit.day),
     );
 
@@ -115,26 +122,25 @@ void main() {
     // First promotional offer
     expect(product.subscription?.promotionalOffers?[0].id, equals("free1week"));
     expect(
-      product.subscription?.promotionalOffers?[0].displayPrice,
-      equals("\$0.00"),
-    );
-    expect(product.subscription?.promotionalOffers?[0].price, equals(0.0));
-    expect(product.subscription?.promotionalOffers?[0].periodCount, equals(1));
-    expect(
       product.subscription?.promotionalOffers?[0].type,
       equals(SubscriptionOfferType.promotional),
+    );
+    expect(
+      product.subscription?.promotionalOffers?[0].offerPeriodCount,
+      equals(1),
+    );
+    expect(product.subscription?.promotionalOffers?[0].price, equals(0.0));
+    expect(
+      product.subscription?.promotionalOffers?[0].displayPrice,
+      equals("\$0.00"),
     );
     expect(
       product.subscription?.promotionalOffers?[0].paymentMode,
       equals(SubscriptionOfferPaymentMode.freeTrial),
     );
-    expect(product.subscription?.promotionalOffers?[0].period, isNotNull);
+    expect(product.subscription?.promotionalOffers?[0].periodCount, equals(1));
     expect(
-      product.subscription?.promotionalOffers?[0].period?.value,
-      equals(1),
-    );
-    expect(
-      product.subscription?.promotionalOffers?[0].period?.unit,
+      product.subscription?.promotionalOffers?[0].periodUnit,
       equals(SubscriptionPeriodUnit.week),
     );
 
@@ -144,29 +150,25 @@ void main() {
       equals("payasyougo1week"),
     );
     expect(
-      product.subscription?.promotionalOffers?[1].displayPrice,
-      equals("\$1.99"),
-    );
-    expect(
-      product.subscription?.promotionalOffers?[1].price,
-      equals(1.9899999999999998),
-    );
-    expect(product.subscription?.promotionalOffers?[1].periodCount, equals(1));
-    expect(
       product.subscription?.promotionalOffers?[1].type,
       equals(SubscriptionOfferType.promotional),
+    );
+    expect(
+      product.subscription?.promotionalOffers?[1].offerPeriodCount,
+      equals(1),
+    );
+    expect(product.subscription?.promotionalOffers?[1].price, equals(1.99));
+    expect(
+      product.subscription?.promotionalOffers?[1].displayPrice,
+      equals("\$1.99"),
     );
     expect(
       product.subscription?.promotionalOffers?[1].paymentMode,
       equals(SubscriptionOfferPaymentMode.payAsYouGo),
     );
-    expect(product.subscription?.promotionalOffers?[1].period, isNotNull);
+    expect(product.subscription?.promotionalOffers?[1].periodCount, equals(1));
     expect(
-      product.subscription?.promotionalOffers?[1].period?.value,
-      equals(1),
-    );
-    expect(
-      product.subscription?.promotionalOffers?[1].period?.unit,
+      product.subscription?.promotionalOffers?[1].periodUnit,
       equals(SubscriptionPeriodUnit.week),
     );
 
@@ -176,26 +178,25 @@ void main() {
       equals("payupfront1month"),
     );
     expect(
-      product.subscription?.promotionalOffers?[2].displayPrice,
-      equals("\$5.99"),
-    );
-    expect(product.subscription?.promotionalOffers?[2].price, equals(5.99));
-    expect(product.subscription?.promotionalOffers?[2].periodCount, equals(1));
-    expect(
       product.subscription?.promotionalOffers?[2].type,
       equals(SubscriptionOfferType.promotional),
+    );
+    expect(
+      product.subscription?.promotionalOffers?[2].offerPeriodCount,
+      equals(1),
+    );
+    expect(product.subscription?.promotionalOffers?[2].price, equals(5.99));
+    expect(
+      product.subscription?.promotionalOffers?[2].displayPrice,
+      equals("\$5.99"),
     );
     expect(
       product.subscription?.promotionalOffers?[2].paymentMode,
       equals(SubscriptionOfferPaymentMode.payUpFront),
     );
-    expect(product.subscription?.promotionalOffers?[2].period, isNotNull);
+    expect(product.subscription?.promotionalOffers?[2].periodCount, equals(1));
     expect(
-      product.subscription?.promotionalOffers?[2].period?.value,
-      equals(1),
-    );
-    expect(
-      product.subscription?.promotionalOffers?[2].period?.unit,
+      product.subscription?.promotionalOffers?[2].periodUnit,
       equals(SubscriptionPeriodUnit.month),
     );
 

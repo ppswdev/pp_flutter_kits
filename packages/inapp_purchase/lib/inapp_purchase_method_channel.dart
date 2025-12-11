@@ -59,9 +59,13 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   @override
   Future<List<Product>> getAllProducts() async {
     final result = await methodChannel.invokeMethod('getAllProducts');
-    return (result as List<dynamic>)
-        .map((item) => Product.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Product.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
@@ -69,25 +73,37 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getNonConsumablesProducts',
     );
-    return (result as List<dynamic>)
-        .map((item) => Product.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Product.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
   Future<List<Product>> getConsumablesProducts() async {
     final result = await methodChannel.invokeMethod('getConsumablesProducts');
-    return (result as List<dynamic>)
-        .map((item) => Product.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Product.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
   Future<List<Product>> getNonRenewablesProducts() async {
     final result = await methodChannel.invokeMethod('getNonRenewablesProducts');
-    return (result as List<dynamic>)
-        .map((item) => Product.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Product.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
@@ -95,9 +111,13 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getAutoRenewablesProducts',
     );
-    return (result as List<dynamic>)
-        .map((item) => Product.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Product.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
@@ -106,7 +126,10 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
       'productId': productId,
     });
     if (result == null) return null;
-    return Product.fromMap(result as Map<String, dynamic>);
+    if (result is Map<String, dynamic>) {
+      return Product.fromMap(result);
+    }
+    return null;
   }
 
   @override
@@ -129,17 +152,25 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getValidPurchasedTransactions',
     );
-    return (result as List<dynamic>)
-        .map((item) => Transaction.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Transaction.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
   Future<List<Transaction>> getLatestTransactions() async {
     final result = await methodChannel.invokeMethod('getLatestTransactions');
-    return (result as List<dynamic>)
-        .map((item) => Transaction.fromMap(item as Map<String, dynamic>))
-        .toList();
+    if (result is List) {
+      return result
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Transaction.fromMap(item))
+          .toList();
+    }
+    return [];
   }
 
   @override
@@ -237,7 +268,13 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   @override
   Stream<List<Map<String, dynamic>>> get onProductsLoaded {
     return productsEventChannel.receiveBroadcastStream().map((event) {
-      return List<Map<String, dynamic>>.from(event);
+      if (event is List) {
+        return event
+            .whereType<Map<String, dynamic>>()
+            .map((item) => item)
+            .toList();
+      }
+      return [];
     });
   }
 

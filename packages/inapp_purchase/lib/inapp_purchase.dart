@@ -1,6 +1,11 @@
 import 'inapp_purchase_platform_interface.dart';
+import 'src/enums.dart';
 import 'src/product.dart';
 import 'src/transaction.dart';
+
+export 'src/enums.dart';
+export 'src/product.dart';
+export 'src/transaction.dart';
 
 /// 应用内购插件主类
 class InappPurchase {
@@ -200,38 +205,4 @@ class InappPurchase {
   Stream<Map<String, dynamic>> get onPurchasedTransactionsUpdated {
     return InappPurchasePlatform.instance.onPurchasedTransactionsUpdated;
   }
-}
-
-/// 订阅周期类型
-enum SubscriptionPeriodType { week, month, year, lifetime }
-
-/// 订阅按钮文案类型
-enum SubscriptionButtonType {
-  standard, // 标准订阅
-  freeTrial, // 免费试用
-  payUpFront, // 预付
-  payAsYouGo, // 按需付费
-  lifetime, // 终身会员
-}
-
-/// StoreKit状态枚举
-class StoreKitState {
-  static const idle = 'idle';
-  static const loadingProducts = 'loadingProducts';
-  static const productsLoaded = 'productsLoaded';
-  static const loadingPurchases = 'loadingPurchases';
-  static const purchasesLoaded = 'purchasesLoaded';
-  static const purchasing = 'purchasing';
-  static const purchaseSuccess = 'purchaseSuccess';
-  static const purchasePending = 'purchasePending';
-  static const purchaseCancelled = 'purchaseCancelled';
-  static const purchaseFailed = 'purchaseFailed';
-  static const subscriptionStatusChanged = 'subscriptionStatusChanged';
-  static const restoringPurchases = 'restoringPurchases';
-  static const restorePurchasesSuccess = 'restorePurchasesSuccess';
-  static const restorePurchasesFailed = 'restorePurchasesFailed';
-  static const purchaseRefunded = 'purchaseRefunded';
-  static const purchaseRevoked = 'purchaseRevoked';
-  static const subscriptionCancelled = 'subscriptionCancelled';
-  static const error = 'error';
 }

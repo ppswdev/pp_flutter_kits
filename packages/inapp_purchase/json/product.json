@@ -10,96 +10,80 @@
         "jsonRepresentation": "{\"attributes\":{\"description\":{\"standard\":\"Weekly VIP of in app\"},\"icuLocale\":\"en_US@currency=USD\",\"isFamilyShareable\":0,\"kind\":\"Auto-Renewable Subscription\",\"name\":\"Weekly VIP InApp\",\"offerName\":\"com.ppswdev.store.inapp.weeklyvip\",\"offers\":[{\"currencyCode\":\"USD\",\"discounts\":[{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"offerId\":\"free1week\",\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"AdhocOffer\"},{\"modeType\":\"PayAsYouGo\",\"numOfPeriods\":1,\"offerId\":\"payasyougo1week\",\"priceFormatted\":\"$1.99\",\"priceString\":\"1.99\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"AdhocOffer\"},{\"modeType\":\"PayUpFront\",\"numOfPeriods\":1,\"offerId\":\"payupfront1month\",\"priceFormatted\":\"$5.99\",\"priceString\":\"5.99\",\"recurringSubscriptionPeriod\":\"P1M\",\"type\":\"AdhocOffer\"},{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"offerId\":\"user_winback_freetrail\",\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P3D\",\"type\":\"Winback\"},{\"modeType\":\"PayUpFront\",\"numOfPeriods\":1,\"offerId\":\"user_winback_payupfront\",\"priceFormatted\":\"$0.99\",\"priceString\":\"0.99\",\"recurringSubscriptionPeriod\":\"P1M\",\"type\":\"Winback\"},{\"modeType\":\"PayAsYouGo\",\"numOfPeriods\":1,\"offerId\":\"user_winback_payasyougo\",\"priceFormatted\":\"$1.99\",\"priceString\":\"1.99\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"Winback\"},{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P3D\",\"type\":\"IntroOffer\"}],\"priceFormatted\":\"$9.99\",\"priceString\":\"9.99\",\"recurringSubscriptionPeriod\":\"P1W\"}],\"subscriptionFamilyId\":\"732E29F2\",\"subscriptionFamilyName\":\"mysubs\",\"subscriptionFamilyRank\":1},\"href\":\"\\/v1\\/catalog\\/usa\\/in-apps\\/D7180163\",\"id\":\"D7180163\",\"type\":\"in-apps\"}",
         "subscription": {
             "subscriptionGroupID": "732E29F2",
-            "subscriptionPeriod": {
-                "unit": "week",
-                "value": 1
-            },
+            "subscriptionPeriodCount": 1,
+            "subscriptionPeriodUnit": "week",
             "introductoryOffer": {
-                "type": "introductory",
                 "id": null,
+                "type": "introductory",
+                "offerPeriodCount": 1,
                 "price": 0.0,
                 "displayPrice": "$0.00",
                 "paymentMode": "freeTrial",
-                "period": {
-                    "unit": "day",
-                    "value": 3
-                },
-                "periodCount": 1
+                "periodCount": 3,
+                "periodUnit": "day"
             },
             "promotionalOffers": [
                 {
-                    "type": "promotional",
                     "id": "free1week",
-                    "paymentMode": "freeTrial",
-                    "period": {
-                        "value": 1,
-                        "unit": "week"
-                    },
-                    "periodCount": 1,
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
                     "price": 0.0,
-                    "displayPrice": "$0.00"
+                    "displayPrice": "$0.00",
+                    "paymentMode": "freeTrial",
+                    "periodCount": 1,
+                    "periodUnit": "week"
                 },
                 {
-                    "type": "promotional",
                     "id": "payasyougo1week",
-                    "paymentMode": "payAsYouGo",
-                    "period": {
-                        "value": 1,
-                        "unit": "week"
-                    },
-                    "periodCount": 1,
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
                     "price": 1.99,
-                    "displayPrice": "$1.99"
+                    "displayPrice": "$1.99",
+                    "paymentMode": "payAsYouGo",
+                    "periodCount": 1,
+                    "periodUnit": "week"
                 },
                 {
-                    "type": "promotional",
                     "id": "payupfront1month",
-                    "paymentMode": "payUpFront",
-                    "period": {
-                        "value": 1,
-                        "unit": "month"
-                    },
-                    "periodCount": 1,
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
                     "price": 5.99,
-                    "displayPrice": "$5.99"
+                    "displayPrice": "$5.99",
+                    "paymentMode": "payUpFront",
+                    "periodCount": 1,
+                    "periodUnit": "month"
                 }
             ],
             "winBackOffers": [
                 {
-                    "type": "winBack",
-                    "paymentMode": "freeTrial",
                     "id": "user_winback_freetrail",
-                    "period": {
-                        "value": 3,
-                        "unit": "day"
-                    },
-                    "periodCount": 1,
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
                     "price": 0.0,
-                    "displayPrice": "$0.00"
+                    "displayPrice": "$0.00",
+                    "paymentMode": "freeTrial",
+                    "periodCount": 3,
+                    "periodUnit": "day"
                 },
                 {
-                    "type": "winBack",
-                    "paymentMode": "payUpFront",
                     "id": "user_winback_payupfront",
-                    "period": {
-                        "value": 1,
-                        "unit": "month"
-                    },
-                    "periodCount": 1,
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
                     "price": 0.99,
-                    "displayPrice": "$0.99"
+                    "displayPrice": "$0.99",
+                    "paymentMode": "payUpFront",
+                    "periodCount": 1,
+                    "periodUnit": "month"
                 },
                 {
-                    "type": "winBack",
                     "id": "user_winback_payasyougo",
-                    "paymentMode": "payAsYouGo",
-                    "period": {
-                        "value": 1,
-                        "unit": "week"
-                    },
-                    "periodCount": 1,
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
                     "price": 1.99,
-                    "displayPrice": "$1.99"
+                    "displayPrice": "$1.99",
+                    "paymentMode": "payAsYouGo",
+                    "periodCount": 1,
+                    "periodUnit": "week"
                 }
             ]
         }
