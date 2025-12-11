@@ -171,58 +171,6 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         result(nil)
     }
     
-    // 购买产品
-    private func purchase(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let arguments = call.arguments as? [String: Any],
-              let productId = arguments["productId"] as? String else {
-            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
-            return
-        }
-        
-        Task {
-            do {
-                try await storeKitManager.purchase(productId: productId)
-                result(nil)
-            } catch {
-                result(FlutterError(code: "purchase_failed", message: error.localizedDescription, details: nil))
-            }
-        }
-    }
-    
-    // 恢复购买
-    private func restorePurchases(_ result: @escaping FlutterResult) {
-        Task {
-            do {
-                try await storeKitManager.restorePurchases()
-                result(nil)
-            } catch {
-                result(FlutterError(code: "restore_failed", message: error.localizedDescription, details: nil))
-            }
-        }
-    }
-    
-    // 检查产品是否已购买
-    private func isPurchased(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let arguments = call.arguments as? [String: Any],
-              let productId = arguments["productId"] as? String else {
-            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
-            return
-        }
-        
-        result(storeKitManager.isPurchased(productId: productId))
-    }
-    
-    // 检查产品是否通过家庭共享获得
-    private func isFamilyShared(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let arguments = call.arguments as? [String: Any],
-              let productId = arguments["productId"] as? String else {
-            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
-            return
-        }
-        
-        result(storeKitManager.isFamilyShared(productId: productId))
-    }
-    
     // 获取所有产品
     private func getAllProducts(_ result: @escaping FlutterResult) {
         Task {
@@ -310,6 +258,36 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         }
     }
     
+    // 购买产品
+    private func purchase(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let arguments = call.arguments as? [String: Any],
+              let productId = arguments["productId"] as? String else {
+            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
+            return
+        }
+        
+        Task {
+            do {
+                try await storeKitManager.purchase(productId: productId)
+                result(nil)
+            } catch {
+                result(FlutterError(code: "purchase_failed", message: error.localizedDescription, details: nil))
+            }
+        }
+    }
+    
+    // 恢复购买
+    private func restorePurchases(_ result: @escaping FlutterResult) {
+        Task {
+            do {
+                try await storeKitManager.restorePurchases()
+                result(nil)
+            } catch {
+                result(FlutterError(code: "restore_failed", message: error.localizedDescription, details: nil))
+            }
+        }
+    }
+    
     // 刷新购买记录
     private func refreshPurchases(_ result: @escaping FlutterResult) {
         Task {
@@ -348,6 +326,28 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         }
     }
     
+    // 检查产品是否已购买
+    private func isPurchased(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let arguments = call.arguments as? [String: Any],
+              let productId = arguments["productId"] as? String else {
+            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
+            return
+        }
+        
+        result(storeKitManager.isPurchased(productId: productId))
+    }
+    
+    // 检查产品是否通过家庭共享获得
+    private func isFamilyShared(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let arguments = call.arguments as? [String: Any],
+              let productId = arguments["productId"] as? String else {
+            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
+            return
+        }
+        
+        result(storeKitManager.isFamilyShared(productId: productId))
+    }
+    
     // 检查是否符合介绍性优惠条件
     private func isEligibleForIntroOffer(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
@@ -382,7 +382,8 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getProductForVipTitle(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String,
-              let periodType = arguments["periodType"] as? String,
+              let periodTypeStr = arguments["periodType"] as? String,
+              let periodType = SubscriptionPeriodType(rawValue: periodTypeStr),
               let langCode = arguments["langCode"] as? String else {
             result(FlutterError(code: "invalid_arguments", message: "Invalid arguments", details: nil))
             return
@@ -390,7 +391,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         Task {
             do {
-                let title = try await storeKitManager.getProductForVipTitle(productId: productId, periodType: periodType, langCode: langCode)
+                let title = storeKitManager.productForVipTitle(for: productId, periodType: periodType, languageCode: langCode)
                 result(title)
             } catch {
                 result(FlutterError(code: "get_vip_title_failed", message: error.localizedDescription, details: nil))
@@ -402,7 +403,8 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getProductForVipSubtitle(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String,
-              let periodType = arguments["periodType"] as? String,
+              let periodTypeStr = arguments["periodType"] as? String,
+              let periodType = SubscriptionPeriodType(rawValue: periodTypeStr),
               let langCode = arguments["langCode"] as? String else {
             result(FlutterError(code: "invalid_arguments", message: "Invalid arguments", details: nil))
             return
@@ -410,7 +412,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         Task {
             do {
-                let subtitle = try await storeKitManager.getProductForVipSubtitle(productId: productId, periodType: periodType, langCode: langCode)
+                let subtitle = try await storeKitManager.productForVipSubtitle(for: productId, periodType: periodType, languageCode: langCode)
                 result(subtitle)
             } catch {
                 result(FlutterError(code: "get_vip_subtitle_failed", message: error.localizedDescription, details: nil))
@@ -429,7 +431,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         Task {
             do {
-                let buttonText = try await storeKitManager.getProductForVipButtonText(productId: productId, langCode: langCode)
+                let buttonText = try await storeKitManager.productForVipButtonText(for: productId, languageCode: langCode)
                 result(buttonText)
             } catch {
                 result(FlutterError(code: "get_vip_button_text_failed", message: error.localizedDescription, details: nil))

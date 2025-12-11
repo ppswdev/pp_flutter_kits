@@ -749,7 +749,7 @@ extension StoreKitService{
         print("   - 产品价格: \(product.displayPrice)")
         print("   - 价格数值: \(product.price)")
         print("   - 家庭共享: \(product.isFamilyShareable)")
-        print("   - 产品JSON: \(String.init(data: product.jsonRepresentation, encoding: .utf8))")
+        //print("   - 产品JSON: \(String.init(data: product.jsonRepresentation, encoding: .utf8))")
          // 如果是订阅产品，打印订阅相关信息
         if let subscription = product.subscription {
             print("📱 订阅信息:")
@@ -808,6 +808,9 @@ extension StoreKitService{
                 }
             }
         }
+        
+        let productJSON = ProductConverter.toDictionary(product)
+        print("   - JSON表示: \(productJSON)")
     }
     
     /// 打印优惠详细信息
@@ -1045,5 +1048,8 @@ extension StoreKitService{
         
         print("════════════════════════════════════════")
         print("")
+
+        let transactionJSON = TransactionConverter.toDictionary(transaction)
+        print("   - JSON表示: \(transactionJSON)")
     }
 }

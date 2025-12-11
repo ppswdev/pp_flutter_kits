@@ -4,6 +4,15 @@ import 'src/transaction.dart';
 
 /// 应用内购插件主类
 class InappPurchase {
+  /// 单例实例
+  static final InappPurchase _instance = InappPurchase._internal();
+
+  /// 内部构造函数
+  InappPurchase._internal();
+
+  /// 获取单例实例
+  static InappPurchase get instance => _instance;
+
   /// 获取平台版本
   Future<String?> getPlatformVersion() {
     return InappPurchasePlatform.instance.getPlatformVersion();

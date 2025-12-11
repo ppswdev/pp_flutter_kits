@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _inappPurchasePlugin = InappPurchase();
+  final _inappPurchasePlugin = InappPurchase.instance;
 
   @override
   void initState() {

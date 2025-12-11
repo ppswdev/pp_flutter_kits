@@ -14,7 +14,7 @@ public struct SubscriptionConverter {
     
     // MARK: - SubscriptionInfo
     
-    /// 将 SubscriptionInfo 转换为 Dictionary
+    /// 将 SubscriptionInfo 转换为 Dictionary（同步版本，不包含异步属性）
     /// - Parameters:
     ///   - subscription: SubscriptionInfo 对象
     ///   - product: 关联的 Product 对象（可选）
@@ -130,9 +130,9 @@ public struct SubscriptionConverter {
     private static func subscriptionOfferToDictionary(_ offer: Product.SubscriptionOffer) -> [String: Any] {
         var dict: [String: Any] = [:]
         
-        // 优惠ID（介绍性优惠为 nil）
+        // 优惠ID（介绍性优惠为 nil，确保是字符串类型）
         if let offerID = offer.id {
-            dict["id"] = offerID
+            dict["id"] = String(describing: offerID)
         } else {
             dict["id"] = NSNull()
         }
@@ -140,9 +140,9 @@ public struct SubscriptionConverter {
         // 优惠类型
         dict["type"] = subscriptionOfferTypeToString(offer.type)
         
-        // 价格信息
-        dict["displayPrice"] = offer.displayPrice
-        dict["price"] = NSDecimalNumber(decimal: offer.price).doubleValue
+        // 价格信息（确保是字符串类型）
+        dict["displayPrice"] = String(describing: offer.displayPrice)
+        dict["price"] = Double(String(format: "%.2f", NSDecimalNumber(decimal: offer.price).doubleValue)) ?? NSDecimalNumber(decimal: offer.price).doubleValue
         
         // 支付模式
         dict["paymentMode"] = paymentModeToString(offer.paymentMode)

@@ -127,53 +127,47 @@ public class StoreKit2Manager {
         service?.start()
     }
     
-    // MARK: - 购买相关
+    // MARK: - 获取产品信息
     
-    /// 通过产品ID购买产品
-    /// - Parameter productId: 产品ID
-    /// - Throws: StoreKitError.productNotFound 如果产品未找到
-    public func purchase(productId: String) async throws {
-        guard let product = allProducts.first(where: { $0.id == productId }) else {
-            throw StoreKitError.productNotFound(productId)
+    /// 手动刷新产品列表
+    /// - Note: 会异步从 App Store 拉取最新的产品信息，更新本地产品列表
+    public func refreshProducts() async {
+        await service?.loadProducts()
+    }
+    
+    /// 获取所有产品
+    /// - Returns: 当前已知的全部产品列表
+    public func getAllProducts() async -> [Product] {
+        if(self.allProducts.isEmpty){
+            await refreshProducts()
         }
-        try await service?.purchase(product)
+        return allProducts
     }
     
-    /// 通过产品对象购买
-    /// - Parameter product: 产品对象
-    /// - Throws: StoreKitError.purchaseInProgress 如果已有购买正在进行
-    public func purchase(_ product: Product) async throws {
-        guard let service = service else {
-            throw StoreKitError.serviceNotStarted
-        }
-        try await service.purchase(product)
+    /// 获取所有非消耗型产品
+    /// - Returns: 非消耗品数组（如：永久解锁类产品）
+    public func getNonConsumablesProducts() async -> [Product] {
+        return nonConsumables
     }
     
-    /// 恢复购买
-    /// - Throws: StoreKitError.restorePurchasesFailed 如果恢复失败
-    public func restorePurchases() async throws {
-        try await service?.restorePurchases()
+    /// 获取所有消耗型产品
+    /// - Returns: 消耗品数组（如：虚拟币、道具等）
+    public func getConsumablesProducts() async -> [Product] {
+        return consumables
     }
     
-    // MARK: - 查询方法
-    
-    /// 检查产品是否已购买
-    /// - Parameter productId: 产品ID
-    /// - Returns: 如果已购买返回 true
-    public func isPurchased(productId: String) -> Bool {
-        return latestTransactions.contains(where: { $0.productID == productId })
+    /// 获取所有非续订型订阅产品
+    /// - Returns: 非续订订阅产品数组（如：半年的订阅）
+    public func getNonRenewablesProducts() async -> [Product] {
+        return nonRenewables
     }
     
-    /// 检查产品是否通过家庭共享获得
-    /// - Parameter productId: 产品ID
-    /// - Returns: 如果是通过家庭共享获得返回 true，否则返回 false
-    /// - Note: 只有支持家庭共享的产品才能通过家庭共享获得
-    public func isFamilyShared(productId: String) -> Bool {
-        guard let transaction = latestTransactions.first(where: { $0.productID == productId }) else {
-            return false
-        }
-        return transaction.ownershipType == .familyShared
+    /// 获取所有自动续订型订阅产品
+    /// - Returns: 自动续订订阅产品数组（如：包月/包年订阅）
+    public func getAutoRenewablesProducts() async -> [Product] {
+        return autoRenewables
     }
+    
     /// 获取产品对象
     /// - Parameter productId: 产品ID
     /// - Returns: 产品对象，如果未找到返回 nil
@@ -264,7 +258,7 @@ public class StoreKit2Manager {
                     switch introOffer.paymentMode {
                     case .freeTrial:
                         buttonType = .freeTrial
-                    case .payUpFront: 
+                    case .payUpFront:
                         buttonType = .payUpFront
                     case .payAsYouGo:
                         buttonType = .payAsYouGo
@@ -298,11 +292,34 @@ public class StoreKit2Manager {
             languageCode: languageCode
         )
     }
-    // MARK: - 刷新方法
+   
     
-    /// 手动刷新产品列表
-    public func refreshProducts() async {
-        await service?.loadProducts()
+    // MARK: - 购买相关
+    
+    /// 通过产品ID购买产品
+    /// - Parameter productId: 产品ID
+    /// - Throws: StoreKitError.productNotFound 如果产品未找到
+    public func purchase(productId: String) async throws {
+        guard let product = allProducts.first(where: { $0.id == productId }) else {
+            throw StoreKitError.productNotFound(productId)
+        }
+        try await service?.purchase(product)
+    }
+    
+    /// 通过产品对象购买
+    /// - Parameter product: 产品对象
+    /// - Throws: StoreKitError.purchaseInProgress 如果已有购买正在进行
+    public func purchase(_ product: Product) async throws {
+        guard let service = service else {
+            throw StoreKitError.serviceNotStarted
+        }
+        try await service.purchase(product)
+    }
+    
+    /// 恢复购买
+    /// - Throws: StoreKitError.restorePurchasesFailed 如果恢复失败
+    public func restorePurchases() async throws {
+        try await service?.restorePurchases()
     }
     
     /// 手动刷新已购买产品交易信息，包括：有效的订阅交易信息，每个产品的最新交易信息
@@ -310,18 +327,53 @@ public class StoreKit2Manager {
         await service?.loadPurchasedTransactions()
     }
     
-    /// 手动检查订阅状态
-    /// - Note: 建议在以下时机调用：
-    ///   - 应用启动时
-    ///   - 应用进入前台时
-    ///   - 用户打开订阅页面时
-    ///   - 购买/恢复购买后
-    @MainActor
-    public func checkSubscriptionStatus() async {
-        await service?.checkSubscriptionStatusManually()
+    // MARK: - 查询方法
+    
+    /// 检查产品是否已购买
+    /// - Parameter productId: 产品ID
+    /// - Returns: 如果已购买返回 true
+    public func isPurchased(productId: String) -> Bool {
+        return latestTransactions.contains(where: { $0.productID == productId })
     }
     
-    // MARK: - 交易历史
+    /// 检查产品是否通过家庭共享获得
+    /// - Parameter productId: 产品ID
+    /// - Returns: 如果是通过家庭共享获得返回 true，否则返回 false
+    /// - Note: 只有支持家庭共享的产品才能通过家庭共享获得
+    public func isFamilyShared(productId: String) -> Bool {
+        guard let transaction = latestTransactions.first(where: { $0.productID == productId }) else {
+            return false
+        }
+        return transaction.ownershipType == .familyShared
+    }
+    
+    /// 检查是否符合享受介绍性优惠资格
+    /// - Parameter productId: 产品ID
+    /// - Returns: 如果有资格享受介绍性优惠返回 true，否则返回 false
+    /// - Note: 仅对支持订阅的产品有效
+    public func isEligibleForIntroOffer(productId: String) async -> Bool {
+        guard let product = allProducts.first(where: { $0.id == productId }) else {
+            return false
+        }
+        guard let subscription = product.subscription else {
+            return false
+        }
+        return await subscription.isEligibleForIntroOffer
+    }
+   
+    // MARK: - 交易相关
+    /// 获取有效的已购买交易
+    /// - Returns: 有效（未过期、未撤销、未退款）的已购买交易数组
+    public func getValidPurchasedTransactions() async -> [Transaction] {
+        return purchasedTransactions
+    }
+
+    /// 获取每个产品的最新交易
+    /// - Returns: 最新交易数组，每个产品只保留最新一笔交易
+    public func getLatestTransactions() async -> [Transaction] {
+        // 当前版本未支持过滤指定productId，仅返回全部产品的最新交易
+        return latestTransactions
+    }
     
     /// 获取交易历史
     /// - Parameter productId: 可选的产品ID，如果提供则只返回该产品的交易历史
@@ -338,6 +390,18 @@ public class StoreKit2Manager {
     }
     
     // MARK: - 订阅相关
+    
+    /// 手动检查订阅状态
+    /// - Note: 建议在以下时机调用：
+    ///   - 应用启动时
+    ///   - 应用进入前台时
+    ///   - 用户打开订阅页面时
+    ///   - 购买/恢复购买后
+    @MainActor
+    public func checkSubscriptionStatus() async {
+        await service?.checkSubscriptionStatusManually()
+    }
+    
     
     /// 获取订阅详细信息
     /// - Parameter productId: 产品ID
@@ -405,6 +469,8 @@ public class StoreKit2Manager {
         }
     }
     
+ 
+    // MARK: - 其他方法
     /// 请求应用评价
     /// - Note: 兼容 iOS 15.0+ 和 iOS 16.0+
     ///   - iOS 15.0: 使用 SKStoreReviewController.requestReview() (StoreKit 1)
@@ -415,8 +481,6 @@ public class StoreKit2Manager {
     public func requestReview() {
         service?.requestReview()
     }
-    
-    // MARK: - 控制方法
     
     /// 停止服务（释放资源）
     public func stop() {

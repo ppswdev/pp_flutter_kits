@@ -59,7 +59,9 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   @override
   Future<List<Product>> getAllProducts() async {
     final result = await methodChannel.invokeMethod('getAllProducts');
-    return (result as List<dynamic>).cast<Product>();
+    return (result as List<dynamic>)
+        .map((item) => Product.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
@@ -67,19 +69,25 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getNonConsumablesProducts',
     );
-    return (result as List<dynamic>).cast<Product>();
+    return (result as List<dynamic>)
+        .map((item) => Product.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
   Future<List<Product>> getConsumablesProducts() async {
     final result = await methodChannel.invokeMethod('getConsumablesProducts');
-    return (result as List<dynamic>).cast<Product>();
+    return (result as List<dynamic>)
+        .map((item) => Product.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
   Future<List<Product>> getNonRenewablesProducts() async {
     final result = await methodChannel.invokeMethod('getNonRenewablesProducts');
-    return (result as List<dynamic>).cast<Product>();
+    return (result as List<dynamic>)
+        .map((item) => Product.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
@@ -87,7 +95,9 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getAutoRenewablesProducts',
     );
-    return (result as List<dynamic>).cast<Product>();
+    return (result as List<dynamic>)
+        .map((item) => Product.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
@@ -95,7 +105,8 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod('getProduct', {
       'productId': productId,
     });
-    return result as Product?;
+    if (result == null) return null;
+    return Product.fromMap(result as Map<String, dynamic>);
   }
 
   @override
@@ -118,13 +129,17 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     final result = await methodChannel.invokeMethod(
       'getValidPurchasedTransactions',
     );
-    return (result as List<dynamic>).cast<Transaction>();
+    return (result as List<dynamic>)
+        .map((item) => Transaction.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
   Future<List<Transaction>> getLatestTransactions() async {
     final result = await methodChannel.invokeMethod('getLatestTransactions');
-    return (result as List<dynamic>).cast<Transaction>();
+    return (result as List<dynamic>)
+        .map((item) => Transaction.fromMap(item as Map<String, dynamic>))
+        .toList();
   }
 
   @override
