@@ -641,140 +641,140 @@ public struct SubscriptionLocale {
             case .week: return "مرونة"
             case .month: return "قيمة ممتازة"
             case .year: return "الأكثر توفيراً"
-            default: return ""
+            case .lifetime: return "اشتراك دائم بدون تجديد"
             }
         case "de":
             switch periodType {
             case .week: return "Flexibilität"
             case .month: return "Bester Wert"
             case .year: return "Meist gespart"
-            default: return ""
+            case .lifetime: return "Einmalig zahlen, dauerhaft nutzen"
             }
         case "en":
             switch periodType {
             case .week: return "Flexible"
             case .month: return "Best Value"
             case .year: return "Most Popular"
-            default: return ""
+            case .lifetime: return "Pay once, own forever"
             }
         case "es":
             switch periodType {
             case .week: return "Flexible"
             case .month: return "Mejor Valor"
             case .year: return "Más Popular"
-            default: return ""
+            case .lifetime: return "Paga una vez, disfruta siempre"
             }
         case "fil":
             switch periodType {
             case .week: return "Nakakalag"
             case .month: return "Pinakamahusay na Halaga"
             case .year: return "Pinakasikat"
-            default: return ""
+            case .lifetime: return "Isang beses lang, habambuhay na"
             }
         case "fr":
             switch periodType {
             case .week: return "Flexible"
             case .month: return "Meilleur Rapport"
             case .year: return "Plus Populaire"
-            default: return ""
+            case .lifetime: return "Achetez une fois, profitez à vie"
             }
         case "id":
             switch periodType {
             case .week: return "Fleksibel"
             case .month: return "Nilai Terbaik"
             case .year: return "Paling Populer"
-            default: return ""
+            case .lifetime: return "Bayar sekali, pakai selamanya"
             }
         case "it":
             switch periodType {
             case .week: return "Flessibile"
             case .month: return "Miglior Valore"
             case .year: return "Più Popolare"
-            default: return ""
+            case .lifetime: return "Paga una volta, usa per sempre"
             }
         case "ja":
             switch periodType {
             case .week: return "柔軟性"
             case .month: return "お得"
             case .year: return "人気"
-            default: return ""
+            case .lifetime: return "一度の支払いで永久利用"
             }
         case "ko":
             switch periodType {
             case .week: return "유연함"
             case .month: return "최고 가치"
             case .year: return "인기"
-            default: return ""
+            case .lifetime: return "한 번 결제로 평생 이용"
             }
         case "pl":
             switch periodType {
             case .week: return "Elastyczność"
             case .month: return "Najlepsza Wartość"
             case .year: return "Najpopularniejsze"
-            default: return ""
+            case .lifetime: return "Zapłać raz, korzystaj zawsze"
             }
         case "pt":
             switch periodType {
             case .week: return "Flexível"
             case .month: return "Melhor Valor"
             case .year: return "Mais Popular"
-            default: return ""
+            case .lifetime: return "Pague uma vez, use para sempre"
             }
         case "ru":
             switch periodType {
             case .week: return "Гибкость"
             case .month: return "Лучшая Цена"
             case .year: return "Популярный"
-            default: return ""
+            case .lifetime: return "Оплати один раз, используй всегда"
             }
         case "th":
             switch periodType {
             case .week: return "ยืดหยุ่น"
             case .month: return "คุ้มค่าที่สุด"
             case .year: return "ยอดนิยม"
-            default: return ""
+            case .lifetime: return "จ่ายครั้งเดียว ใช้ได้ตลอดชีพ"
             }
         case "tr":
             switch periodType {
             case .week: return "Esnek"
             case .month: return "En İyi Değer"
             case .year: return "En Popüler"
-            default: return ""
+            case .lifetime: return "Bir kez öde, sürekli kullan"
             }
         case "uk":
             switch periodType {
             case .week: return "Гнучкість"
             case .month: return "Найкраща Ціна"
             case .year: return "Популярний"
-            default: return ""
+            case .lifetime: return "Сплати один раз, використовуй завжди"
             }
         case "vi":
             switch periodType {
             case .week: return "Linh hoạt"
             case .month: return "Giá trị tốt nhất"
             case .year: return "Phổ biến nhất"
-            default: return ""
+            case .lifetime: return "Thanh toán một lần, sử dụng mãi mãi"
             }
         case "zh_Hans":
             switch periodType {
             case .week: return "灵活选择"
             case .month: return "性价比之选"
             case .year: return "最优惠"
-            default: return ""
+            case .lifetime: return "一次购买，终身访问"
             }
         case "zh_Hant":
             switch periodType {
             case .week: return "靈活選擇"
             case .month: return "性價比之選"
             case .year: return "最優惠"
-            default: return ""
+            case .lifetime: return "一次購買，終生訪問"
             }
         default:
             switch periodType {
             case .week: return "Flexible"
             case .month: return "Best Value"
             case .year: return "Most Popular"
-            default: return ""
+            case .lifetime: return "Pay once, own forever"
             }
         }
     }
@@ -791,7 +791,7 @@ public struct SubscriptionLocale {
         let currencySymbol = getCurrencySymbol(from: product)
         var productUnit = periodType.rawValue
         if let subscription = product.subscription {
-            productUnit = getUnit(from: subscription.subscriptionPeriod)
+            productUnit = getLocalizedUnit(languageCode: languageCode, numberOfPeriods: 1, unit: getUnit(from: subscription.subscriptionPeriod))
         }
         
         // 原价订阅描述：灵活选择、性价比之选、最优惠
@@ -801,11 +801,11 @@ public struct SubscriptionLocale {
             // 终身会员只返回描述
             return description
         } else if periodType == .week {
-            return buildDefaultSubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol, productUnit: productUnit)
+            return description + "," + buildDefaultSubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol, productUnit: productUnit)
         } else if periodType == .month {
-            return buildMonthlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
+            return description + "," + buildMonthlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
         } else if periodType == .year {
-            return buildYearlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
+            return description + "," +  buildYearlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
         }
         return buildDefaultSubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol, productUnit: productUnit)
     }

@@ -206,7 +206,8 @@ public class StoreKit2Manager {
         // 检查是否有自动续订
         if let subscription = product.subscription {
             // 是自动续订, 且有资格享受介绍性优惠
-            if await subscription.isEligibleForIntroOffer {
+            let isEligible = await subscription.isEligibleForIntroOffer
+            if isEligible {
                 // 介绍性优惠：免费试用，随用随付，提前支付
                 if subscription.introductoryOffer != nil {
                     return await SubscriptionLocale.introductoryOfferSubtitle(
@@ -255,7 +256,8 @@ public class StoreKit2Manager {
         // 检查是否有自动续订
         if let subscription = product.subscription {
             //是自动续订, 且有资格享受介绍性优惠
-            if await subscription.isEligibleForIntroOffer{
+            let isEligible = await subscription.isEligibleForIntroOffer
+            if isEligible {
                 //介绍性优惠：免费试用，随用随付，提前支付
                 if let introOffer = subscription.introductoryOffer {
                     switch introOffer.paymentMode {

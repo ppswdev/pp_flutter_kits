@@ -36,15 +36,30 @@ internal class StoreKitService: ObservableObject {
     private var isPurchasing = false
     private let purchasingQueue = DispatchQueue(label: "com.storekit.purchasing")
     
-    //订阅状态监听相关属性
+    // MARK: - 订阅状态监听相关属性
     
     /// 订阅状态缓存（产品ID -> 上次的订阅状态）
+    /// 
+    /// 用途：
+    /// - 存储每个订阅产品上次检查时的 RenewalState（已订阅/已过期/宽限期等）
+    /// - 用于比较状态变化，只有变化时才触发通知
+    /// - 避免重复通知相同的状态
     private var lastSubscriptionStatus: [String: Product.SubscriptionInfo.RenewalState] = [:]
     
     /// 续订信息缓存（产品ID -> 上次的续订信息）
+    /// 
+    /// 用途：
+    /// - 存储每个订阅产品上次检查时的 RenewalInfo（包含 willAutoRenew、expirationDate 等）
+    /// - 用于检测订阅取消：比较 willAutoRenew 从 true 变为 false
+    /// - 避免重复通知相同的续订信息
     private var lastRenewalInfo: [String: Product.SubscriptionInfo.RenewalInfo] = [:]
     
     /// 订阅状态检查间隔（秒），默认30秒
+    /// 
+    /// 说明：
+    /// - 自动监听任务会每隔此时间间隔检查一次订阅状态
+    /// - 可以根据应用需求调整（例如：更频繁的检查需要更小的值）
+    /// - 注意：过于频繁的检查可能会影响性能和电池寿命
     private let subscriptionCheckInterval: TimeInterval = 30
     
     // 当前状态
@@ -347,11 +362,21 @@ internal class StoreKitService: ObservableObject {
                 histories.append(history)
                 
                 // 检查是否退款或撤销
+                // 注意：在查询交易历史时，如果发现撤销的交易，也会触发状态通知
+                // 这样可以确保应用能够及时响应历史交易中的撤销事件
                 if transaction.revocationDate != nil {
                     await MainActor.run {
                         if transaction.productType == .autoRenewable {
-                            currentState = .subscriptionCancelled(transaction.productID)
+                            // 订阅产品被撤销/退款
+                            // 检查是否在免费试用期（通过交易中的 offer 信息判断）
+                            // 如果用户在免费试用期内退款，isFreeTrialCancelled 应该为 true
+                            let isFreeTrialCancelled = self.isFreeTrialTransaction(transaction)
+                            
+                            // 触发订阅取消通知（虽然实际上是撤销，但使用相同的状态）
+                            // 外部可以通过 isFreeTrialCancelled 来区分是否在免费试用期
+                            currentState = .subscriptionCancelled(transaction.productID, isFreeTrialCancelled: isFreeTrialCancelled)
                         } else {
+                            // 非订阅产品被退款
                             currentState = .purchaseRefunded(transaction.productID)
                         }
                     }
@@ -411,6 +436,59 @@ internal class StoreKitService: ObservableObject {
         }
     }
     
+    /// 检查交易是否在免费试用期
+    /// 
+    /// 功能说明：
+    /// - 通过检查交易中的优惠信息（offer）来判断该交易是否使用了免费试用优惠
+    /// - 判断标准：优惠类型是介绍性优惠（introductory）且支付模式是免费试用（freeTrial）
+    /// 
+    /// 使用场景：
+    /// 1. 订阅取消检测：判断用户是否在免费试用期内取消订阅
+    /// 2. 订阅撤销检测：判断用户是否在免费试用期内撤销/退款订阅
+    /// 3. 交易历史分析：统计免费试用期的交易数量
+    /// 
+    /// - Parameter transaction: 交易对象
+    /// - Returns: 如果交易使用的是免费试用优惠返回 true，否则返回 false
+    /// 
+    /// - Note: 
+    ///   - 此方法检查的是交易创建时使用的优惠，而不是当前时间点
+    ///   - 如果交易使用了免费试用优惠，即使试用期已过，此方法仍返回 true
+    ///   - 要判断"当前是否还在试用期内"，需要结合购买日期和试用期长度来计算
+    private func isFreeTrialTransaction(_ transaction: Transaction) -> Bool {
+        // iOS 17.2+ 使用新的 offer 属性
+        if #available(iOS 17.2, macOS 14.2, tvOS 17.2, watchOS 10.2, *) {
+            if let offer = transaction.offer {
+                // 检查优惠类型和支付模式
+                // 判断标准：
+                // 1. 优惠类型必须是介绍性优惠（introductory）
+                // 2. 支付模式必须是免费试用（freeTrial）
+                // 同时满足这两个条件，说明交易使用了免费试用优惠
+                if offer.type == .introductory,
+                   offer.paymentMode == .freeTrial {
+                    return true
+                }
+            }
+        } else {
+            // iOS 15.0 - iOS 17.1 使用已废弃的属性
+            if let offerType = transaction.offerType,
+               let paymentMode = transaction.offerPaymentModeStringRepresentation {
+                // 检查是否是介绍性优惠且支付模式是免费试用
+                // 注意：paymentMode 是字符串类型，需要与 "freeTrial" 比较
+                if offerType == .introductory,
+                   paymentMode == "freeTrial" {
+                    return true
+                }
+            }
+        }
+        
+        // 没有优惠信息或不是免费试用，返回 false
+        // 可能的情况：
+        // 1. 交易没有使用任何优惠（正常付费订阅）
+        // 2. 交易使用了其他类型的优惠（促销优惠、预付优惠等）
+        // 3. 交易使用了介绍性优惠但支付模式不是免费试用（如预付优惠）
+        return false
+    }
+    
     /// 监听交易状态流
     private func transactionStatusStream() -> Task<Void, Error> {
         return Task.detached { [weak self] in
@@ -423,11 +501,22 @@ internal class StoreKitService: ObservableObject {
                     await printTransactionDetails(transaction)
                     
                     // 检查是否退款或撤销
+                    // 注意：revocationDate 表示撤销/退款，与订阅取消（cancellation）不同
+                    // - 撤销（revocation）：通常是退款或违规导致的，会立即失效，通过 Transaction.updates 触发
+                    // - 取消（cancellation）：用户主动取消，订阅仍然有效直到过期，通过定期检查 subscription.status 检测
                     if transaction.revocationDate != nil {
                         await MainActor.run {
                             if transaction.productType == .autoRenewable {
-                                self.currentState = .subscriptionCancelled(transaction.productID)
+                                // 订阅产品被撤销/退款
+                                // 检查是否在免费试用期（通过交易中的 offer 信息判断）
+                                // 如果用户在免费试用期内退款，isFreeTrialCancelled 应该为 true
+                                let isFreeTrialCancelled = self.isFreeTrialTransaction(transaction)
+                                
+                                // 触发订阅取消通知（虽然实际上是撤销，但使用相同的状态）
+                                // 外部可以通过 isFreeTrialCancelled 来区分是否在免费试用期
+                                self.currentState = .subscriptionCancelled(transaction.productID, isFreeTrialCancelled: isFreeTrialCancelled)
                             } else {
+                                // 非订阅产品被退款
                                 // 有撤销日期通常表示退款
                                 self.currentState = .purchaseRefunded(transaction.productID)
                             }
@@ -452,23 +541,43 @@ internal class StoreKitService: ObservableObject {
     // MARK: - 订阅状态监听
     
     /// 启动订阅状态监听（定期检查）
+    /// 
+    /// 功能说明：
+    /// - 创建一个后台任务，定期检查所有已购买订阅的状态
+    /// - 检查间隔：默认30秒（可通过 subscriptionCheckInterval 调整）
+    /// - 检测内容：
+    ///   1. 订阅取消：通过比较 willAutoRenew 从 true 变为 false
+    ///   2. 订阅状态变化：通过比较 RenewalState 的变化（已订阅/已过期/宽限期等）
+    ///   3. 订阅撤销：检测到 revoked 状态时触发通知
+    /// - 通知机制：只有检测到变化时才触发状态通知，避免重复通知
+    /// - 生命周期：任务会在服务停止时自动取消
     private func startSubscriptionStatusListener() {
-        // 创建新的监听任务
+        // 创建新的监听任务（使用 weak self 避免循环引用）
         let task = Task { [weak self] in
             guard let self = self else { return }
             
+            // 持续监听，直到任务被取消
             while !Task.isCancelled {
+                // 检查所有订阅的状态（并行检查，提高效率）
                 await self.checkSubscriptionStatus()
                 
-                // 等待指定间隔（30秒）
+                // 等待指定间隔（默认30秒）后再次检查
+                // 使用 try? 忽略取消错误，因为任务取消是正常情况
                 try? await Task.sleep(nanoseconds: UInt64(self.subscriptionCheckInterval * 1_000_000_000))
             }
         }
         
+        // 将任务添加到任务列表，以便在停止服务时统一取消
         subscriberTasks.append(task)
     }
     
     /// 检查所有订阅的状态
+    /// 功能说明：
+    /// 1. 并行检查所有已购买的自动续订订阅的状态
+    /// 2. 比较续订信息（willAutoRenew）的变化，检测订阅取消
+    /// 3. 比较订阅状态（RenewalState）的变化，检测状态变更
+    /// 4. 更新缓存，只有变化时才通知，避免重复通知
+    /// 5. 触发相应的状态通知（subscriptionCancelled、subscriptionStatusChanged 等）
     @MainActor
     private func checkSubscriptionStatus() async {
         // 获取所有已购买的自动续订订阅
@@ -480,43 +589,214 @@ internal class StoreKitService: ObservableObject {
         // 如果没有订阅，直接返回
         guard !purchasedSubscriptions.isEmpty else { return }
         
-        // 使用 TaskGroup 并行检查所有订阅
-        await withTaskGroup(of: (String, Product.SubscriptionInfo.RenewalState?, Product.SubscriptionInfo.RenewalInfo?, Date?).self) { group in
+        // 使用 TaskGroup 并行检查所有订阅，提高效率
+        // 返回类型：(产品ID, 订阅状态, 续订信息, 过期日期, 是否在免费试用期)
+        await withTaskGroup(of: (String, Product.SubscriptionInfo.RenewalState?, Product.SubscriptionInfo.RenewalInfo?, Date?, Bool?).self) { group in
+            // 为每个订阅产品创建检查任务
             for product in purchasedSubscriptions {
                 group.addTask { [weak self] in
-                    guard let self = self else { return (product.id, nil, nil, nil) }
-                    guard let subscription = product.subscription else { return (product.id, nil, nil, nil) }
+                    guard let self = self else { return (product.id, nil, nil, nil, nil) }
+                    guard let subscription = product.subscription else { return (product.id, nil, nil, nil, nil) }
                     
                     do {
-                        // 获取订阅状态
+                        // 获取订阅状态数组（通常只有一个当前状态）
                         let statuses = try await subscription.status
-                        guard let currentStatus = statuses.first else { return (product.id, nil, nil, nil) }
+                        guard let currentStatus = statuses.first else { return (product.id, nil, nil, nil, nil) }
                         
                         let currentState = currentStatus.state
                         var renewalInfo: Product.SubscriptionInfo.RenewalInfo?
                         var expirationDate: Date?
+                        var isFreeTrial: Bool? = nil
                         
-                        // 获取续订信息
+                        // 获取续订信息（包含 willAutoRenew、expirationDate 等）
                         if case .verified(let info) = currentStatus.renewalInfo {
                             renewalInfo = info
                         }
                         
-                        // 从 Transaction 中获取过期日期
+                        // 从 Transaction 中获取过期日期和优惠信息
+                        // 注意：subscription.status 中的 transaction 是当前有效的交易
+                        // 如果用户取消了订阅，这个交易仍然是当前有效的，直到过期
                         if case .verified(let transaction) = currentStatus.transaction {
                             expirationDate = transaction.expirationDate
+                            
+                            // ========== 判断是否在免费试用期 ==========
+                            // 判断逻辑：
+                            // 1. 检查交易中的优惠信息（offer）
+                            // 2. 如果优惠类型是介绍性优惠（introductory）且支付模式是免费试用（freeTrial）
+                            // 3. 则说明当前订阅使用的是免费试用优惠，即用户在免费试用期内
+                            // 
+                            // 注意：
+                            // - 如果用户取消了订阅，但还在免费试用期内，isFreeTrial 应该为 true
+                            // - 如果用户取消了订阅，但已经过了免费试用期，isFreeTrial 应该为 false
+                            // - 这个判断基于当前有效交易的优惠信息，是准确的
+                            
+                            // iOS 17.2+ 使用新的 offer 属性
+                            if #available(iOS 17.2, macOS 14.2, tvOS 17.2, watchOS 10.2, *) {
+                                if let offer = transaction.offer {
+                                    // 检查优惠类型和支付模式
+                                    // 如果是介绍性优惠且支付模式是免费试用，则是在免费试用期
+                                    if offer.type == .introductory,
+                                       offer.paymentMode == .freeTrial {
+                                        isFreeTrial = true
+                                    } else {
+                                        // 其他情况：没有优惠、促销优惠、或其他支付模式，都不算免费试用期
+                                        isFreeTrial = false
+                                    }
+                                } else {
+                                    // 没有优惠信息，说明不在免费试用期（可能是正常付费订阅）
+                                    isFreeTrial = false
+                                }
+                            } else {
+                                // iOS 15.0 - iOS 17.1 使用已废弃的属性
+                                if let offerType = transaction.offerType,
+                                   let paymentMode = transaction.offerPaymentModeStringRepresentation {
+                                    // 检查是否是介绍性优惠且支付模式是免费试用
+                                    if offerType == .introductory,
+                                       paymentMode == "freeTrial" {
+                                        isFreeTrial = true
+                                    } else {
+                                        // 其他情况：没有优惠、促销优惠、或其他支付模式，都不算免费试用期
+                                        isFreeTrial = false
+                                    }
+                                } else {
+                                    // 没有优惠信息，说明不在免费试用期（可能是正常付费订阅）
+                                    isFreeTrial = false
+                                }
+                            }
+                        } else {
+                            // 如果无法获取交易信息，默认不在免费试用期
+                            isFreeTrial = false
                         }
                         
-                        return (product.id, currentState, renewalInfo, expirationDate)
+                        return (product.id, currentState, renewalInfo, expirationDate, isFreeTrial)
                     } catch {
                         print("获取订阅状态失败: \(product.id), 错误: \(error)")
-                        return (product.id, nil, nil, nil)
+                        return (product.id, nil, nil, nil, nil)
                     }
                 }
+            }
+            
+            // 收集所有任务的结果并处理状态变化
+            for await (productId, currentRenewalState, renewalInfo, expirationDate, isFreeTrial) in group {
+                // 跳过无效结果
+                guard let currentRenewalState = currentRenewalState else { continue }
+                
+                // 获取上次缓存的续订信息和状态
+                let lastInfo = self.lastRenewalInfo[productId]
+                let lastState = self.lastSubscriptionStatus[productId]
+                
+                // ========== 检测订阅取消 ==========
+                // 订阅取消的判断标准：willAutoRenew 从 true 变为 false
+                // 这表示用户主动取消了订阅，但订阅在过期日期前仍然有效
+                // 注意：订阅取消后，订阅仍然可以使用直到过期日期
+                if let lastInfo = lastInfo,
+                   let currentInfo = renewalInfo {
+                    // 检查 willAutoRenew 是否从 true 变为 false
+                    if lastInfo.willAutoRenew == true && currentInfo.willAutoRenew == false {
+                        // ========== 判断是否在免费试用期取消 ==========
+                        // 判断逻辑：
+                        // 1. isFreeTrial 为 true 表示当前有效交易使用的是免费试用优惠
+                        // 2. 如果用户在免费试用期内取消订阅，isFreeTrial 应该为 true
+                        // 3. 如果用户在付费订阅期内取消订阅，isFreeTrial 应该为 false
+                        // 
+                        // 使用场景：
+                        // - isFreeTrialCancelled = true：用户在免费试用期内取消，可以：
+                        //   * 显示"免费试用已取消"的提示
+                        //   * 提供重新订阅的引导
+                        //   * 统计免费试用取消率
+                        // - isFreeTrialCancelled = false：用户在付费订阅期内取消，可以：
+                        //   * 显示"订阅已取消，将在XX日期过期"的提示
+                        //   * 提供续订或重新订阅的引导
+                        //   * 统计付费订阅取消率
+                        let isFreeTrialCancelled = isFreeTrial ?? false
+                        
+                        // 订阅已取消，触发通知（包含是否在免费试用期取消的信息）
+                        if isFreeTrialCancelled {
+                            print("🔔 检测到订阅取消（免费试用期）: \(productId)")
+                            print("   说明：用户在免费试用期内取消了订阅，订阅将在试用期结束时失效")
+                        } else {
+                            print("🔔 检测到订阅取消（付费订阅期）: \(productId)")
+                            print("   说明：用户在付费订阅期内取消了订阅，订阅将在当前周期结束时失效")
+                        }
+                        
+                        // 触发状态通知，包含是否在免费试用期取消的信息
+                        // 外部可以通过这个信息来区分不同的取消场景，提供不同的处理逻辑
+                        self.currentState = .subscriptionCancelled(productId, isFreeTrialCancelled: isFreeTrialCancelled)
+                        
+                        // 打印过期日期信息，告知用户订阅何时失效
+                        if let expirationDate = expirationDate {
+                            let formatter = DateFormatter()
+                            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                            if isFreeTrialCancelled {
+                                print("   免费试用将在 \(formatter.string(from: expirationDate)) 过期")
+                            } else {
+                                print("   订阅将在 \(formatter.string(from: expirationDate)) 过期")
+                            }
+                        }
+                    }
+                }
+                
+                // ========== 检测订阅状态变化 ==========
+                // 比较当前状态和上次状态，如果不同则触发通知
+                // 这样可以检测到订阅从已订阅 -> 已过期、已订阅 -> 宽限期等状态变化
+                if let lastState = lastState, lastState != currentRenewalState {
+                    // 状态发生变化，根据不同的状态类型进行处理
+                    switch currentRenewalState {
+                    case .subscribed:
+                        // 订阅已激活（可能是新订阅或从其他状态恢复）
+                        print("📱 订阅状态变化: \(productId) -> 已订阅")
+                        // 注意：这里不触发状态通知，因为 subscribed 是正常状态
+                        
+                    case .expired:
+                        // 订阅已过期（用户无法再使用订阅功能）
+                        print("⏰ 订阅状态变化: \(productId) -> 已过期")
+                        // 注意：过期状态通常不需要额外通知，因为用户已经知道
+                        
+                    case .inGracePeriod:
+                        // 订阅在宽限期内（支付失败但仍在宽限期内，功能仍可用）
+                        print("⚠️ 订阅状态变化: \(productId) -> 宽限期")
+                        // 可以在这里触发通知，提醒用户更新支付方式
+                        
+                    case .inBillingRetryPeriod:
+                        // 订阅在计费重试期（支付失败，正在重试，功能仍可用）
+                        print("🔄 订阅状态变化: \(productId) -> 计费重试期")
+                        // 可以在这里触发通知，提醒用户更新支付方式
+                        
+                    case .revoked:
+                        // 订阅已撤销（可能是退款或违规，功能立即失效）
+                        print("❌ 订阅状态变化: \(productId) -> 已撤销")
+                        self.currentState = .purchaseRevoked(productId)
+                        
+                    default:
+                        print("❓ 订阅状态变化: \(productId) -> 未知状态: \(currentRenewalState)")
+                    }
+                }
+                
+                // ========== 更新缓存 ==========
+                // 更新续订信息缓存（用于下次比较 willAutoRenew 的变化）
+                if let renewalInfo = renewalInfo {
+                    self.lastRenewalInfo[productId] = renewalInfo
+                }
+                
+                // 更新订阅状态缓存（用于下次比较 RenewalState 的变化）
+                self.lastSubscriptionStatus[productId] = currentRenewalState
             }
         }
     }
     
     /// 手动检查订阅状态（供外部调用，在关键时机使用）
+    /// 
+    /// 使用场景：
+    /// - 应用启动时：确保订阅状态是最新的
+    /// - 应用进入前台时：检查是否有状态变化
+    /// - 用户打开订阅页面时：显示最新的订阅信息
+    /// - 购买/恢复购买后：立即检查订阅状态
+    /// - 用户从订阅管理页面返回时：检查是否有变化
+    /// 
+    /// 注意：
+    /// - 此方法会立即执行一次完整的订阅状态检查
+    /// - 与自动监听不同，此方法不会定期重复执行
+    /// - 建议在关键时机调用，避免频繁调用影响性能
     @MainActor
     func checkSubscriptionStatusManually() async {
         await checkSubscriptionStatus()

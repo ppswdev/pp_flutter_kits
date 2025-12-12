@@ -53,7 +53,10 @@ public enum StoreKitState: Equatable {
     case purchaseRevoked(String) // 产品ID
     
     /// 订阅已取消
-    case subscriptionCancelled(String) // 产品ID
+    /// - Parameters:
+    ///   - productId: 产品ID
+    ///   - isFreeTrialCancelled: 是否在免费试用期取消（true 表示在免费试用期内取消，false 表示在付费订阅期内取消）
+    case subscriptionCancelled(String, isFreeTrialCancelled: Bool)
     
     /// 发生错误
     case error(Error)
@@ -78,9 +81,10 @@ public enum StoreKitState: Equatable {
         case (.restorePurchasesFailed(let lhsError), .restorePurchasesFailed(let rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
         case (.purchaseRefunded(let lhsId), .purchaseRefunded(let rhsId)),
-             (.purchaseRevoked(let lhsId), .purchaseRevoked(let rhsId)),
-             (.subscriptionCancelled(let lhsId), .subscriptionCancelled(let rhsId)):
+             (.purchaseRevoked(let lhsId), .purchaseRevoked(let rhsId)):
             return lhsId == rhsId
+        case (.subscriptionCancelled(let lhsId, let lhsIsFreeTrial), .subscriptionCancelled(let rhsId, let rhsIsFreeTrial)):
+            return lhsId == rhsId && lhsIsFreeTrial == rhsIsFreeTrial
         case (.error(let lhsError), .error(let rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
         default:
