@@ -514,10 +514,12 @@ internal class StoreKitService: ObservableObject {
                                 
                                 // 触发订阅取消通知（虽然实际上是撤销，但使用相同的状态）
                                 // 外部可以通过 isFreeTrialCancelled 来区分是否在免费试用期
+                                print("🔔 检测到订阅取消: \(transaction.productID), isFreeTrialCancelled: \(isFreeTrialCancelled)")
                                 self.currentState = .subscriptionCancelled(transaction.productID, isFreeTrialCancelled: isFreeTrialCancelled)
                             } else {
                                 // 非订阅产品被退款
                                 // 有撤销日期通常表示退款
+                                print("🔔 检测到订阅退款: \(transaction.productID)")
                                 self.currentState = .purchaseRefunded(transaction.productID)
                             }
                         }
@@ -559,6 +561,11 @@ internal class StoreKitService: ObservableObject {
             // 持续监听，直到任务被取消
             while !Task.isCancelled {
                 // 检查所有订阅的状态（并行检查，提高效率）
+                let now = Date()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                formatter.timeZone = TimeZone.current
+                print("当前订阅检测时间: \(formatter.string(from: now))")
                 await self.checkSubscriptionStatus()
                 
                 // 等待指定间隔（默认30秒）后再次检查
