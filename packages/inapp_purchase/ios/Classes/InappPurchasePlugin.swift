@@ -246,7 +246,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         Task {
             do {
-                if let product = try await storeKitManager.getProduct(productId: productId) {
+                if let product = storeKitManager.product(for: productId) {
                     let productDict = ProductConverter.toDictionary(product)
                     result(productDict)
                 } else {
@@ -465,7 +465,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 请求应用评分
     private func requestReview() {
-        storeKitManager.requestReview()
+        Task {
+            @MainActor in
+            storeKitManager.requestReview()
+        }
     }
 
     // 处理状态变化

@@ -25,9 +25,9 @@ public struct StoreKitStateConverter {
         case .loadingProducts:
             dict["type"] = "loadingProducts"
             
-        case .productsLoaded(let products):
-            dict["type"] = "productsLoaded"
-            dict["products"] = ProductConverter.toDictionaryArray(products)
+//        case .productsLoaded(let products):
+//            dict["type"] = "productsLoaded"
+//            dict["products"] = ProductConverter.toDictionaryArray(products)
             
         case .loadingPurchases:
             dict["type"] = "loadingPurchases"
@@ -56,9 +56,9 @@ public struct StoreKitStateConverter {
             dict["productId"] = productId
             dict["error"] = String(describing: error)
             
-        case .subscriptionStatusChanged(let renewalState):
-            dict["type"] = "subscriptionStatusChanged"
-            dict["renewalState"] = renewalStateToString(renewalState)
+//        case .subscriptionStatusChanged(let renewalState):
+//            dict["type"] = "subscriptionStatusChanged"
+//            dict["renewalState"] = renewalStateToString(renewalState)
             
         case .restoringPurchases:
             dict["type"] = "restoringPurchases"

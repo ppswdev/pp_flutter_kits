@@ -371,7 +371,6 @@ public class StoreKit2Manager {
     /// 获取每个产品的最新交易
     /// - Returns: 最新交易数组，每个产品只保留最新一笔交易
     public func getLatestTransactions() async -> [Transaction] {
-        // 当前版本未支持过滤指定productId，仅返回全部产品的最新交易
         return latestTransactions
     }
     

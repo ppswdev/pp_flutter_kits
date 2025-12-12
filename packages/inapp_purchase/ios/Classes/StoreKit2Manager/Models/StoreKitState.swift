@@ -16,9 +16,6 @@ public enum StoreKitState: Equatable {
     /// 正在加载产品
     case loadingProducts
     
-    /// 产品加载成功
-    case productsLoaded([Product])
-    
     /// 正在加载已购买产品
     case loadingPurchases
     
@@ -39,9 +36,6 @@ public enum StoreKitState: Equatable {
     
     /// 购买失败
     case purchaseFailed(String, Error) // 产品ID, 错误
-    
-    /// 订阅状态变化
-    case subscriptionStatusChanged(Product.SubscriptionInfo.RenewalState)
     
     /// 正在恢复购买
     case restoringPurchases
@@ -71,8 +65,6 @@ public enum StoreKitState: Equatable {
              (.loadingPurchases, .loadingPurchases),
              (.purchasesLoaded, .purchasesLoaded):
             return true
-        case (.productsLoaded(let lhsProducts), .productsLoaded(let rhsProducts)):
-            return lhsProducts.map { $0.id } == rhsProducts.map { $0.id }
         case (.purchasing(let lhsId), .purchasing(let rhsId)),
              (.purchaseSuccess(let lhsId), .purchaseSuccess(let rhsId)),
              (.purchasePending(let lhsId), .purchasePending(let rhsId)),
@@ -80,8 +72,6 @@ public enum StoreKitState: Equatable {
             return lhsId == rhsId
         case (.purchaseFailed(let lhsId, _), .purchaseFailed(let rhsId, _)):
             return lhsId == rhsId
-        case (.subscriptionStatusChanged(let lhsState), .subscriptionStatusChanged(let rhsState)):
-            return lhsState == rhsState
         case (.restoringPurchases, .restoringPurchases),
              (.restorePurchasesSuccess, .restorePurchasesSuccess):
             return true

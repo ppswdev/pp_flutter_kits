@@ -26,7 +26,8 @@ public struct SubscriptionConverter {
         dict["subscriptionGroupID"] = subscription.subscriptionGroupID
         
         // 订阅周期
-        dict["subscriptionPeriod"] = subscriptionPeriodToDictionary(subscription.subscriptionPeriod)
+        dict["subscriptionPeriodCount"] = subscription.subscriptionPeriod.value
+        dict["subscriptionPeriodUnit"] = subscriptionPeriodUnitToString(subscription.subscriptionPeriod.unit)
         
         // 介绍性优惠（如果有）
         if let introOffer = subscription.introductoryOffer {
@@ -132,7 +133,7 @@ public struct SubscriptionConverter {
         
         // 优惠ID（介绍性优惠为 nil，确保是字符串类型）
         if let offerID = offer.id {
-            dict["id"] = String(describing: offerID)
+            dict["id"] = offerID
         } else {
             dict["id"] = NSNull()
         }
@@ -148,10 +149,11 @@ public struct SubscriptionConverter {
         dict["paymentMode"] = paymentModeToString(offer.paymentMode)
         
         // 优惠周期
-        dict["period"] = subscriptionPeriodToDictionary(offer.period)
+        dict["periodCount"] = offer.period.value
+        dict["periodUnit"] = subscriptionPeriodUnitToString(offer.period.unit)
         
         // 周期数量
-        dict["periodCount"] = offer.periodCount
+        dict["offerPeriodCount"] = offer.periodCount
         
         return dict
     }
