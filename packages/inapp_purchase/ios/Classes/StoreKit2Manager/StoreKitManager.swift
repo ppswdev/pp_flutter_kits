@@ -131,6 +131,7 @@ public class StoreKit2Manager {
     
     /// 手动刷新产品列表
     /// - Note: 会异步从 App Store 拉取最新的产品信息，更新本地产品列表
+    /// - Returns: 刷新后的产品列表，如果刷新失败返回 nil
     public func refreshProducts() async {
         await service?.loadProducts()
     }
@@ -138,8 +139,10 @@ public class StoreKit2Manager {
     /// 获取所有产品
     /// - Returns: 当前已知的全部产品列表
     public func getAllProducts() async -> [Product] {
-        if(self.allProducts.isEmpty){
-            await refreshProducts()
+        if(allProducts.isEmpty){
+            if let products = await service?.loadProducts() {
+                allProducts = products
+            }
         }
         return allProducts
     }

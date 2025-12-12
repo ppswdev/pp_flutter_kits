@@ -102,8 +102,9 @@ internal class StoreKitService: ObservableObject {
     }
     
     /// 从商店获取所有有效产品
+    /// - Returns: 加载的产品列表，如果加载失败返回 nil
     @MainActor
-    func loadProducts() async {
+    func loadProducts() async -> [Product]? {
         currentState = .loadingProducts
         
         do {
@@ -120,8 +121,10 @@ internal class StoreKitService: ObservableObject {
             }
 
             self.allProducts = products
+            return products
         } catch {
             currentState = .error(error)
+            return nil
         }
     }
     

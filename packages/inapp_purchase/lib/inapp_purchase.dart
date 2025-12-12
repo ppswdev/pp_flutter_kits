@@ -29,17 +29,20 @@ class InappPurchase {
   /// [lifetimeIds] - 终身会员产品ID列表
   /// [nonRenewableExpirationDays] - 非续订订阅的过期天数，默认7天
   /// [autoSortProducts] - 是否自动按价格排序产品
+  /// [showLog] - 是否显示日志，默认为false
   Future<void> configure({
     required List<String> productIds,
     required List<String> lifetimeIds,
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
+    bool showLog = false,
   }) {
     return InappPurchasePlatform.instance.configure(
       productIds: productIds,
       lifetimeIds: lifetimeIds,
       nonRenewableExpirationDays: nonRenewableExpirationDays,
       autoSortProducts: autoSortProducts,
+      showLog: showLog,
     );
   }
 

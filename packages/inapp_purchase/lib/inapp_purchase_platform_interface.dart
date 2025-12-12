@@ -24,6 +24,7 @@ abstract class InappPurchasePlatform extends PlatformInterface {
     required List<String> lifetimeIds,
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
+    bool showLog = true,
   });
 
   /// 获取所有产品信息

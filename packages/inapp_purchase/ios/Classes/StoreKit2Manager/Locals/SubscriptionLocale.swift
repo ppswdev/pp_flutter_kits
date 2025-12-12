@@ -230,7 +230,76 @@ public struct SubscriptionLocale {
             }
         }
     }
-    
+
+    /// 从 Product 的 displayPrice 中提取货币符号
+    /// 通过从 displayPrice 中移除价格数字部分来获取货币符号
+    /// - Parameter product: Product 对象
+    /// - Returns: 货币符号字符串
+    public static func getCurrencySymbol(from product: Product) -> String {
+        let displayPrice = product.displayPrice
+        let priceDecimal = product.price
+        let priceDouble = NSDecimalNumber(decimal: priceDecimal).doubleValue
+        
+        // 生成多种可能的价格格式字符串
+        var pricePatterns: [String] = []
+        
+        // 1. 标准格式 "9.99"
+        pricePatterns.append(String(format: "%.2f", priceDouble))
+        
+        // 2. 整数格式（如果价格是整数）
+        if priceDouble.truncatingRemainder(dividingBy: 1) == 0 {
+            pricePatterns.append(String(format: "%.0f", priceDouble))
+        }
+        
+        // 3. 一位小数格式 "9.9"（如果最后一位是0）
+        let priceString = String(format: "%.2f", priceDouble)
+        if priceString.hasSuffix("0") {
+            pricePatterns.append(String(format: "%.1f", priceDouble))
+        }
+        
+        // 4. 本地化格式（可能包含千位分隔符，如 "1,234.56" 或 "1.234,56"）
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        if let localizedPrice = formatter.string(from: NSNumber(value: priceDouble)) {
+            pricePatterns.append(localizedPrice)
+        }
+        
+        // 5. 本地化整数格式
+        if priceDouble.truncatingRemainder(dividingBy: 1) == 0 {
+            formatter.maximumFractionDigits = 0
+            if let localizedPrice = formatter.string(from: NSNumber(value: priceDouble)) {
+                pricePatterns.append(localizedPrice)
+            }
+        }
+        
+        // 从 displayPrice 中移除所有可能的价格格式
+        var cleanedPrice = displayPrice
+        for pattern in pricePatterns {
+            // 移除价格（处理前后可能有空格的情况）
+            cleanedPrice = cleanedPrice.replacingOccurrences(of: " \(pattern) ", with: " ")
+            cleanedPrice = cleanedPrice.replacingOccurrences(of: "\(pattern) ", with: " ")
+            cleanedPrice = cleanedPrice.replacingOccurrences(of: " \(pattern)", with: " ")
+            cleanedPrice = cleanedPrice.replacingOccurrences(of: pattern, with: "")
+        }
+        
+        // 进一步清理：移除所有数字、小数点、逗号
+        cleanedPrice = cleanedPrice.replacingOccurrences(of: #"\d"#, with: "", options: .regularExpression)
+        cleanedPrice = cleanedPrice.replacingOccurrences(of: #"[.,]"#, with: "", options: .regularExpression)
+        
+        // 清理多余的空格
+        cleanedPrice = cleanedPrice.trimmingCharacters(in: .whitespaces)
+        cleanedPrice = cleanedPrice.replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+        cleanedPrice = cleanedPrice.trimmingCharacters(in: .whitespaces)
+        
+        // 如果提取成功且不为空，返回货币符号
+        if !cleanedPrice.isEmpty {
+            return cleanedPrice
+        }
+        
+        // 后备方案：使用 Locale.current.currencySymbol
+        return Locale.current.currencySymbol ?? "$"
+    }
     // MARK: - 按钮文案
     
     /// 获取订阅按钮文案
@@ -717,8 +786,9 @@ public struct SubscriptionLocale {
     ///   - languageCode: 语言代码
     /// - Returns: 本地化的副标题
     public static func defaultSubtitle(product: Product, periodType: SubscriptionPeriodType, languageCode: String) -> String {
-        let price = product.price.formatted(product.priceFormatStyle)
-        let currencySymbol = Locale.current.currencySymbol ?? "$"
+        let priceDouble = NSDecimalNumber(decimal: product.price).doubleValue
+        let priceString = String(format: "%.2f", priceDouble)
+        let currencySymbol = getCurrencySymbol(from: product)
         var productUnit = periodType.rawValue
         if let subscription = product.subscription {
             productUnit = getUnit(from: subscription.subscriptionPeriod)
@@ -731,13 +801,13 @@ public struct SubscriptionLocale {
             // 终身会员只返回描述
             return description
         } else if periodType == .week {
-            return buildDefaultSubtitle(languageCode: languageCode, price: price, currencySymbol: currencySymbol, productUnit: productUnit)
+            return buildDefaultSubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol, productUnit: productUnit)
         } else if periodType == .month {
-            return buildMonthlySubtitle(languageCode: languageCode, price: price, currencySymbol: currencySymbol)
+            return buildMonthlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
         } else if periodType == .year {
-            return buildYearlySubtitle(languageCode: languageCode, price: price, currencySymbol: currencySymbol)
+            return buildYearlySubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol)
         }
-        return buildDefaultSubtitle(languageCode: languageCode, price: price, currencySymbol: currencySymbol, productUnit: productUnit)
+        return buildDefaultSubtitle(languageCode: languageCode, price: priceString, currencySymbol: currencySymbol, productUnit: productUnit)
     }
     
     /// 获取介绍性优惠副标题
@@ -751,8 +821,11 @@ public struct SubscriptionLocale {
             return ""
         }
         
-        let priceString = product.price.formatted(product.priceFormatStyle)
-        let currencySymbol = Locale.current.currencySymbol ?? "$"
+        let priceDouble = NSDecimalNumber(decimal: product.price).doubleValue
+        let priceString = String(format: "%.2f", priceDouble)
+        let currencySymbol = getCurrencySymbol(from: product)
+
+        //print("introductoryOfferSubtitle:priceString \(priceString) currencySymbol: \(currencySymbol)")
         
         // 获取产品单位
         let productUnit = getUnit(from: subscription.subscriptionPeriod)
@@ -817,8 +890,9 @@ public struct SubscriptionLocale {
             return ""
         }
         
-        let priceString = product.price.formatted(product.priceFormatStyle)
-        let currencySymbol = Locale.current.currencySymbol ?? "$"
+        let priceDouble = NSDecimalNumber(decimal: product.price).doubleValue
+        let priceString = String(format: "%.2f", priceDouble)
+        let currencySymbol = getCurrencySymbol(from: product)
         
         // 获取产品单位
         let productUnit = getUnit(from: subscription.subscriptionPeriod)
