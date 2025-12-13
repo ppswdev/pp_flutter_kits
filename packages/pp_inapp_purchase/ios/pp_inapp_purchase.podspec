@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint inapp_purchase.podspec` to validate before publishing.
+# Run `pod lib lint pp_inapp_purchase.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'inapp_purchase'
+  s.name             = 'pp_inapp_purchase'
   s.version          = '0.0.1'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC

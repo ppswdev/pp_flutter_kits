@@ -10,17 +10,15 @@ import 'src/transaction.dart';
 class MethodChannelInappPurchase extends InappPurchasePlatform {
   /// 方法通道
   @visibleForTesting
-  final methodChannel = const MethodChannel('pp_inapp_purchase');
+  final methodChannel = const MethodChannel('inapp_purchase');
 
   /// 事件通道
-  final stateEventChannel = const EventChannel(
-    'pp_inapp_purchase/state_events',
-  );
+  final stateEventChannel = const EventChannel('inapp_purchase/state_events');
   final productsEventChannel = const EventChannel(
-    'pp_inapp_purchase/products_events',
+    'inapp_purchase/products_events',
   );
   final transactionsEventChannel = const EventChannel(
-    'pp_inapp_purchase/transactions_events',
+    'inapp_purchase/transactions_events',
   );
 
   /// 是否显示日志

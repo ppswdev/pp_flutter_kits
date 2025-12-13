@@ -1,6 +1,6 @@
 name: pp_inapp_purchase
 description: "Flutter in-app purchase plugin, supporting iOS (StoreKit2) and Android platforms, providing a unified API interface to manage in-app purchase functionality."
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_inapp_purchase
 
 environment:
