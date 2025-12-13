@@ -31,7 +31,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private let storeKitManager = StoreKit2Manager.shared
     
     // 是否显示日志
-    private var _showLog = true
+    private var _showLog = false
     
     // 安全日志输出方法
     fileprivate func safeLog(_ message: String) {
@@ -189,18 +189,18 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 配置StoreKit
     private func configure(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 开始配置 StoreKit")
+        print("🔵 [iOS Plugin] 开始配置 StoreKit")
         guard let arguments = call.arguments as? [String: Any],
               let productIds = arguments["productIds"] as? [String],
               let lifetimeIds = arguments["lifetimeIds"] as? [String] else {
-            safeLog("❌ [iOS Plugin] configure 参数无效")
+            print("❌ [iOS Plugin] configure 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid configuration arguments", details: nil))
             return
         }
         
         let nonRenewableExpirationDays = arguments["nonRenewableExpirationDays"] as? Int ?? 7
         let autoSortProducts = arguments["autoSortProducts"] as? Bool ?? true
-        let showLog = arguments["showLog"] as? Bool ?? true
+        let showLog = arguments["showLog"] as? Bool ?? false
         
         _showLog = showLog
         
@@ -215,7 +215,8 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
             productIds: productIds,
             lifetimeIds: lifetimeIds,
             nonRenewableExpirationDays: nonRenewableExpirationDays,
-            autoSortProducts: autoSortProducts
+            autoSortProducts: autoSortProducts,
+            showLog: showLog
         )
         
         storeKitManager.configure(with: config)

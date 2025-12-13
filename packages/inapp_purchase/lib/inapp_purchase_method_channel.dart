@@ -741,8 +741,14 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
         .map((event) {
           safeLog('📨 [MethodChannel] 收到状态变化事件: $event');
           if (event is Map) {
-            // Safely convert keys to String for a properly typed Map<String, dynamic>
-            return event.map((key, value) => MapEntry(key.toString(), value));
+            // 使用 _deepConvertMap 递归转换嵌套的 Map，确保所有字段都被正确转换
+            try {
+              return _deepConvertMap(event);
+            } catch (e) {
+              safeLog('⚠️ [MethodChannel] onStateChanged 转换Map失败: $e，使用简单转换');
+              // 如果转换失败，尝试使用简单转换
+              return event.map((key, value) => MapEntry(key.toString(), value));
+            }
           } else {
             throw StateError('Received event is not a Map: $event');
           }
