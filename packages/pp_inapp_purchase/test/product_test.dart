@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:inapp_purchase/src/enums.dart';
-import 'package:inapp_purchase/src/product.dart';
+import 'package:pp_inapp_purchase/src/enums.dart';
+import 'package:pp_inapp_purchase/src/product.dart';
 
 void main() {
   test('Product.fromMap should correctly parse Swift JSON structure', () {

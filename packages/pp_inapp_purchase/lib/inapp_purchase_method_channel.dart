@@ -1,24 +1,26 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:inapp_purchase/src/product.dart';
-import 'package:inapp_purchase/src/transaction.dart';
 
 import 'inapp_purchase_platform_interface.dart';
+import 'src/product.dart';
+import 'src/transaction.dart';
 
 /// 基于MethodChannel的应用内购实现
 class MethodChannelInappPurchase extends InappPurchasePlatform {
   /// 方法通道
   @visibleForTesting
-  final methodChannel = const MethodChannel('inapp_purchase');
+  final methodChannel = const MethodChannel('pp_inapp_purchase');
 
   /// 事件通道
-  final stateEventChannel = const EventChannel('inapp_purchase/state_events');
+  final stateEventChannel = const EventChannel(
+    'pp_inapp_purchase/state_events',
+  );
   final productsEventChannel = const EventChannel(
-    'inapp_purchase/products_events',
+    'pp_inapp_purchase/products_events',
   );
   final transactionsEventChannel = const EventChannel(
-    'inapp_purchase/transactions_events',
+    'pp_inapp_purchase/transactions_events',
   );
 
   /// 是否显示日志

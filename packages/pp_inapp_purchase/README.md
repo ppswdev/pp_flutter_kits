@@ -25,7 +25,7 @@
 
 ```yaml
 dependencies:
-  inapp_purchase: ^1.0.0
+  pp_inapp_purchase: ^1.0.0
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。
@@ -35,7 +35,7 @@ dependencies:
 ### 初始化和配置
 
 ```dart
-import 'package:inapp_purchase/inapp_purchase.dart';
+import 'package:pp_inapp_purchase/inapp_purchase.dart';
 
 // 初始化插件
 final InappPurchase inappPurchase = InappPurchase.instance;

@@ -1,17 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:inapp_purchase/inapp_purchase.dart';
-import 'package:inapp_purchase/inapp_purchase_platform_interface.dart';
-import 'package:inapp_purchase/inapp_purchase_method_channel.dart';
-import 'package:inapp_purchase/src/product.dart';
-import 'package:inapp_purchase/src/transaction.dart';
+import 'package:pp_inapp_purchase/inapp_purchase.dart';
+import 'package:pp_inapp_purchase/inapp_purchase_platform_interface.dart';
+import 'package:pp_inapp_purchase/inapp_purchase_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockInappPurchasePlatform
     with MockPlatformInterfaceMixin
     implements InappPurchasePlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
@@ -21,6 +18,7 @@ class MockInappPurchasePlatform
     required List<String> lifetimeIds,
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
+    bool showLog = false,
   }) => Future.value();
 
   @override
@@ -39,7 +37,8 @@ class MockInappPurchasePlatform
   Future<List<Product>> getAutoRenewablesProducts() => Future.value([]);
 
   @override
-  Future<Product?> getProduct({required String productId}) => Future.value(null);
+  Future<Product?> getProduct({required String productId}) =>
+      Future.value(null);
 
   @override
   Future<void> purchase({required String productId}) => Future.value();
@@ -60,10 +59,12 @@ class MockInappPurchasePlatform
   Future<bool> isPurchased({required String productId}) => Future.value(false);
 
   @override
-  Future<bool> isFamilyShared({required String productId}) => Future.value(false);
+  Future<bool> isFamilyShared({required String productId}) =>
+      Future.value(false);
 
   @override
-  Future<bool> isEligibleForIntroOffer({required String productId}) => Future.value(false);
+  Future<bool> isEligibleForIntroOffer({required String productId}) =>
+      Future.value(false);
 
   @override
   Future<bool> checkSubscriptionStatus() => Future.value(false);
@@ -104,7 +105,8 @@ class MockInappPurchasePlatform
   Stream<List<Map<String, dynamic>>> get onProductsLoaded => Stream.empty();
 
   @override
-  Stream<Map<String, dynamic>> get onPurchasedTransactionsUpdated => Stream.empty();
+  Stream<Map<String, dynamic>> get onPurchasedTransactionsUpdated =>
+      Stream.empty();
 }
 
 void main() {

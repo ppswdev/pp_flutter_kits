@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:inapp_purchase/src/enums.dart';
-import 'package:inapp_purchase/src/transaction.dart';
+import 'package:pp_inapp_purchase/src/enums.dart';
+import 'package:pp_inapp_purchase/src/transaction.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
     test('Parse transaction.json file', () {
       // Read the JSON file
       final file = File(
-        '/Users/xiaopin/Desktop/AppDev/Projects/pp_flutter_kits/packages/inapp_purchase/example/json/transaction.json',
+        '/Users/xiaopin/Desktop/AppDev/Projects/pp_flutter_kits/packages/pp_inapp_purchase/example/json/transaction.json',
       );
       final jsonString = file.readAsStringSync();
       final List<dynamic> jsonList = json.decode(jsonString);
