@@ -1,0 +1,28 @@
+name: inapp_purchase
+description: "Flutter in-app purchase plugin, supporting iOS (StoreKit2) and Android platforms, providing a unified API interface to manage in-app purchase functionality."
+version: 1.0.0
+homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/inapp_purchase
+
+environment:
+  sdk: ^3.9.0
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  test: ^1.26.3
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.ppswdev.inapp_purchase
+        pluginClass: InappPurchasePlugin
+      ios:
+        pluginClass: InappPurchasePlugin

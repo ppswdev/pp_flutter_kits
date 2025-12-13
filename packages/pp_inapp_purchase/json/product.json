@@ -1,0 +1,124 @@
+[
+    {
+        "id": "com.ppswdev.store.inapp.weeklyvip",
+        "type": "autoRenewable",
+        "displayName": "Weekly VIP InApp",
+        "description": "Weekly VIP of in app",
+        "price": 9.99,
+        "displayPrice": "$9.99",
+        "isFamilyShareable": false,
+        "jsonRepresentation": "{\"attributes\":{\"description\":{\"standard\":\"Weekly VIP of in app\"},\"icuLocale\":\"en_US@currency=USD\",\"isFamilyShareable\":0,\"kind\":\"Auto-Renewable Subscription\",\"name\":\"Weekly VIP InApp\",\"offerName\":\"com.ppswdev.store.inapp.weeklyvip\",\"offers\":[{\"currencyCode\":\"USD\",\"discounts\":[{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"offerId\":\"free1week\",\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"AdhocOffer\"},{\"modeType\":\"PayAsYouGo\",\"numOfPeriods\":1,\"offerId\":\"payasyougo1week\",\"priceFormatted\":\"$1.99\",\"priceString\":\"1.99\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"AdhocOffer\"},{\"modeType\":\"PayUpFront\",\"numOfPeriods\":1,\"offerId\":\"payupfront1month\",\"priceFormatted\":\"$5.99\",\"priceString\":\"5.99\",\"recurringSubscriptionPeriod\":\"P1M\",\"type\":\"AdhocOffer\"},{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"offerId\":\"user_winback_freetrail\",\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P3D\",\"type\":\"Winback\"},{\"modeType\":\"PayUpFront\",\"numOfPeriods\":1,\"offerId\":\"user_winback_payupfront\",\"priceFormatted\":\"$0.99\",\"priceString\":\"0.99\",\"recurringSubscriptionPeriod\":\"P1M\",\"type\":\"Winback\"},{\"modeType\":\"PayAsYouGo\",\"numOfPeriods\":1,\"offerId\":\"user_winback_payasyougo\",\"priceFormatted\":\"$1.99\",\"priceString\":\"1.99\",\"recurringSubscriptionPeriod\":\"P1W\",\"type\":\"Winback\"},{\"modeType\":\"FreeTrial\",\"numOfPeriods\":1,\"priceFormatted\":\"$0.00\",\"priceString\":\"0.00\",\"recurringSubscriptionPeriod\":\"P3D\",\"type\":\"IntroOffer\"}],\"priceFormatted\":\"$9.99\",\"priceString\":\"9.99\",\"recurringSubscriptionPeriod\":\"P1W\"}],\"subscriptionFamilyId\":\"732E29F2\",\"subscriptionFamilyName\":\"mysubs\",\"subscriptionFamilyRank\":1},\"href\":\"\\/v1\\/catalog\\/usa\\/in-apps\\/D7180163\",\"id\":\"D7180163\",\"type\":\"in-apps\"}",
+        "subscription": {
+            "subscriptionGroupID": "732E29F2",
+            "subscriptionPeriodCount": 1,
+            "subscriptionPeriodUnit": "week",
+            "introductoryOffer": {
+                "id": null,
+                "type": "introductory",
+                "offerPeriodCount": 1,
+                "price": 0.0,
+                "displayPrice": "$0.00",
+                "paymentMode": "freeTrial",
+                "periodCount": 3,
+                "periodUnit": "day"
+            },
+            "promotionalOffers": [
+                {
+                    "id": "free1week",
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
+                    "price": 0.0,
+                    "displayPrice": "$0.00",
+                    "paymentMode": "freeTrial",
+                    "periodCount": 1,
+                    "periodUnit": "week"
+                },
+                {
+                    "id": "payasyougo1week",
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
+                    "price": 1.99,
+                    "displayPrice": "$1.99",
+                    "paymentMode": "payAsYouGo",
+                    "periodCount": 1,
+                    "periodUnit": "week"
+                },
+                {
+                    "id": "payupfront1month",
+                    "type": "promotional",
+                    "offerPeriodCount": 1,
+                    "price": 5.99,
+                    "displayPrice": "$5.99",
+                    "paymentMode": "payUpFront",
+                    "periodCount": 1,
+                    "periodUnit": "month"
+                }
+            ],
+            "winBackOffers": [
+                {
+                    "id": "user_winback_freetrail",
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
+                    "price": 0.0,
+                    "displayPrice": "$0.00",
+                    "paymentMode": "freeTrial",
+                    "periodCount": 3,
+                    "periodUnit": "day"
+                },
+                {
+                    "id": "user_winback_payupfront",
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
+                    "price": 0.99,
+                    "displayPrice": "$0.99",
+                    "paymentMode": "payUpFront",
+                    "periodCount": 1,
+                    "periodUnit": "month"
+                },
+                {
+                    "id": "user_winback_payasyougo",
+                    "type": "winBack",
+                    "offerPeriodCount": 1,
+                    "price": 1.99,
+                    "displayPrice": "$1.99",
+                    "paymentMode": "payAsYouGo",
+                    "periodCount": 1,
+                    "periodUnit": "week"
+                }
+            ]
+        }
+    },
+    {
+        "id": "com.ppswdev.store.non.monthlyvip",
+        "type": "nonRenewable",
+        "displayName": "Monthly VIP Once",
+        "description": "Once purchase monthly vip",
+        "price": 19.99,
+        "displayPrice": "$19.99",
+        "isFamilyShareable": false,
+        "jsonRepresentation": "{\"attributes\":{\"description\":{\"standard\":\"Once purchase monthly vip\"},\"icuLocale\":\"en_US@currency=USD\",\"isFamilyShareable\":0,\"kind\":\"Non-Renewing Subscription\",\"name\":\"Monthly VIP Once\",\"offerName\":\"com.ppswdev.store.non.monthlyvip\",\"offers\":[{\"currencyCode\":\"USD\",\"priceFormatted\":\"$19.99\",\"priceString\":\"19.99\"}]},\"href\":\"\\/v1\\/catalog\\/usa\\/in-apps\\/A8A4C5D2\",\"id\":\"A8A4C5D2\",\"type\":\"in-apps\"}",
+        "subscription": null
+    },
+    {
+        "id": "com.ppswdev.store.lifetimevip",
+        "type": "nonConsumable",
+        "displayName": "Lifetime Access",
+        "description": "Lifetime access vip",
+        "price": 39.99,
+        "displayPrice": "$39.99",
+        "isFamilyShareable": false,
+        "jsonRepresentation": "{\"attributes\":{\"description\":{\"standard\":\"Lifetime access vip\"},\"icuLocale\":\"en_US@currency=USD\",\"isFamilyShareable\":0,\"kind\":\"Non-Consumable\",\"name\":\"Lifetime Access\",\"offerName\":\"com.ppswdev.store.lifetimevip\",\"offers\":[{\"currencyCode\":\"USD\",\"priceFormatted\":\"$39.99\",\"priceString\":\"39.99\"}]},\"href\":\"\\/v1\\/catalog\\/usa\\/in-apps\\/891B8B94\",\"id\":\"891B8B94\",\"type\":\"in-apps\"}",
+        "subscription": null
+    },
+    {
+        "id": "com.ppswdev.store.goldcoin.10",
+        "type": "consumable",
+        "displayName": "Gold coin 10",
+        "description": "Gold coin 10 , for purchase",
+        "price": 0.99,
+        "displayPrice": "$0.99",
+        "isFamilyShareable": false,
+        "jsonRepresentation": "{\"attributes\":{\"description\":{\"standard\":\"Gold coin 10 , for purchase\"},\"icuLocale\":\"en_US@currency=USD\",\"isFamilyShareable\":0,\"kind\":\"Consumable\",\"name\":\"Gold coin 10\",\"offerName\":\"com.ppswdev.store.goldcoin.10\",\"offers\":[{\"currencyCode\":\"USD\",\"priceFormatted\":\"$0.99\",\"priceString\":\"0.99\"}]},\"href\":\"\\/v1\\/catalog\\/usa\\/in-apps\\/0FE3B8EB\",\"id\":\"0FE3B8EB\",\"type\":\"in-apps\"}",
+        "subscription": null
+    }
+]
