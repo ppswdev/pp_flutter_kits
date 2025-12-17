@@ -14,12 +14,12 @@ public struct SubscriptionConverter {
     
     // MARK: - SubscriptionInfo
     
-    /// 将 SubscriptionInfo 转换为 Dictionary（同步版本，不包含异步属性）
+    /// 将 SubscriptionInfo 转换为 Dictionary（自动从 subscription 中获取 isSubscribedButFreeTrailCancelled）
     /// - Parameters:
     ///   - subscription: SubscriptionInfo 对象
-    ///   - product: 关联的 Product 对象（可选）
-    /// - Returns: Dictionary 对象
-    public static func subscriptionInfoToDictionary(_ subscription: Product.SubscriptionInfo, product: Product? = nil) -> [String: Any] {
+    ///   - product: 关联的 Product 对象（可选，用于日志）
+    /// - Returns: Dictionary 对象，包含所有订阅信息（包括 isSubscribedButFreeTrailCancelled）
+    public static func subscriptionInfoToDictionary(_ subscription: Product.SubscriptionInfo, product: Product? = nil) async -> [String: Any] {
         var dict: [String: Any] = [:]
         
         // 订阅组ID
@@ -46,7 +46,57 @@ public struct SubscriptionConverter {
             dict["winBackOffers"] = []
         }
         
+        // 从 subscription 中获取 isSubscribedButFreeTrailCancelled
+        // 含义：产品或交易订单是在有效订阅期间内，但是在免费试用期取消了订阅时这个值为true，默认为false
+        dict["isSubscribedButFreeTrailCancelled"] = await isSubscribedButFreeTrailCancelled(subscription, product: product)
+        
         return dict
+    }
+    
+    /// 判断订阅是否在有效订阅期间内，但是在免费试用期取消了订阅
+    /// - Parameters:
+    ///   - subscription: SubscriptionInfo 对象
+    ///   - product: 关联的 Product 对象（可选，用于日志）
+    /// - Returns: 如果是在有效订阅期间内且在免费试用期取消返回 true，否则返回 false
+    /// - Note: 只有在订阅状态为 .subscribed（有效订阅）且已取消（willAutoRenew == false）且在免费试用期时，才返回 true
+    private static func isSubscribedButFreeTrailCancelled(_ subscription: Product.SubscriptionInfo, product: Product? = nil) async -> Bool {
+        do {
+            // 获取订阅状态
+            let statuses = try await subscription.status
+            guard let currentStatus = statuses.first else {
+                return false
+            }
+            
+            // 首先检查订阅状态是否为 .subscribed（有效订阅）
+            // 只有在有效订阅期间内才需要判断
+            guard currentStatus.state == .subscribed else {
+                return false
+            }
+            
+            // 检查是否已取消（willAutoRenew == false）
+            var isCancelled = false
+            if case .verified(let renewalInfo) = currentStatus.renewalInfo {
+                isCancelled = !renewalInfo.willAutoRenew
+            }
+            
+            // 如果未取消，直接返回 false
+            guard isCancelled else {
+                return false
+            }
+            
+            // 检查是否在免费试用期
+            var isFreeTrial = false
+            if case .verified(let transaction) = currentStatus.transaction {
+                isFreeTrial = isFreeTrialTransaction(transaction)
+            }
+            
+            // 只有在有效订阅期间内、已取消且处于免费试用期时，才返回 true
+            return isFreeTrial
+        } catch {
+            let productId = product?.id ?? "unknown"
+            print("获取订阅状态失败: \(productId), 错误: \(error)")
+            return false
+        }
     }
     
     // MARK: - RenewalInfo
@@ -232,6 +282,31 @@ public struct SubscriptionConverter {
             return nil
         }
         return jsonString
+    }
+    
+    /// 判断 Transaction 是否在免费试用期（私有辅助方法）
+    private static func isFreeTrialTransaction(_ transaction: Transaction) -> Bool {
+        // iOS 17.2+ 使用新的 offer 属性
+        if #available(iOS 17.2, macOS 14.2, tvOS 17.2, watchOS 10.2, visionOS 2.4, *) {
+            if let offer = transaction.offer {
+                // 检查优惠类型和支付模式
+                if offer.type == .introductory,
+                   offer.paymentMode == .freeTrial {
+                    return true
+                }
+            }
+        } else {
+            // iOS 15.0 - iOS 17.1 使用已废弃的属性
+            if let offerType = transaction.offerType,
+               let paymentMode = transaction.offerPaymentModeStringRepresentation {
+                if offerType == .introductory,
+                   paymentMode == "freeTrial" {
+                    return true
+                }
+            }
+        }
+        
+        return false
     }
 }
 

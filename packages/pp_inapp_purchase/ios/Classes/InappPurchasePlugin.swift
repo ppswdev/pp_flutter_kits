@@ -133,6 +133,9 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         case "isEligibleForIntroOffer":
             isEligibleForIntroOffer(call, result)
         
+        case "isSubscribedButFreeTrailCancelled":
+            isSubscribedButFreeTrailCancelled(call, result)
+        
         case "checkSubscriptionStatus":
             checkSubscriptionStatus(result)
         
@@ -228,16 +231,11 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getAllProducts(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getAllProducts")
         Task {
-            do {
-                let products = try await storeKitManager.getAllProducts()
-                safeLog("📥 [iOS Plugin] getAllProducts 成功: \(products.count) 个产品")
-                let productsDict = ProductConverter.toDictionaryArray(products)
-                safeLog("✅ [iOS Plugin] getAllProducts 转换完成，返回数据")
-                result(productsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getAllProducts 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_products_failed", message: error.localizedDescription, details: nil))
-            }
+            let products = await storeKitManager.getAllProducts()
+            safeLog("📥 [iOS Plugin] getAllProducts 成功: \(products.count) 个产品")
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            safeLog("✅ [iOS Plugin] getAllProducts 转换完成，返回数据")
+            result(productsDict)
         }
     }
     
@@ -245,15 +243,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getNonConsumablesProducts(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getNonConsumablesProducts")
         Task {
-            do {
-                let products = try await storeKitManager.getNonConsumablesProducts()
-                safeLog("📥 [iOS Plugin] getNonConsumablesProducts 成功: \(products.count) 个产品")
-                let productsDict = ProductConverter.toDictionaryArray(products)
-                result(productsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getNonConsumablesProducts 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_products_failed", message: error.localizedDescription, details: nil))
-            }
+            let products = await storeKitManager.getNonConsumablesProducts()
+            safeLog("📥 [iOS Plugin] getNonConsumablesProducts 成功: \(products.count) 个产品")
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            result(productsDict)
         }
     }
     
@@ -261,15 +254,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getConsumablesProducts(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getConsumablesProducts")
         Task {
-            do {
-                let products = try await storeKitManager.getConsumablesProducts()
-                safeLog("📥 [iOS Plugin] getConsumablesProducts 成功: \(products.count) 个产品")
-                let productsDict = ProductConverter.toDictionaryArray(products)
-                result(productsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getConsumablesProducts 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_products_failed", message: error.localizedDescription, details: nil))
-            }
+            let products = await storeKitManager.getConsumablesProducts()
+            safeLog("📥 [iOS Plugin] getConsumablesProducts 成功: \(products.count) 个产品")
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            result(productsDict)
         }
     }
     
@@ -277,15 +265,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getNonRenewablesProducts(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getNonRenewablesProducts")
         Task {
-            do {
-                let products = try await storeKitManager.getNonRenewablesProducts()
-                safeLog("📥 [iOS Plugin] getNonRenewablesProducts 成功: \(products.count) 个产品")
-                let productsDict = ProductConverter.toDictionaryArray(products)
-                result(productsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getNonRenewablesProducts 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_products_failed", message: error.localizedDescription, details: nil))
-            }
+            let products = await storeKitManager.getNonRenewablesProducts()
+            safeLog("📥 [iOS Plugin] getNonRenewablesProducts 成功: \(products.count) 个产品")
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            result(productsDict)
         }
     }
     
@@ -293,15 +276,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getAutoRenewablesProducts(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getAutoRenewablesProducts")
         Task {
-            do {
-                let products = try await storeKitManager.getAutoRenewablesProducts()
-                safeLog("📥 [iOS Plugin] getAutoRenewablesProducts 成功: \(products.count) 个产品")
-                let productsDict = ProductConverter.toDictionaryArray(products)
-                result(productsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getAutoRenewablesProducts 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_products_failed", message: error.localizedDescription, details: nil))
-            }
+            let products = await storeKitManager.getAutoRenewablesProducts()
+            safeLog("📥 [iOS Plugin] getAutoRenewablesProducts 成功: \(products.count) 个产品")
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            result(productsDict)
         }
     }
     
@@ -315,21 +293,16 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         }
         
         safeLog("🔵 [iOS Plugin] 调用 getProduct, productId: \(productId)")
-        Task {
-            do {
-                if let product = storeKitManager.product(for: productId) {
-                    safeLog("📥 [iOS Plugin] getProduct 找到产品: \(product.id)")
-                    let productDict = ProductConverter.toDictionary(product)
-                    safeLog("✅ [iOS Plugin] getProduct 转换完成，返回数据")
-                    result(productDict)
-                } else {
-                    safeLog("⚠️ [iOS Plugin] getProduct 未找到产品: \(productId)")
-                    result(nil)
-                }
-            } catch {
-                safeLog("❌ [iOS Plugin] getProduct 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_product_failed", message: error.localizedDescription, details: nil))
+        if let product = storeKitManager.product(for: productId) {
+            safeLog("📥 [iOS Plugin] getProduct 找到产品: \(product.id)")
+            Task {
+                let productDict = await ProductConverter.toDictionary(product)
+                safeLog("✅ [iOS Plugin] getProduct 转换完成，返回数据")
+                result(productDict)
             }
+        } else {
+            safeLog("⚠️ [iOS Plugin] getProduct 未找到产品: \(productId)")
+            result(nil)
         }
     }
     
@@ -344,14 +317,9 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         safeLog("🔵 [iOS Plugin] 调用 purchase, productId: \(productId)")
         Task {
-            do {
-                try await storeKitManager.purchase(productId: productId)
-                safeLog("✅ [iOS Plugin] purchase 调用成功")
-                result(nil)
-            } catch {
-                safeLog("❌ [iOS Plugin] purchase 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "purchase_failed", message: error.localizedDescription, details: nil))
-            }
+            await storeKitManager.purchase(productId: productId)
+            safeLog("✅ [iOS Plugin] purchase 调用成功")
+            result(nil)
         }
     }
     
@@ -374,14 +342,9 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func refreshPurchases(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 refreshPurchases")
         Task {
-            do {
-                try await storeKitManager.refreshPurchases()
-                safeLog("✅ [iOS Plugin] refreshPurchases 成功")
-                result(nil)
-            } catch {
-                safeLog("❌ [iOS Plugin] refreshPurchases 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "refresh_purchases_failed", message: error.localizedDescription, details: nil))
-            }
+            await storeKitManager.refreshPurchases()
+            safeLog("✅ [iOS Plugin] refreshPurchases 成功")
+            result(nil)
         }
     }
     
@@ -389,16 +352,11 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getValidPurchasedTransactions(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getValidPurchasedTransactions")
         Task {
-            do {
-                let transactions = try await storeKitManager.getValidPurchasedTransactions()
-                safeLog("📥 [iOS Plugin] getValidPurchasedTransactions 成功: \(transactions.count) 个交易")
-                let transactionsDict = TransactionConverter.toDictionaryArray(transactions)
-                safeLog("✅ [iOS Plugin] getValidPurchasedTransactions 转换完成，返回数据")
-                result(transactionsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getValidPurchasedTransactions 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_transactions_failed", message: error.localizedDescription, details: nil))
-            }
+            let transactions = await storeKitManager.getValidPurchasedTransactions()
+            safeLog("📥 [iOS Plugin] getValidPurchasedTransactions 成功: \(transactions.count) 个交易")
+            let transactionsDict = await TransactionConverter.toDictionaryArray(transactions)
+            safeLog("✅ [iOS Plugin] getValidPurchasedTransactions 转换完成，返回数据")
+            result(transactionsDict)
         }
     }
     
@@ -406,16 +364,11 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getLatestTransactions(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 getLatestTransactions")
         Task {
-            do {
-                let transactions = try await storeKitManager.getLatestTransactions()
-                safeLog("📥 [iOS Plugin] getLatestTransactions 成功: \(transactions.count) 个交易")
-                let transactionsDict = TransactionConverter.toDictionaryArray(transactions)
-                safeLog("✅ [iOS Plugin] getLatestTransactions 转换完成，返回数据")
-                result(transactionsDict)
-            } catch {
-                safeLog("❌ [iOS Plugin] getLatestTransactions 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_transactions_failed", message: error.localizedDescription, details: nil))
-            }
+            let transactions = await storeKitManager.getLatestTransactions()
+            safeLog("📥 [iOS Plugin] getLatestTransactions 成功: \(transactions.count) 个交易")
+            let transactionsDict = await TransactionConverter.toDictionaryArray(transactions)
+            safeLog("✅ [iOS Plugin] getLatestTransactions 转换完成，返回数据")
+            result(transactionsDict)
         }
     }
     
@@ -460,29 +413,36 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         safeLog("🔵 [iOS Plugin] 调用 isEligibleForIntroOffer, productId: \(productId)")
         Task {
-            do {
-                let isEligible = try await storeKitManager.isEligibleForIntroOffer(productId: productId)
-                safeLog("✅ [iOS Plugin] isEligibleForIntroOffer 返回: \(isEligible)")
-                result(isEligible)
-            } catch {
-                safeLog("❌ [iOS Plugin] isEligibleForIntroOffer 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "check_eligible_failed", message: error.localizedDescription, details: nil))
-            }
+            let isEligible = await storeKitManager.isEligibleForIntroOffer(productId: productId)
+            safeLog("✅ [iOS Plugin] isEligibleForIntroOffer 返回: \(isEligible)")
+            result(isEligible)
+        }
+    }
+    
+    // 检查产品是否在有效订阅期间内但在免费试用期已取消
+    private func isSubscribedButFreeTrailCancelled(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let arguments = call.arguments as? [String: Any],
+              let productId = arguments["productId"] as? String else {
+            safeLog("❌ [iOS Plugin] isSubscribedButFreeTrailCancelled 参数无效")
+            result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
+            return
+        }
+        
+        safeLog("🔵 [iOS Plugin] 调用 isSubscribedButFreeTrailCancelled, productId: \(productId)")
+        Task {
+            let isCancelled = await storeKitManager.isSubscribedButFreeTrailCancelled(productId: productId)
+            safeLog("✅ [iOS Plugin] isSubscribedButFreeTrailCancelled 返回: \(isCancelled)")
+            result(isCancelled)
         }
     }
     
     // 检查订阅状态
     private func checkSubscriptionStatus(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 checkSubscriptionStatus")
-        Task {
-            do {
-                let isActive = try await storeKitManager.checkSubscriptionStatus()
-                safeLog("✅ [iOS Plugin] checkSubscriptionStatus 返回: \(isActive)")
-                result(isActive)
-            } catch {
-                safeLog("❌ [iOS Plugin] checkSubscriptionStatus 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "check_subscription_status_failed", message: error.localizedDescription, details: nil))
-            }
+        Task { @MainActor in
+            await storeKitManager.checkSubscriptionStatus()
+            safeLog("✅ [iOS Plugin] checkSubscriptionStatus 完成")
+            result(nil)
         }
     }
     
@@ -498,17 +458,12 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 getProductForVipTitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode)")
-        Task {
-            do {
-                let title = storeKitManager.productForVipTitle(for: productId, periodType: periodType, languageCode: langCode)
-                safeLog("✅ [iOS Plugin] getProductForVipTitle 返回: \(title)")
-                result(title)
-            } catch {
-                safeLog("❌ [iOS Plugin] getProductForVipTitle 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_vip_title_failed", message: error.localizedDescription, details: nil))
-            }
-        }
+        let isShort = arguments["isShort"] as? Bool ?? false
+        
+        safeLog("🔵 [iOS Plugin] 调用 getProductForVipTitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode), isShort: \(isShort)")
+        let title = storeKitManager.productForVipTitle(for: productId, periodType: periodType, languageCode: langCode, isShort: isShort)
+        safeLog("✅ [iOS Plugin] getProductForVipTitle 返回: \(title)")
+        result(title)
     }
     
     // 获取VIP副标题
@@ -525,14 +480,9 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         safeLog("🔵 [iOS Plugin] 调用 getProductForVipSubtitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode)")
         Task {
-            do {
-                let subtitle = try await storeKitManager.productForVipSubtitle(for: productId, periodType: periodType, languageCode: langCode)
-                safeLog("✅ [iOS Plugin] getProductForVipSubtitle 返回: \(subtitle)")
-                result(subtitle)
-            } catch {
-                safeLog("❌ [iOS Plugin] getProductForVipSubtitle 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_vip_subtitle_failed", message: error.localizedDescription, details: nil))
-            }
+            let subtitle = await storeKitManager.productForVipSubtitle(for: productId, periodType: periodType, languageCode: langCode)
+            safeLog("✅ [iOS Plugin] getProductForVipSubtitle 返回: \(subtitle)")
+            result(subtitle)
         }
     }
     
@@ -548,52 +498,36 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         safeLog("🔵 [iOS Plugin] 调用 getProductForVipButtonText, productId: \(productId), langCode: \(langCode)")
         Task {
-            do {
-                let buttonText = try await storeKitManager.productForVipButtonText(for: productId, languageCode: langCode)
-                safeLog("✅ [iOS Plugin] getProductForVipButtonText 返回: \(buttonText)")
-                result(buttonText)
-            } catch {
-                safeLog("❌ [iOS Plugin] getProductForVipButtonText 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "get_vip_button_text_failed", message: error.localizedDescription, details: nil))
-            }
+            let buttonText = await storeKitManager.productForVipButtonText(for: productId, languageCode: langCode)
+            safeLog("✅ [iOS Plugin] getProductForVipButtonText 返回: \(buttonText)")
+            result(buttonText)
         }
     }
     
     // 显示管理订阅界面
     private func showManageSubscriptionsSheet(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 showManageSubscriptionsSheet")
-        Task {
-            do {
-                try await storeKitManager.showManageSubscriptionsSheet()
-                safeLog("✅ [iOS Plugin] showManageSubscriptionsSheet 成功")
-                result(nil)
-            } catch {
-                safeLog("❌ [iOS Plugin] showManageSubscriptionsSheet 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "show_manage_subscriptions_failed", message: error.localizedDescription, details: nil))
-            }
+        Task { @MainActor in
+            let success = await storeKitManager.showManageSubscriptionsSheet()
+            safeLog("✅ [iOS Plugin] showManageSubscriptionsSheet 返回: \(success)")
+            result(success)
         }
     }
     
     // 显示优惠码兑换界面
     private func presentOfferCodeRedeemSheet(_ result: @escaping FlutterResult) {
         safeLog("🔵 [iOS Plugin] 调用 presentOfferCodeRedeemSheet")
-        Task {
-            do {
-                let success = try await storeKitManager.presentOfferCodeRedeemSheet()
-                safeLog("✅ [iOS Plugin] presentOfferCodeRedeemSheet 返回: \(success)")
-                result(success)
-            } catch {
-                safeLog("❌ [iOS Plugin] presentOfferCodeRedeemSheet 失败: \(error.localizedDescription)")
-                result(FlutterError(code: "present_offer_code_redeem_sheet_failed", message: error.localizedDescription, details: nil))
-            }
+        Task { @MainActor in
+            let success = await storeKitManager.presentOfferCodeRedeemSheet()
+            safeLog("✅ [iOS Plugin] presentOfferCodeRedeemSheet 返回: \(success)")
+            result(success)
         }
     }
     
     // 请求应用评分
     private func requestReview() {
         safeLog("🔵 [iOS Plugin] 调用 requestReview")
-        Task {
-            @MainActor in
+        Task { @MainActor in
             storeKitManager.requestReview()
             safeLog("✅ [iOS Plugin] requestReview 调用完成")
         }
@@ -615,31 +549,35 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 处理产品加载
     private func handleProductsLoaded(_ products: [Product]) {
         safeLog("📨 [iOS Plugin] 处理产品加载: \(products.count) 个产品")
-        let productsDict = ProductConverter.toDictionaryArray(products)
-        safeLog("📤 [iOS Plugin] 发送产品加载事件到 Flutter: \(productsDict.count) 个产品")
-        if let productsEventSink = productsEventSink {
-            productsEventSink(productsDict)
-            safeLog("✅ [iOS Plugin] 产品加载事件已发送")
-        } else {
-            safeLog("⚠️ [iOS Plugin] productsEventSink 为 nil，无法发送产品加载事件")
+        Task {
+            let productsDict = await ProductConverter.toDictionaryArray(products)
+            safeLog("📤 [iOS Plugin] 发送产品加载事件到 Flutter: \(productsDict.count) 个产品")
+            if let productsEventSink = productsEventSink {
+                productsEventSink(productsDict)
+                safeLog("✅ [iOS Plugin] 产品加载事件已发送")
+            } else {
+                safeLog("⚠️ [iOS Plugin] productsEventSink 为 nil，无法发送产品加载事件")
+            }
         }
     }
     
     // 处理交易更新
     private func handleTransactionsUpdated(_ purchasedTransactions: [Transaction], _ latestTransactions: [Transaction]) {
         safeLog("📨 [iOS Plugin] 处理交易更新: purchasedTransactions=\(purchasedTransactions.count), latestTransactions=\(latestTransactions.count)")
-        let purchasedTransactionsDict = TransactionConverter.toDictionaryArray(purchasedTransactions)
-        let latestTransactionsDict = TransactionConverter.toDictionaryArray(latestTransactions)
-        let transactionData: [String: Any] = [
-            "purchasedTransactions": purchasedTransactionsDict,
-            "latestTransactions": latestTransactionsDict
-        ]
-        safeLog("📤 [iOS Plugin] 发送交易更新事件到 Flutter")
-        if let transactionsEventSink = transactionsEventSink {
-            transactionsEventSink(transactionData)
-            safeLog("✅ [iOS Plugin] 交易更新事件已发送")
-        } else {
-            safeLog("⚠️ [iOS Plugin] transactionsEventSink 为 nil，无法发送交易更新事件")
+        Task {
+            let purchasedTransactionsDict = await TransactionConverter.toDictionaryArray(purchasedTransactions)
+            let latestTransactionsDict = await TransactionConverter.toDictionaryArray(latestTransactions)
+            let transactionData: [String: Any] = [
+                "purchasedTransactions": purchasedTransactionsDict,
+                "latestTransactions": latestTransactionsDict
+            ]
+            safeLog("📤 [iOS Plugin] 发送交易更新事件到 Flutter")
+            if let transactionsEventSink = transactionsEventSink {
+                transactionsEventSink(transactionData)
+                safeLog("✅ [iOS Plugin] 交易更新事件已发送")
+            } else {
+                safeLog("⚠️ [iOS Plugin] transactionsEventSink 为 nil，无法发送交易更新事件")
+            }
         }
     }
 }

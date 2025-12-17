@@ -31,6 +31,7 @@ class Transaction {
   final String? deviceVerificationNonce;
   final String? deviceVerification;
   final TransactionOffer? offer;
+  final bool isSubscribedButFreeTrailCancelled;
 
   Transaction({
     this.id,
@@ -62,6 +63,7 @@ class Transaction {
     this.deviceVerificationNonce,
     this.deviceVerification,
     this.offer,
+    this.isSubscribedButFreeTrailCancelled = false,
   });
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
@@ -103,6 +105,8 @@ class Transaction {
       offer: map['offer'] != null
           ? TransactionOffer.fromMap(map['offer'] as Map<String, dynamic>)
           : null,
+      isSubscribedButFreeTrailCancelled:
+          map['isSubscribedButFreeTrailCancelled'] == true,
     );
   }
 
@@ -137,6 +141,7 @@ class Transaction {
       'deviceVerificationNonce': deviceVerificationNonce,
       'deviceVerification': deviceVerification,
       'offer': offer?.toMap(),
+      'isSubscribedButFreeTrailCancelled': isSubscribedButFreeTrailCancelled,
     };
   }
 }

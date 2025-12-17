@@ -65,6 +65,7 @@ class SubscriptionInfo {
   final SubscriptionOffer? introductoryOffer;
   final List<SubscriptionOffer>? promotionalOffers;
   final List<SubscriptionOffer>? winBackOffers;
+  final bool isSubscribedButFreeTrailCancelled;
 
   SubscriptionInfo({
     this.subscriptionGroupID,
@@ -73,6 +74,7 @@ class SubscriptionInfo {
     this.introductoryOffer,
     this.promotionalOffers,
     this.winBackOffers,
+    this.isSubscribedButFreeTrailCancelled = false,
   });
 
   factory SubscriptionInfo.fromMap(Map<String, dynamic> map) {
@@ -103,6 +105,8 @@ class SubscriptionInfo {
                 )
                 .toList()
           : null,
+      isSubscribedButFreeTrailCancelled:
+          map['isSubscribedButFreeTrailCancelled'] == true,
     );
   }
 
@@ -118,6 +122,7 @@ class SubscriptionInfo {
           ?.map((offer) => offer.toMap())
           .toList(),
       'winBackOffers': winBackOffers?.map((offer) => offer.toMap()).toList(),
+      'isSubscribedButFreeTrailCancelled': isSubscribedButFreeTrailCancelled,
     };
   }
 }

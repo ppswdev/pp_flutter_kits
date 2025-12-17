@@ -16,14 +16,14 @@ import AppKit
 
 /// StoreKit 内部服务类
 /// 负责与 StoreKit API 交互，处理产品加载、购买、交易监听等核心功能
-internal class StoreKitService: ObservableObject {
+internal final class StoreKitService: ObservableObject,@unchecked Sendable {
     private let config: StoreKitConfig
     weak var delegate: StoreKitServiceDelegate?
     
     /// 所有产品
     @Published private(set) var allProducts: [Product] = []
     /// 所有有效的非消耗和订阅交易记录集合
-    @Published private(set) var purchasedTransactions: [Transaction] = []
+    @Published private(set) var validTransactions: [Transaction] = []
     /// 每个产品的最新交易记录集合
     @Published private(set) var latestTransactions: [Transaction] = []
     
@@ -97,8 +97,8 @@ internal class StoreKitService: ObservableObject {
         
         Task {
             await clearUnfinishedTransactions()
-            await loadProducts()
-            await loadPurchasedTransactions()
+            let _ = await loadProducts()
+            await loadValidTransactions()
             
             // 初始检查订阅状态
             await checkSubscriptionStatus()
@@ -138,14 +138,14 @@ internal class StoreKitService: ObservableObject {
             self.allProducts = products
             return products
         } catch {
-            currentState = .error(error)
+            currentState = .error("StoreKitService.loadProduct",error.localizedDescription, String(describing: error))
             return nil
         }
     }
     
     /// 获取所有有效的非消耗品和订阅交易信息集合
     @MainActor
-    func loadPurchasedTransactions() async {
+    func loadValidTransactions() async {
         currentState = .loadingPurchases
         
         // 使用 TaskGroup 并行获取所有产品的最新交易记录
@@ -182,7 +182,7 @@ internal class StoreKitService: ObservableObject {
                 purchasedTransactions.append(transaction)
             }
         }
-        self.purchasedTransactions = purchasedTransactions
+        self.validTransactions = purchasedTransactions
         
         currentState = .purchasesLoaded
     }
@@ -194,37 +194,35 @@ internal class StoreKitService: ObservableObject {
             do {
                 // 使用统一的验证方法
                 let transaction = try verifyPurchase(result)
-                
                 // 验证成功，完成交易
                 await transaction.finish()
-                print("未完成交易，完成交易处理: \(transaction.productID)")
-                
+                currentState = .unfinishedCompelted
             } catch {
-                // 验证失败，记录错误但不完成交易
-                if case .unverified(let transaction, _) = result {
-                    print("未完成交易，交易验证失败，产品ID: \(transaction.productID) 错误\(error.localizedDescription)")
-                    
-                    // 更新状态
-                    currentState = .error(StoreKitError.verificationFailed)
-                }
-                
-                // 注意：验证失败时不要调用 finish()
+                currentState = .error("StoreKitService.clearUnfinishedTransactions", error.localizedDescription, String(describing: error))
             }
         }
     }
     
     /// 购买产品（带并发保护）
-    func purchase(_ product: Product) async throws {
+    func purchase(_ product: Product) async {
         // 并发购买保护
-        return try await withCheckedThrowingContinuation { continuation in
+        await withCheckedContinuation { continuation in
             purchasingQueue.async { [weak self] in
                 guard let self = self else {
-                    continuation.resume(throwing: StoreKitError.unknownError)
+                    // self 为 nil，设置错误状态
+                    Task { @MainActor in
+                        self?.currentState = .error("StoreKitService.purchase", "service released", "服务已释放")
+                    }
+                    continuation.resume()
                     return
                 }
                 
                 guard !self.isPurchasing else {
-                    continuation.resume(throwing: StoreKitError.purchaseInProgress)
+                    // 购买正在进行中，设置错误状态
+                    Task { @MainActor in
+                        self.currentState = .error("StoreKitService.purchase", "isPurchasing", "购买正在进行中，请等待当前购买完成")
+                    }
+                    continuation.resume()
                     return
                 }
                 
@@ -244,7 +242,7 @@ internal class StoreKitService: ObservableObject {
     }
     
     /// 执行购买
-    private func performPurchase(_ product: Product, continuation: CheckedContinuation<Void, Error>) async {
+    private func performPurchase(_ product: Product, continuation: CheckedContinuation<Void, Never>) async {
         await MainActor.run {
             currentState = .purchasing(product.id)
         }
@@ -256,7 +254,7 @@ internal class StoreKitService: ObservableObject {
             case .success(let verification):
                 do {
                     let transaction = try verifyPurchase(verification)
-                    
+                    // 打印产品详细信息
                     await printProductDetails(product)
                     // 打印详细的交易信息
                     await printTransactionDetails(transaction)
@@ -266,7 +264,7 @@ internal class StoreKitService: ObservableObject {
                     
                     // 然后刷新购买列表（消耗品不需要）
                     if product.type != .consumable {
-                        await loadPurchasedTransactions()
+                        await loadValidTransactions()
                     }
                     
                     await MainActor.run {
@@ -274,10 +272,12 @@ internal class StoreKitService: ObservableObject {
                     }
                     continuation.resume()
                 } catch {
+                    // 验证失败，通过状态返回错误
                     await MainActor.run {
-                        currentState = .purchaseFailed(product.id, error)
+                        currentState = .error("StoreKitService.performPurchase", error.localizedDescription, String(describing: error))
+                        currentState = .purchaseFailed(product.id, error.localizedDescription)
                     }
-                    continuation.resume(throwing: error)
+                    continuation.resume()
                 }
                 
             case .pending:
@@ -293,23 +293,73 @@ internal class StoreKitService: ObservableObject {
                 continuation.resume()
                 
             @unknown default:
-                let error = StoreKitError.unknownError
+                // 未知状态，通过状态返回错误
                 await MainActor.run {
-                    currentState = .purchaseFailed(product.id, error)
+                    currentState = .error("StoreKitService.performPurchase", "Unknown purchase status", "Unknown purchase status")
+                    currentState = .purchaseFailed(product.id, "Unknown purchase status")
                 }
-                continuation.resume(throwing: error)
+                continuation.resume()
             }
         } catch {
-            await MainActor.run {
-                currentState = .purchaseFailed(product.id, error)
+            // 购买过程出错，通过状态返回错误
+            // 这里捕获的是 product.purchase() 抛出的错误
+            // 可能是：Product.PurchaseError、StoreKit.StoreKitError 或其他系统错误
+            
+            let errorMessage: String
+            let errorDetails: String
+            let errorLocation: String
+            
+            // 根据错误类型获取详细信息
+            if let purchaseError = error as? Product.PurchaseError {
+                // Product.PurchaseError 类型的错误
+                // case purchaseNotAllowed        // 购买不被允许
+                // case purchaseUnavailable       // 购买不可用
+                // case invalidOfferIdentifier    // 无效的优惠标识符
+                // case invalidOfferPrice         // 无效的优惠价格
+                // case invalidOfferSignature     // 无效的优惠签名
+                // case invalidProductIdentifier  // 无效的产品标识符
+                // case productUnavailable        // 产品不可用
+                // case ineligibleForOffer        // 不符合优惠条件
+                // case invalidNonce              // 无效的 nonce
+                // case invalidSignature           // 无效的签名
+                // case missingOfferSignature     // 缺少优惠签名
+                // case unknown                   // 未知错误
+                errorMessage = purchaseError.localizedDescription
+                errorDetails = "Product.PurchaseError: \(String(describing: purchaseError))"
+                errorLocation = "StoreKitService.product.purchase"
+            } else if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
+                    let storeKitError = error as? StoreKit.StoreKitError {
+                // StoreKit.StoreKitError 类型的错误
+                // case networkError(URLError)
+                // case systemError(any Error)
+                // case userCancelled
+                // case notAvailableInStorefront
+                // case notEntitled
+                // case unknown
+                // case unsupported
+                errorMessage = storeKitError.localizedDescription
+                errorDetails = "StoreKit.StoreKitError: \(String(describing: storeKitError))"
+                errorLocation = "StoreKitService.product.purchase"
+            } else {
+                // 其他类型的未知错误
+                errorMessage = error.localizedDescription
+                errorDetails = "Other error: \(type(of: error)), \(String(describing: error))"
+                errorLocation = "StoreKitService.product.purchase"
             }
-            continuation.resume(throwing: error)
+            
+            await MainActor.run {
+                // 第一次通知：详细的错误信息（包含位置、描述、堆栈）
+                currentState = .error(errorLocation, errorMessage, errorDetails)
+                // 第二次通知：购买失败（包含产品ID和错误描述）
+                currentState = .purchaseFailed(product.id, errorMessage)
+            }
+            continuation.resume()
         }
     }
     
     /// 恢复购买
     @MainActor
-    func restorePurchases() async throws {
+    func restorePurchases() async {
         currentState = .restoringPurchases
         
         do {
@@ -318,11 +368,31 @@ internal class StoreKitService: ObservableObject {
             /// - 重要提示：此操作会提示用户进行身份验证，仅在用户交互时调用此函数。
             /// - 异常情况：如果用户身份验证不成功，或者 StoreKit 无法连接到 App Store。
             try await AppStore.sync()
-            await loadPurchasedTransactions()
+            await loadValidTransactions()
             currentState = .restorePurchasesSuccess
         } catch {
-            currentState = .restorePurchasesFailed(error)
-            throw StoreKitError.restorePurchasesFailed(error)
+            // 恢复购买失败，通过状态返回错误
+            // 这里捕获的是 AppStore.sync() 抛出的错误
+            // 可能是：StoreKit.StoreKitError（网络错误、系统错误等）
+            
+            let errorMessage: String
+            let errorDetails: String
+            
+            // 根据错误类型获取详细信息
+            if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
+            let storeKitError = error as? StoreKit.StoreKitError {
+                // StoreKit.StoreKitError 类型的错误
+                errorMessage = storeKitError.localizedDescription
+                errorDetails = "StoreKit.StoreKitError: \(String(describing: storeKitError))"
+            } else {
+                // 其他类型的错误（系统错误、网络错误等）
+                errorMessage = error.localizedDescription
+                errorDetails = "\(type(of: error)): \(String(describing: error))"
+            }
+            
+            // 通过状态返回错误（不抛出异常）
+            currentState = .error("StoreKitService.restorePurchases", errorMessage, errorDetails)
+            currentState = .restorePurchasesFailed(errorMessage)
         }
     }
     
@@ -332,12 +402,32 @@ internal class StoreKitService: ObservableObject {
         // 同步 App Store 的购买状态
         do {
             try await AppStore.sync()
+             // 重新获取已购买产品（会更新订阅状态）
+            await loadValidTransactions()
         } catch {
-            print("同步 App Store 状态失败: \(error)")
+            // 恢复购买失败，通过状态返回错误
+            // 这里捕获的是 AppStore.sync() 抛出的错误
+            // 可能是：StoreKit.StoreKitError（网络错误、系统错误等）
+            
+            let errorMessage: String
+            let errorDetails: String
+            
+            // 根据错误类型获取详细信息
+            if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
+            let storeKitError = error as? StoreKit.StoreKitError {
+                // StoreKit.StoreKitError 类型的错误
+                errorMessage = storeKitError.localizedDescription
+                errorDetails = "StoreKit.StoreKitError: \(String(describing: storeKitError))"
+            } else {
+                // 其他类型的错误（系统错误、网络错误等）
+                errorMessage = error.localizedDescription
+                errorDetails = "\(type(of: error)): \(String(describing: error))"
+            }
+            
+            // 通过状态返回错误（不抛出异常）
+            currentState = .error("StoreKitService.refreshPurchasesSync", errorMessage, errorDetails)
+            currentState = .restorePurchasesFailed(errorMessage)
         }
-        
-        // 重新获取已购买产品（会更新订阅状态）
-        await loadPurchasedTransactions()
     }
     
     
@@ -368,16 +458,13 @@ internal class StoreKitService: ObservableObject {
                     await MainActor.run {
                         if transaction.productType == .autoRenewable {
                             // 订阅产品被撤销/退款
-                            // 检查是否在免费试用期（通过交易中的 offer 信息判断）
-                            // 如果用户在免费试用期内退款，isFreeTrialCancelled 应该为 true
-                            let isFreeTrialCancelled = self.isFreeTrialTransaction(transaction)
-                            
-                            // 触发订阅取消通知（虽然实际上是撤销，但使用相同的状态）
-                            // 外部可以通过 isFreeTrialCancelled 来区分是否在免费试用期
-                            currentState = .subscriptionCancelled(transaction.productID, isFreeTrialCancelled: isFreeTrialCancelled)
+                            // 注意：撤销/退款后订阅立即失效，不再是"有效订阅期间内"
+                            // 所以 isSubscribedButFreeTrailCancelled 应该为 false
+                            // 这里使用 false，因为撤销/退款不是"有效订阅期间内"的情况
+                            self.currentState = .subscriptionCancelled(transaction.productID, isSubscribedButFreeTrailCancelled: false)
                         } else {
                             // 非订阅产品被退款
-                            currentState = .purchaseRefunded(transaction.productID)
+                            self.currentState = .purchaseRefunded(transaction.productID)
                         }
                     }
                 }
@@ -415,7 +502,7 @@ internal class StoreKitService: ObservableObject {
             .store(in: &cancellables)
         
         // 监听已购买产品变化
-        $purchasedTransactions
+        $validTransactions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transactions in
                 guard let self = self else { return }
@@ -430,7 +517,7 @@ internal class StoreKitService: ObservableObject {
     private func verifyPurchase<T>(_ verificationResult: VerificationResult<T>) throws -> T {
         switch verificationResult {
         case .unverified(_, let error):
-            throw StoreKitError.verificationFailed
+            throw error
         case .verified(let result):
             return result
         }
@@ -508,24 +595,21 @@ internal class StoreKitService: ObservableObject {
                         await MainActor.run {
                             if transaction.productType == .autoRenewable {
                                 // 订阅产品被撤销/退款
-                                // 检查是否在免费试用期（通过交易中的 offer 信息判断）
-                                // 如果用户在免费试用期内退款，isFreeTrialCancelled 应该为 true
-                                let isFreeTrialCancelled = self.isFreeTrialTransaction(transaction)
-                                
-                                // 触发订阅取消通知（虽然实际上是撤销，但使用相同的状态）
-                                // 外部可以通过 isFreeTrialCancelled 来区分是否在免费试用期
-                                print("🔔 检测到订阅取消: \(transaction.productID), isFreeTrialCancelled: \(isFreeTrialCancelled)")
-                                self.currentState = .subscriptionCancelled(transaction.productID, isFreeTrialCancelled: isFreeTrialCancelled)
+                                // 注意：撤销/退款后订阅立即失效，不再是"有效订阅期间内"
+                                // 所以 isSubscribedButFreeTrailCancelled 应该为 false
+                                // 这里使用 false，因为撤销/退款不是"有效订阅期间内"的情况
+                                print("🔔 检测到订阅撤销/退款: \(transaction.productID)")
+                                self.currentState = .subscriptionCancelled(transaction.productID, isSubscribedButFreeTrailCancelled: false)
                             } else {
                                 // 非订阅产品被退款
                                 // 有撤销日期通常表示退款
-                                print("🔔 检测到订阅退款: \(transaction.productID)")
+                                print("🔔 检测到产品退款: \(transaction.productID)")
                                 self.currentState = .purchaseRefunded(transaction.productID)
                             }
                         }
                     }
                     
-                    await self.loadPurchasedTransactions()
+                    await self.loadValidTransactions()
                     
                     await transaction.finish()
                 } catch {
@@ -589,8 +673,7 @@ internal class StoreKitService: ObservableObject {
     private func checkSubscriptionStatus() async {
         // 获取所有已购买的自动续订订阅
         let purchasedSubscriptions = allProducts.filter { product in
-            product.type == .autoRenewable && 
-            purchasedTransactions.contains(where: { $0.productID == product.id })
+            product.type == .autoRenewable
         }
         
         // 如果没有订阅，直接返回
@@ -700,41 +783,44 @@ internal class StoreKitService: ObservableObject {
                    let currentInfo = renewalInfo {
                     // 检查 willAutoRenew 是否从 true 变为 false
                     if lastInfo.willAutoRenew == true && currentInfo.willAutoRenew == false {
-                        // ========== 判断是否在免费试用期取消 ==========
+                        // ========== 判断是否在有效订阅期间内，但是在免费试用期取消 ==========
                         // 判断逻辑：
-                        // 1. isFreeTrial 为 true 表示当前有效交易使用的是免费试用优惠
-                        // 2. 如果用户在免费试用期内取消订阅，isFreeTrial 应该为 true
-                        // 3. 如果用户在付费订阅期内取消订阅，isFreeTrial 应该为 false
+                        // 1. 订阅状态必须是 .subscribed（有效订阅）
+                        // 2. willAutoRenew == false（已取消）
+                        // 3. isFreeTrial 为 true 表示当前有效交易使用的是免费试用优惠
+                        // 4. 只有同时满足以上三个条件，isSubscribedButFreeTrailCancelled 才为 true
                         // 
                         // 使用场景：
-                        // - isFreeTrialCancelled = true：用户在免费试用期内取消，可以：
+                        // - isSubscribedButFreeTrailCancelled = true：在有效订阅期间内，但是在免费试用期取消，可以：
                         //   * 显示"免费试用已取消"的提示
                         //   * 提供重新订阅的引导
                         //   * 统计免费试用取消率
-                        // - isFreeTrialCancelled = false：用户在付费订阅期内取消，可以：
+                        // - isSubscribedButFreeTrailCancelled = false：在有效订阅期间内，但是在付费订阅期取消，可以：
                         //   * 显示"订阅已取消，将在XX日期过期"的提示
                         //   * 提供续订或重新订阅的引导
                         //   * 统计付费订阅取消率
-                        let isFreeTrialCancelled = isFreeTrial ?? false
+                        // 
+                        // 注意：只有在订阅状态为 .subscribed 时才判断，其他状态（如 .expired）不判断
+                        let isSubscribedButFreeTrailCancelled = (currentRenewalState == .subscribed) && (isFreeTrial ?? false)
                         
-                        // 订阅已取消，触发通知（包含是否在免费试用期取消的信息）
-                        if isFreeTrialCancelled {
-                            print("🔔 检测到订阅取消（免费试用期）: \(productId)")
-                            print("   说明：用户在免费试用期内取消了订阅，订阅将在试用期结束时失效")
+                        // 订阅已取消，触发通知（包含是否在有效订阅期间内但在免费试用期取消的信息）
+                        if isSubscribedButFreeTrailCancelled {
+                            print("🔔 检测到订阅取消（有效订阅期间内，免费试用期）: \(productId)")
+                            print("   说明：在有效订阅期间内，但是在免费试用期内取消了订阅，订阅将在试用期结束时失效")
                         } else {
-                            print("🔔 检测到订阅取消（付费订阅期）: \(productId)")
-                            print("   说明：用户在付费订阅期内取消了订阅，订阅将在当前周期结束时失效")
+                            print("🔔 检测到订阅取消（有效订阅期间内，付费订阅期）: \(productId)")
+                            print("   说明：在有效订阅期间内，但是在付费订阅期内取消了订阅，订阅将在当前周期结束时失效")
                         }
                         
-                        // 触发状态通知，包含是否在免费试用期取消的信息
+                        // 触发状态通知，包含是否在有效订阅期间内但在免费试用期取消的信息
                         // 外部可以通过这个信息来区分不同的取消场景，提供不同的处理逻辑
-                        self.currentState = .subscriptionCancelled(productId, isFreeTrialCancelled: isFreeTrialCancelled)
+                        self.currentState = .subscriptionCancelled(productId, isSubscribedButFreeTrailCancelled: isSubscribedButFreeTrailCancelled)
                         
                         // 打印过期日期信息，告知用户订阅何时失效
                         if let expirationDate = expirationDate {
                             let formatter = DateFormatter()
                             formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                            if isFreeTrialCancelled {
+                            if isSubscribedButFreeTrailCancelled {
                                 print("   免费试用将在 \(formatter.string(from: expirationDate)) 过期")
                             } else {
                                 print("   订阅将在 \(formatter.string(from: expirationDate)) 过期")
@@ -843,7 +929,7 @@ extension StoreKitService{
                 if let windowScene = windowScene {
                     try await AppStore.showManageSubscriptions(in: windowScene)
                     
-                    await loadPurchasedTransactions()
+                    await loadValidTransactions()
                     
                     return true
                 } else {
@@ -887,7 +973,7 @@ extension StoreKitService{
     }
     
     /// 显示优惠代码兑换界面（iOS 16.0+）
-    /// - Throws: StoreKitError 如果显示失败
+    /// - Throws: StoreKit2Error 如果显示失败
     /// - Note: 兑换后的交易会通过 Transaction.updates 发出
     @MainActor
     @available(iOS 16.0, visionOS 1.0, *)
@@ -902,19 +988,20 @@ extension StoreKitService{
             .first
         
         guard let windowScene = windowScene else {
-            throw StoreKitError.unknownError
+            currentState = .error("StoreKitService.presentOfferCodeRedeemSheet", "windowScene is nil", "windowScene is nil")
+            return;
         }
         
         do {
             try await AppStore.presentOfferCodeRedeemSheet(in: windowScene)
             // 兑换后的交易会通过 Transaction.updates 自动处理
             // 这里可以刷新购买列表以确保数据同步
-            await loadPurchasedTransactions()
+            await loadValidTransactions()
         } catch {
-            throw StoreKitError.purchaseFailed(error)
+            currentState = .error("StoreKitService.presentOfferCodeRedeemSheet", error.localizedDescription, String(describing: error))
         }
         #else
-        throw StoreKitError.unknownError
+        throw StoreKit2Error.unknownError
         #endif
     }
     
@@ -936,7 +1023,11 @@ extension StoreKitService{
             // iOS 15.0 (以及 iOS 10.3-15.x) 使用 StoreKit 1 的 API
             // 在 iOS 15 中，StoreKit 2 存在，但 AppStore.requestReview 需要 iOS 16+
             // 所以回退到 StoreKit 1 的 SKStoreReviewController
-            SKStoreReviewController.requestReview()
+            if let windowScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first {
+                SKStoreReviewController.requestReview(in: windowScene)
+            }
         }
         #elseif os(macOS)
         if #available(macOS 13.0, *) {
@@ -962,8 +1053,8 @@ extension StoreKitService{
     
     /// 通知已购买交易订单更新（在主线程执行）
     @MainActor
-    private func notifyPurchasedTransactionsUpdated(_ efficient: [Transaction], _ latests: [Transaction]) {
-        delegate?.service(self, didUpdatePurchasedTransactions: efficient, latests: latests)
+    private func notifyPurchasedTransactionsUpdated(_ validTrans: [Transaction], _ latestTrans: [Transaction]) {
+        delegate?.service(self, didUpdatePurchasedTransactions: validTrans, latestTrans: latestTrans)
     }
     
     /// 通知状态变化（在主线程执行）
@@ -1054,7 +1145,7 @@ extension StoreKitService{
             }
         }
         
-        let productJSON = ProductConverter.toDictionary(product)
+        let productJSON = await ProductConverter.toDictionary(product)
         print("   - JSON表示: \(productJSON)")
     }
     
@@ -1294,7 +1385,7 @@ extension StoreKitService{
         print("════════════════════════════════════════")
         print("")
 
-        let transactionJSON = TransactionConverter.toDictionary(transaction)
+        let transactionJSON = await TransactionConverter.toDictionary(transaction)
         print("   - JSON表示: \(transactionJSON)")
     }
 }

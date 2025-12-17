@@ -15,45 +15,45 @@ public struct StoreKitConverter {
     // MARK: - Product 转换
     
     /// 将 Product 转换为 Dictionary
-    public static func productToDictionary(_ product: Product) -> [String: Any] {
-        return ProductConverter.toDictionary(product)
+    public static func productToDictionary(_ product: Product) async -> [String: Any] {
+        return await ProductConverter.toDictionary(product)
     }
     
     /// 将 Product 数组转换为 Dictionary 数组
-    public static func productsToDictionaryArray(_ products: [Product]) -> [[String: Any]] {
-        return ProductConverter.toDictionaryArray(products)
+    public static func productsToDictionaryArray(_ products: [Product]) async -> [[String: Any]] {
+        return await ProductConverter.toDictionaryArray(products)
     }
 
     /// 将 Product 转换为 JSON 字符串
-    public static func productToJSONString(_ product: Product) -> String? {
-        return ProductConverter.toJSONString(product)
+    public static func productToJSONString(_ product: Product) async -> String? {
+        return await ProductConverter.toJSONString(product)
     }
     
     /// 将 Product 数组转换为 JSON 字符串
-    public static func productsToJSONString(_ products: [Product]) -> String? {
-        return ProductConverter.toJSONString(products)
+    public static func productsToJSONString(_ products: [Product]) async -> String? {
+        return await ProductConverter.toJSONString(products)
     }
     
     // MARK: - Transaction 转换
     
     /// 将 Transaction 转换为 Dictionary
-    public static func transactionToDictionary(_ transaction: Transaction) -> [String: Any] {
-        return TransactionConverter.toDictionary(transaction)
+    public static func transactionToDictionary(_ transaction: Transaction) async -> [String: Any] {
+        return await TransactionConverter.toDictionary(transaction)
     }
     
     /// 将 Transaction 数组转换为 Dictionary 数组
-    public static func transactionsToDictionaryArray(_ transactions: [Transaction]) -> [[String: Any]] {
-        return TransactionConverter.toDictionaryArray(transactions)
+    public static func transactionsToDictionaryArray(_ transactions: [Transaction]) async -> [[String: Any]] {
+        return await TransactionConverter.toDictionaryArray(transactions)
     }
     
     /// 将 Transaction 转换为 JSON 字符串
-    public static func transactionToJSONString(_ transaction: Transaction) -> String? {
-        return TransactionConverter.toJSONString(transaction)
+    public static func transactionToJSONString(_ transaction: Transaction) async -> String? {
+        return await TransactionConverter.toJSONString(transaction)
     }
     
     /// 将 Transaction 数组转换为 JSON 字符串
-    public static func transactionsToJSONString(_ transactions: [Transaction]) -> String? {
-        return TransactionConverter.toJSONString(transactions)
+    public static func transactionsToJSONString(_ transactions: [Transaction]) async -> String? {
+        return await TransactionConverter.toJSONString(transactions)
     }
     
     // MARK: - StoreKitState 转换
@@ -90,8 +90,8 @@ public struct StoreKitConverter {
     // MARK: - SubscriptionInfo 转换
     
     /// 将 SubscriptionInfo 转换为 Dictionary
-    public static func subscriptionInfoToDictionary(_ subscription: Product.SubscriptionInfo, product: Product? = nil) -> [String: Any] {
-        return SubscriptionConverter.subscriptionInfoToDictionary(subscription, product: product)
+    public static func subscriptionInfoToDictionary(_ subscription: Product.SubscriptionInfo, product: Product? = nil) async -> [String: Any] {
+        return await SubscriptionConverter.subscriptionInfoToDictionary(subscription, product: product)
     }
 
 }

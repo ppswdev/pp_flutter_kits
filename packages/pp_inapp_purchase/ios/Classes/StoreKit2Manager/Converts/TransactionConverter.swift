@@ -12,10 +12,10 @@ import StoreKit
 /// 将 Transaction 对象转换为可序列化的基础数据类型（Dictionary/JSON）
 public struct TransactionConverter {
     
-    /// 将 Transaction 转换为 Dictionary（可序列化为 JSON）
+    /// 将 Transaction 转换为 Dictionary（可序列化为 JSON，自动从 productID 查询 isSubscribedButFreeTrailCancelled）
     /// - Parameter transaction: Transaction 对象
-    /// - Returns: Dictionary 对象，包含所有交易信息
-    public static func toDictionary(_ transaction: Transaction) -> [String: Any] {
+    /// - Returns: Dictionary 对象，包含所有交易信息（包括 isSubscribedButFreeTrailCancelled）
+    public static func toDictionary(_ transaction: Transaction) async -> [String: Any] {
         var dict: [String: Any] = [:]
         
         // 基本信息
@@ -155,29 +155,50 @@ public struct TransactionConverter {
         // 注意：Transaction.AdvancedCommerceInfo 的具体结构需要根据实际 API 调整
         // 暂不处理
         
+        // 从 transaction.productID 查询是否在有效订阅期间内，但是在免费试用期取消了订阅
+        // 只有自动续订订阅才需要查询
+        // 含义：产品或交易订单是在有效订阅期间内，但是在免费试用期取消了订阅时这个值为true，默认为false
+        if transaction.productType == .autoRenewable {
+            dict["isSubscribedButFreeTrailCancelled"] = await isSubscribedButFreeTrailCancelledForProduct(productID: transaction.productID)
+        } else {
+            dict["isSubscribedButFreeTrailCancelled"] = false
+        }
+        
         return dict
     }
     
     /// 将 Transaction 数组转换为 Dictionary 数组
     /// - Parameter transactions: Transaction 数组
     /// - Returns: Dictionary 数组
-    public static func toDictionaryArray(_ transactions: [Transaction]) -> [[String: Any]] {
-        return transactions.map { toDictionary($0) }
+    public static func toDictionaryArray(_ transactions: [Transaction]) async -> [[String: Any]] {
+        return await withTaskGroup(of: [String: Any].self) { group in
+            for transaction in transactions {
+                group.addTask {
+                    await toDictionary(transaction)
+                }
+            }
+            
+            var result: [[String: Any]] = []
+            for await dict in group {
+                result.append(dict)
+            }
+            return result
+        }
     }
     
     /// 将 Transaction 转换为 JSON 字符串
     /// - Parameter transaction: Transaction 对象
     /// - Returns: JSON 字符串
-    public static func toJSONString(_ transaction: Transaction) -> String? {
-        let dict = toDictionary(transaction)
+    public static func toJSONString(_ transaction: Transaction) async -> String? {
+        let dict = await toDictionary(transaction)
         return dictionaryToJSONString(dict)
     }
     
     /// 将 Transaction 数组转换为 JSON 字符串
     /// - Parameter transactions: Transaction 数组
     /// - Returns: JSON 字符串
-    public static func toJSONString(_ transactions: [Transaction]) -> String? {
-        let array = toDictionaryArray(transactions)
+    public static func toJSONString(_ transactions: [Transaction]) async -> String? {
+        let array = await toDictionaryArray(transactions)
         return arrayToJSONString(array)
     }
     
@@ -470,6 +491,84 @@ public struct TransactionConverter {
             return nil
         }
         return jsonString
+    }
+    
+    /// 判断指定 productID 的订阅是否在有效订阅期间内，但是在免费试用期取消了订阅
+    /// - Parameter productID: 产品ID
+    /// - Returns: 如果是在有效订阅期间内且在免费试用期取消返回 true，否则返回 false
+    /// - Note: 只有在订阅状态为 .subscribed（有效订阅）且已取消（willAutoRenew == false）且在免费试用期时，才返回 true
+    private static func isSubscribedButFreeTrailCancelledForProduct(productID: String) async -> Bool {
+        do {
+            // 通过 productID 获取 Product
+            guard let product = try await Product.products(for: [productID]).first else {
+                return false
+            }
+            
+            // 检查是否是订阅产品
+            guard let subscription = product.subscription else {
+                return false
+            }
+            
+            // 获取订阅状态
+            let statuses = try await subscription.status
+            guard let currentStatus = statuses.first else {
+                return false
+            }
+            
+            // 首先检查订阅状态是否为 .subscribed（有效订阅）
+            // 只有在有效订阅期间内才需要判断
+            guard currentStatus.state == .subscribed else {
+                return false
+            }
+            
+            // 检查是否已取消（willAutoRenew == false）
+            var isCancelled = false
+            if case .verified(let renewalInfo) = currentStatus.renewalInfo {
+                isCancelled = !renewalInfo.willAutoRenew
+            }
+            
+            // 如果未取消，直接返回 false
+            guard isCancelled else {
+                return false
+            }
+            
+            // 检查是否在免费试用期
+            var isFreeTrial = false
+            if case .verified(let transaction) = currentStatus.transaction {
+                isFreeTrial = isFreeTrialTransaction(transaction)
+            }
+            
+            // 只有在有效订阅期间内、已取消且处于免费试用期时，才返回 true
+            return isFreeTrial
+        } catch {
+            print("查询订阅状态失败: \(productID), 错误: \(error)")
+            return false
+        }
+    }
+    
+    /// 判断 Transaction 是否在免费试用期（私有辅助方法）
+    private static func isFreeTrialTransaction(_ transaction: Transaction) -> Bool {
+        // iOS 17.2+ 使用新的 offer 属性
+        if #available(iOS 17.2, macOS 14.2, tvOS 17.2, watchOS 10.2, visionOS 2.4, *) {
+            if let offer = transaction.offer {
+                // 检查优惠类型和支付模式
+                if offer.type == .introductory,
+                   offer.paymentMode == .freeTrial {
+                    return true
+                }
+            }
+        } else {
+            // iOS 15.0 - iOS 17.1 使用已废弃的属性
+            if let offerType = transaction.offerType,
+               let paymentMode = transaction.offerPaymentModeStringRepresentation {
+                if offerType == .introductory,
+                   paymentMode == "freeTrial" {
+                    return true
+                }
+            }
+        }
+        
+        return false
     }
 }
 

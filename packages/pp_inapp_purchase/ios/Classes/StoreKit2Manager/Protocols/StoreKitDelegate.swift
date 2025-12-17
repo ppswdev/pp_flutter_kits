@@ -26,9 +26,9 @@ public protocol StoreKitDelegate: AnyObject {
     /// 已购买交易订单更新回调
     /// - Parameters:
     ///   - manager: StoreKit2Manager 实例
-    ///   - efficient: 已购买的交易订单（有效的交易）
-    ///   - latests: 每个产品的最新交易记录
-    func storeKit(_ manager: StoreKit2Manager, didUpdatePurchasedTransactions efficient: [Transaction], latests: [Transaction])
+    ///   - validTrans: 已购买的交易订单（有效的交易）
+    ///   - latestTrans: 每个产品的最新交易记录
+    func storeKit(_ manager: StoreKit2Manager, didUpdatePurchasedTransactions validTrans: [Transaction], latestTrans: [Transaction])
 }
 
 // MARK: - 可选方法默认实现
@@ -41,7 +41,7 @@ extension StoreKitDelegate {
         // 默认实现为空，子类可以选择性实现
     }
     
-    public func storeKit(_ manager: StoreKit2Manager, didUpdatePurchasedTransactions efficient: [Transaction], latests: [Transaction]) {
+    public func storeKit(_ manager: StoreKit2Manager, didUpdatePurchasedTransactions validTrans: [Transaction], latestTrans: [Transaction]) {
         // 默认实现为空，子类可以选择性实现
     }
 }

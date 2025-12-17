@@ -19,6 +19,6 @@ internal protocol StoreKitServiceDelegate: AnyObject {
     func service(_ service: StoreKitService, didLoadProducts products: [Product])
     
     /// 已购买交易订单更新
-    func service(_ service: StoreKitService, didUpdatePurchasedTransactions efficient: [Transaction], latests: [Transaction])
+    func service(_ service: StoreKitService, didUpdatePurchasedTransactions validTrans: [Transaction], latestTrans: [Transaction])
 }
 

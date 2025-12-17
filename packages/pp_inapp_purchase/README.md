@@ -25,7 +25,7 @@
 
 ```yaml
 dependencies:
-  pp_inapp_purchase: ^1.0.1
+  pp_inapp_purchase: ^1.0.2
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。
@@ -119,8 +119,11 @@ bool isPurchased = await inappPurchase.isPurchased(productId: 'product_id_1');
 // 检查产品是否通过家庭共享获得
 bool isFamilyShared = await inappPurchase.isFamilyShared(productId: 'product_id_1');
 
+// 检查产品是否在有效订阅期间内但在免费试用期已取消
+bool isFamilyShared = await inappPurchase.isSubscribedButFreeTrailCancelled(productId: 'product_id_1');
+
 // 检查订阅状态
-bool isSubscriptionActive = await inappPurchase.checkSubscriptionStatus();
+await inappPurchase.checkSubscriptionStatus();
 ```
 
 ### 其他功能
@@ -171,6 +174,7 @@ inappPurchase.requestReview();
 - `isPurchased()`: 检查产品是否已购买
 - `isFamilyShared()`: 检查产品是否通过家庭共享获得
 - `isEligibleForIntroOffer()`: 检查是否符合享受介绍性优惠资格
+- `isSubscribedButFreeTrailCancelled()`: 检查产品是否在有效订阅期间内但在免费试用期已取消
 - `checkSubscriptionStatus()`: 检查订阅状态
 
 ### 其他功能

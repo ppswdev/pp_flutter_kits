@@ -22,12 +22,11 @@ public struct StoreKitStateConverter {
         case .idle:
             dict["type"] = "idle"
             
+        case .unfinishedCompelted:
+            dict["type"] = "unfinishedCompelted"
+            
         case .loadingProducts:
             dict["type"] = "loadingProducts"
-            
-//        case .productsLoaded(let products):
-//            dict["type"] = "productsLoaded"
-//            dict["products"] = ProductConverter.toDictionaryArray(products)
             
         case .loadingPurchases:
             dict["type"] = "loadingPurchases"
@@ -39,26 +38,22 @@ public struct StoreKitStateConverter {
             dict["type"] = "purchasing"
             dict["productId"] = productId
             
-        case .purchaseSuccess(let productId):
-            dict["type"] = "purchaseSuccess"
-            dict["productId"] = productId
-            
         case .purchasePending(let productId):
             dict["type"] = "purchasePending"
+            dict["productId"] = productId
+            
+        case .purchaseSuccess(let productId):
+            dict["type"] = "purchaseSuccess"
             dict["productId"] = productId
             
         case .purchaseCancelled(let productId):
             dict["type"] = "purchaseCancelled"
             dict["productId"] = productId
             
-        case .purchaseFailed(let productId, let error):
+        case .purchaseFailed(let productId, let errorMessage):
             dict["type"] = "purchaseFailed"
             dict["productId"] = productId
-            dict["error"] = String(describing: error)
-            
-//        case .subscriptionStatusChanged(let renewalState):
-//            dict["type"] = "subscriptionStatusChanged"
-//            dict["renewalState"] = renewalStateToString(renewalState)
+            dict["error"] = errorMessage
             
         case .restoringPurchases:
             dict["type"] = "restoringPurchases"
@@ -66,9 +61,9 @@ public struct StoreKitStateConverter {
         case .restorePurchasesSuccess:
             dict["type"] = "restorePurchasesSuccess"
             
-        case .restorePurchasesFailed(let error):
+        case .restorePurchasesFailed(let errorMessage):
             dict["type"] = "restorePurchasesFailed"
-            dict["error"] = String(describing: error)
+            dict["error"] = errorMessage
             
         case .purchaseRefunded(let productId):
             dict["type"] = "purchaseRefunded"
@@ -78,14 +73,17 @@ public struct StoreKitStateConverter {
             dict["type"] = "purchaseRevoked"
             dict["productId"] = productId
             
-        case .subscriptionCancelled(let productId, let isFreeTrialCancelled):
+        case .subscriptionCancelled(let productId, let isSubscribedButFreeTrailCancelled):
             dict["type"] = "subscriptionCancelled"
             dict["productId"] = productId
-            dict["isFreeTrialCancelled"] = isFreeTrialCancelled
+            dict["isSubscribedButFreeTrailCancelled"] = isSubscribedButFreeTrailCancelled
             
-        case .error(let error):
+        case .error(let errorPosition, let errorDesc, let errorDetail):
             dict["type"] = "error"
-            dict["error"] = String(describing: error)
+            dict["errorPosition"] = errorPosition
+            dict["errorDesc"] = errorDesc
+            dict["errorDetail"] = errorDetail
+        
         }
         
         return dict

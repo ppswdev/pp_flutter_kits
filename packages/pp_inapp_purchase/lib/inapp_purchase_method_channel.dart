@@ -583,6 +583,34 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   }
 
   @override
+  Future<bool> isSubscribedButFreeTrailCancelled({
+    required String productId,
+  }) async {
+    safeLog(
+      '📤 [MethodChannel] 调用 isSubscribedButFreeTrailCancelled, productId: $productId',
+    );
+    try {
+      final result =
+          await methodChannel.invokeMethod(
+                'isSubscribedButFreeTrailCancelled',
+                {'productId': productId},
+              )
+              as bool;
+      safeLog(
+        '✅ [MethodChannel] isSubscribedButFreeTrailCancelled 返回: $result',
+      );
+      return result;
+    } catch (e, stackTrace) {
+      safeLog(
+        '❌ [MethodChannel] isSubscribedButFreeTrailCancelled 失败: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<bool> checkSubscriptionStatus() async {
     safeLog('📤 [MethodChannel] 调用 checkSubscriptionStatus');
     try {

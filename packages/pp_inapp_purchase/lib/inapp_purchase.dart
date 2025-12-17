@@ -126,6 +126,16 @@ class InappPurchase {
     );
   }
 
+  /// 检查产品是否在有效订阅期间内但在免费试用期已取消
+  ///
+  /// [productId] - 要检查的产品ID
+  /// 返回 true 表示在有效订阅期间内但在免费试用期已取消，false 表示不是
+  Future<bool> isSubscribedButFreeTrailCancelled({required String productId}) {
+    return InappPurchasePlatform.instance.isSubscribedButFreeTrailCancelled(
+      productId: productId,
+    );
+  }
+
   /// 检查订阅状态
   Future<bool> checkSubscriptionStatus() {
     return InappPurchasePlatform.instance.checkSubscriptionStatus();

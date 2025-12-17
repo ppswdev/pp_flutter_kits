@@ -12,10 +12,10 @@ import StoreKit
 /// 将 Product 对象转换为可序列化的基础数据类型（Dictionary/JSON）
 public struct ProductConverter {
     
-    /// 将 Product 转换为 Dictionary（可序列化为 JSON）
+    /// 将 Product 转换为 Dictionary（可序列化为 JSON，自动从 subscription 中获取 isSubscribedButFreeTrailCancelled）
     /// - Parameter product: Product 对象
-    /// - Returns: Dictionary 对象，包含所有产品信息
-    public static func toDictionary(_ product: Product) -> [String: Any] {
+    /// - Returns: Dictionary 对象，包含所有产品信息（包括 isSubscribedButFreeTrailCancelled）
+    public static func toDictionary(_ product: Product) async -> [String: Any] {
         var dict: [String: Any] = [:]
         
         // 基本信息（确保都是字符串类型）
@@ -44,36 +44,48 @@ public struct ProductConverter {
             dict["jsonRepresentation"] = ""
         }
         
-        // 订阅信息（如果有）
+        // 订阅信息（如果有）- 使用异步版本自动获取 isSubscribedButFreeTrailCancelled
         if let subscription = product.subscription {
-            dict["subscription"] = SubscriptionConverter.subscriptionInfoToDictionary(subscription, product: product)
+            dict["subscription"] = await SubscriptionConverter.subscriptionInfoToDictionary(subscription, product: product)
         } else {
             dict["subscription"] = NSNull()
         }
-        
+    
         return dict
     }
     
     /// 将 Product 数组转换为 Dictionary 数组
     /// - Parameter products: Product 数组
     /// - Returns: Dictionary 数组
-    public static func toDictionaryArray(_ products: [Product]) -> [[String: Any]] {
-        return products.map { toDictionary($0) }
+    public static func toDictionaryArray(_ products: [Product]) async -> [[String: Any]] {
+        return await withTaskGroup(of: [String: Any].self) { group in
+            for product in products {
+                group.addTask {
+                    await toDictionary(product)
+                }
+            }
+            
+            var result: [[String: Any]] = []
+            for await dict in group {
+                result.append(dict)
+            }
+            return result
+        }
     }
     
     /// 将 Product 转换为 JSON 字符串
     /// - Parameter product: Product 对象
     /// - Returns: JSON 字符串
-    public static func toJSONString(_ product: Product) -> String? {
-        let dict = toDictionary(product)
+    public static func toJSONString(_ product: Product) async -> String? {
+        let dict = await toDictionary(product)
         return dictionaryToJSONString(dict)
     }
     
     /// 将 Product 数组转换为 JSON 字符串
     /// - Parameter products: Product 数组
     /// - Returns: JSON 字符串
-    public static func toJSONString(_ products: [Product]) -> String? {
-        let array = toDictionaryArray(products)
+    public static func toJSONString(_ products: [Product]) async -> String? {
+        let array = await toDictionaryArray(products)
         return arrayToJSONString(array)
     }
     

@@ -25,23 +25,23 @@ public enum SubscriptionButtonType: String {
     case lifetime = "lifetime"        // 终身会员
 }
 
+/// 交易类型别名
+public typealias Transaction = StoreKit.Transaction
+
 /// 订阅信息类型别名
 public typealias SubscriptionInfo = StoreKit.Product.SubscriptionInfo
 
-/// 订阅状态类型别名
-public typealias SubscriptionStatus = StoreKit.Product.SubscriptionInfo.Status
-
 /// 订阅周期类型别名
 public typealias SubscriptionPeriod = StoreKit.Product.SubscriptionPeriod
+
+/// 订阅状态类型别名
+public typealias SubscriptionStatus = StoreKit.Product.SubscriptionInfo.Status
 
 /// 续订信息类型别名
 public typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
 
 /// 续订状态类型别名
 public typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
-
-/// 交易类型别名
-public typealias Transaction = StoreKit.Transaction
 
 /// StoreKit 管理器
 /// 提供统一的接口来管理应用内购买
@@ -74,8 +74,8 @@ public class StoreKit2Manager {
     /// 所有产品
     public private(set) var allProducts: [Product] = []
     
-    /// 已购买有效的交易信息
-    public private(set) var purchasedTransactions: [Transaction] = []
+    /// 有效的购买订单
+    public private(set) var validTransactions: [Transaction] = []
     
     /// 每个产品的最新交易记录集合
     public private(set) var latestTransactions: [Transaction] = []
@@ -133,7 +133,7 @@ public class StoreKit2Manager {
     /// - Note: 会异步从 App Store 拉取最新的产品信息，更新本地产品列表
     /// - Returns: 刷新后的产品列表，如果刷新失败返回 nil
     public func refreshProducts() async {
-        await service?.loadProducts()
+       let _ = await service?.loadProducts()
     }
     
     /// 获取所有产品
@@ -185,7 +185,7 @@ public class StoreKit2Manager {
     /// - Parameter isShort: 是否短标题
     /// - Returns: 本地化的产品标题
     public func productForVipTitle(for productId: String, periodType: SubscriptionPeriodType , languageCode: String, isShort: Bool = false) -> String {
-        guard let product = product(for: productId) else {
+        guard let _ = product(for: productId) else {
             return ""
         }
         return SubscriptionLocale.subscriptionTitle(
@@ -301,35 +301,35 @@ public class StoreKit2Manager {
     
     // MARK: - 购买相关
     
-    /// 通过产品ID购买产品
+    /// 通过产品ID购买
     /// - Parameter productId: 产品ID
-    /// - Throws: StoreKitError.productNotFound 如果产品未找到
-    public func purchase(productId: String) async throws {
+    public func purchase(productId: String) async {
         guard let product = allProducts.first(where: { $0.id == productId }) else {
-            throw StoreKitError.productNotFound(productId)
+            currentState = .error("StoreKit2Manager.purchase","Product not found","产品未找到: \(productId)")
+            return
         }
-        try await service?.purchase(product)
+        await service?.purchase(product)
     }
-    
+
     /// 通过产品对象购买
     /// - Parameter product: 产品对象
-    /// - Throws: StoreKitError.purchaseInProgress 如果已有购买正在进行
-    public func purchase(_ product: Product) async throws {
+    public func purchase(_ product: Product) async {
         guard let service = service else {
-            throw StoreKitError.serviceNotStarted
+            currentState = .error("StoreKit2Manager.purchase","Service not started","服务未启动，请先调用 configure 方法")    
+            return
         }
-        try await service.purchase(product)
+        await service.purchase(product)
     }
     
     /// 恢复购买
-    /// - Throws: StoreKitError.restorePurchasesFailed 如果恢复失败
+    /// - Throws: StoreKit2Error.restorePurchasesFailed 如果恢复失败
     public func restorePurchases() async throws {
-        try await service?.restorePurchases()
+        await service?.restorePurchases()
     }
     
     /// 手动刷新已购买产品交易信息，包括：有效的订阅交易信息，每个产品的最新交易信息
     public func refreshPurchases() async {
-        await service?.loadPurchasedTransactions()
+        await service?.loadValidTransactions()
     }
     
     // MARK: - 查询方法
@@ -365,12 +365,93 @@ public class StoreKit2Manager {
         }
         return await subscription.isEligibleForIntroOffer
     }
+
+    /// 检查产品是否在有效订阅期间内但在免费试用期已取消
+    /// - Parameter productId: 产品ID
+    /// - Returns: 如果在有效订阅期间内但在免费试用期取消返回 true，否则返回 false
+    /// - Note: 仅对支持订阅的产品有效
+    /// - Note: 只有在订阅状态为 .subscribed（有效订阅）且已取消（willAutoRenew == false）且在免费试用期时，才返回 true
+    public func isSubscribedButFreeTrailCancelled(productId: String) async -> Bool {
+        // 获取产品
+        guard let product = allProducts.first(where: { $0.id == productId }) else {
+            return false
+        }
+        
+        // 检查是否是订阅产品
+        guard let subscription = product.subscription else {
+            return false
+        }
+        
+        do {
+            // 获取订阅状态
+            let statuses = try await subscription.status
+            guard let currentStatus = statuses.first else {
+                return false
+            }
+            
+            // 首先检查订阅状态是否为 .subscribed（有效订阅）
+            // 只有在有效订阅期间内才需要判断
+            guard currentStatus.state == .subscribed else {
+                return false
+            }
+            
+            // 检查是否已取消（willAutoRenew == false）
+            var isCancelled = false
+            if case .verified(let renewalInfo) = currentStatus.renewalInfo {
+                isCancelled = !renewalInfo.willAutoRenew
+            }
+            
+            // 如果未取消，直接返回 false
+            guard isCancelled else {
+                return false
+            }
+            
+            // 检查是否在免费试用期
+            var isFreeTrial = false
+            if case .verified(let transaction) = currentStatus.transaction {
+                isFreeTrial = isFreeTrialTransaction(transaction)
+            }
+            
+            // 只有在有效订阅期间内、已取消且处于免费试用期时，才返回 true
+            return isFreeTrial
+        } catch {
+            print("获取订阅状态失败: \(productId), 错误: \(error)")
+            return false
+        }
+    }
+    
+    /// 判断 Transaction 是否在免费试用期（私有辅助方法）
+    /// - Parameter transaction: Transaction 对象
+    /// - Returns: 如果在免费试用期返回 true，否则返回 false
+    private func isFreeTrialTransaction(_ transaction: Transaction) -> Bool {
+        // iOS 17.2+ 使用新的 offer 属性
+        if #available(iOS 17.2, macOS 14.2, tvOS 17.2, watchOS 10.2, visionOS 2.4, *) {
+            if let offer = transaction.offer {
+                // 检查优惠类型和支付模式
+                if offer.type == .introductory,
+                   offer.paymentMode == .freeTrial {
+                    return true
+                }
+            }
+        } else {
+            // iOS 15.0 - iOS 17.1 使用已废弃的属性
+            if let offerType = transaction.offerType,
+               let paymentMode = transaction.offerPaymentModeStringRepresentation {
+                if offerType == .introductory,
+                   paymentMode == "freeTrial" {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
    
     // MARK: - 交易相关
     /// 获取有效的已购买交易
     /// - Returns: 有效（未过期、未撤销、未退款）的已购买交易数组
     public func getValidPurchasedTransactions() async -> [Transaction] {
-        return purchasedTransactions
+        return validTransactions
     }
 
     /// 获取每个产品的最新交易
@@ -454,7 +535,7 @@ public class StoreKit2Manager {
     }
     
     /// 显示优惠代码兑换界面（iOS 16.0+）
-    /// - Throws: StoreKitError 如果显示失败
+    /// - Throws: StoreKit2Error 如果显示失败
     /// - Note: 兑换后的交易会通过 Transaction.updates 发出
     @MainActor
     public func presentOfferCodeRedeemSheet() async -> Bool {
@@ -523,14 +604,14 @@ extension StoreKit2Manager: StoreKitServiceDelegate {
     }
     
     @MainActor
-    func service(_ service: StoreKitService, didUpdatePurchasedTransactions efficient: [Transaction], latests: [Transaction]) {
-        purchasedTransactions = efficient
+    func service(_ service: StoreKitService, didUpdatePurchasedTransactions validTrans: [Transaction], latestTrans: [Transaction]) {
+        validTransactions = validTrans
         
         // 通知代理
-        delegate?.storeKit(self, didUpdatePurchasedTransactions: efficient, latests: latests)
+        delegate?.storeKit(self, didUpdatePurchasedTransactions: validTrans, latestTrans: latestTrans)
         
         // 通知闭包回调
-        onPurchasedTransactionsUpdated?(efficient, latests)
+        onPurchasedTransactionsUpdated?(validTrans, latestTrans)
     }
 }
 
