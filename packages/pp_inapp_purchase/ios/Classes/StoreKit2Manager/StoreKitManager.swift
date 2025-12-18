@@ -385,7 +385,10 @@ public class StoreKit2Manager {
         do {
             // 获取订阅状态
             let statuses = try await subscription.status
-            guard let currentStatus = statuses.first else {
+            guard let currentStatus = statuses.first(where: { $0.state == .subscribed }) else {
+                // 如果没有找到 .subscribed 状态，打印所有状态用于调试
+                print("❌ [isSubscribedButFreeTrailCancelled] 未找到 .subscribed 状态: \(productId)")
+                print("   当前状态列表: \(statuses.map { "\($0.state)" })")
                 return false
             }
             
