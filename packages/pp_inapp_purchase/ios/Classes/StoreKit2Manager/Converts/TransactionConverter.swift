@@ -29,8 +29,8 @@ public struct TransactionConverter {
         } else {
             dict["price"] = 0.00
         }
-        // 货币代码（iOS 16.0+）
-        if #available(iOS 16.0, *) {
+        // 货币代码（iOS 16.0+，macOS 13.0+）
+        if #available(iOS 16.0, macOS 13.0, *) {
             if let currency = transaction.currency {
                 // 确保是字符串类型
                 dict["currency"] = String(describing: currency)
@@ -54,7 +54,7 @@ public struct TransactionConverter {
         dict["purchasedQuantity"] = transaction.purchasedQuantity
         
         // 交易原因（iOS 17.0+，表示购买还是续订）
-        if #available(iOS 17.0, *) {
+        if #available(iOS 17.0, macOS 14.0, *) {
             dict["purchaseReason"] = transactionReasonToString(transaction.reason)
         } else {
             dict["purchaseReason"] = ""
@@ -94,7 +94,7 @@ public struct TransactionConverter {
         }
         
         // 环境信息（iOS 16.0+）
-        if #available(iOS 16.0, *) {
+        if #available(iOS 16.0, macOS 13.0, *) {
             dict["environment"] = environmentToString(transaction.environment)
         } else {
             dict["environment"] = "unknown"
@@ -238,7 +238,7 @@ public struct TransactionConverter {
     }
     
     /// 环境转字符串
-    @available(iOS 16.0, *)
+    @available(iOS 16.0, macOS 13.0, *)
     private static func environmentToString(_ environment: AppStore.Environment) -> String {
         switch environment {
         case .production:
@@ -253,7 +253,7 @@ public struct TransactionConverter {
     }
     
     /// 交易原因转字符串
-    @available(iOS 17.0, *)
+    @available(iOS 17.0, macOS 14.0, *)
     private static func transactionReasonToString(_ reason: Transaction.Reason) -> String {
         switch reason {
         case .purchase:
@@ -335,7 +335,7 @@ public struct TransactionConverter {
     }
     
     /// 交易优惠支付模式转字符串（用于 Transaction.Offer.PaymentMode）
-    @available(iOS 17.2, *)
+    @available(iOS 17.2, macOS 14.2, *)
     private static func transactionOfferPaymentModeToString(_ mode: Transaction.Offer.PaymentMode) -> String {
         switch mode {
         case .freeTrial:

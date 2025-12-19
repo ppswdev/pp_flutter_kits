@@ -538,6 +538,7 @@ public class StoreKit2Manager {
     /// - Throws: StoreKit2Error 如果显示失败
     /// - Note: 兑换后的交易会通过 Transaction.updates 发出
     @MainActor
+    @available(macOS, unavailable, message: "presentOfferCodeRedeemSheet() is unavailable in macOS")
     public func presentOfferCodeRedeemSheet() async -> Bool {
         guard let service = service else {
             return false
