@@ -511,13 +511,7 @@ public struct TransactionConverter {
             
             // 获取订阅状态
             let statuses = try await subscription.status
-            guard let currentStatus = statuses.first else {
-                return false
-            }
-            
-            // 首先检查订阅状态是否为 .subscribed（有效订阅）
-            // 只有在有效订阅期间内才需要判断
-            guard currentStatus.state == .subscribed else {
+            guard let currentStatus = statuses.first(where: { $0.state == .subscribed }) else {
                 return false
             }
             
@@ -535,6 +529,9 @@ public struct TransactionConverter {
             // 检查是否在免费试用期
             var isFreeTrial = false
             if case .verified(let transaction) = currentStatus.transaction {
+                if(transaction.productID != productID){
+                    return false;
+                }
                 isFreeTrial = isFreeTrialTransaction(transaction)
             }
             

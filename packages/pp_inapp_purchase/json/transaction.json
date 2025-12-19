@@ -34,7 +34,8 @@
             "paymentMode": "freeTrial",
             "periodUnit": "day",
             "periodCount": 3
-        }
+        },
+        "isSubscribedButFreeTrailCancelled": true
     },
     {
         "id": "4",

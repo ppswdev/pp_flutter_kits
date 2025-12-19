@@ -315,7 +315,7 @@ public class StoreKit2Manager {
     /// - Parameter product: 产品对象
     public func purchase(_ product: Product) async {
         guard let service = service else {
-            currentState = .error("StoreKit2Manager.purchase","Service not started","服务未启动，请先调用 configure 方法")    
+            currentState = .error("StoreKit2Manager.purchase","Service not started","服务未启动，请先调用 configure 方法")
             return
         }
         await service.purchase(product)
@@ -392,12 +392,6 @@ public class StoreKit2Manager {
                 return false
             }
             
-            // 首先检查订阅状态是否为 .subscribed（有效订阅）
-            // 只有在有效订阅期间内才需要判断
-            guard currentStatus.state == .subscribed else {
-                return false
-            }
-            
             // 检查是否已取消（willAutoRenew == false）
             var isCancelled = false
             if case .verified(let renewalInfo) = currentStatus.renewalInfo {
@@ -412,6 +406,9 @@ public class StoreKit2Manager {
             // 检查是否在免费试用期
             var isFreeTrial = false
             if case .verified(let transaction) = currentStatus.transaction {
+                if(transaction.productID != productId){
+                    return false;
+                }
                 isFreeTrial = isFreeTrialTransaction(transaction)
             }
             

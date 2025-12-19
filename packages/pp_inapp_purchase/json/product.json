@@ -12,6 +12,7 @@
             "subscriptionGroupID": "732E29F2",
             "subscriptionPeriodCount": 1,
             "subscriptionPeriodUnit": "week",
+            "isSubscribedButFreeTrailCancelled": true,
             "introductoryOffer": {
                 "id": null,
                 "type": "introductory",
