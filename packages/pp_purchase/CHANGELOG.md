@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Update docs
+
 ## 1.0.9
 
 * Archive and stop updating

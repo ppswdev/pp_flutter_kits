@@ -3,7 +3,7 @@ Easy-to-use in-app purchases that can callback results and facilitate operationa
 
 ## Maintenance Termination Notice
 
-The current version is the in_app_purchase version that supports StoreKit1. Subsequent versions will no longer maintain the functions related to StoreKit1. All the code related to StoreKit1 will be archived. It is recommended to migrate to [pp_inapp_purchase] <https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_inapp_purchase>, and more up-to-date features of StoreKit2 are provided.
+The current version is the in_app_purchase version that supports StoreKit1. Subsequent versions will no longer maintain the functions related to StoreKit1. All the code related to StoreKit1 will be archived. It is recommended to migrate to <a href="https://pub.dev/packages/pp_inapp_purchase">pp_inapp_purchase(https://pub.dev/packages/pp_inapp_purchase)</a>, and more up-to-date features of StoreKit2 are provided.
 
 ## Features
 
