@@ -1,7 +1,6 @@
 ## 1.0.9
 
-* Update StoreKit2 logic
-*
+* Archive and stop updating
 
 ## 1.0.8
 
