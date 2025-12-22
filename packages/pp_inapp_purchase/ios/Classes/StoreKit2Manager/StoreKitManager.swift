@@ -360,7 +360,7 @@ public class StoreKit2Manager {
         guard let product = allProducts.first(where: { $0.id == productId }) else {
             return false
         }
-        guard let subscription = product.subscription else {
+        guard let subscription = product.subscription, let introOffer = subscription.introductoryOffer else {
             return false
         }
         return await subscription.isEligibleForIntroOffer

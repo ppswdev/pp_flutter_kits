@@ -32,8 +32,10 @@ public struct SubscriptionConverter {
         // 介绍性优惠（如果有）
         if let introOffer = subscription.introductoryOffer {
             dict["introductoryOffer"] = subscriptionOfferToDictionary(introOffer)
+            dict["isEligibleForIntroOffer"] = await subscription.isEligibleForIntroOffer
         } else {
             dict["introductoryOffer"] = NSNull()
+            dict["isEligibleForIntroOffer"] = false
         }
         
         // 促销优惠列表
