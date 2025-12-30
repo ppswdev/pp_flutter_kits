@@ -268,7 +268,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                     }
                     
                     await MainActor.run {
-                        currentState = .purchaseSuccess(transaction.productID)
+                        currentState = .purchaseSuccess(transaction.productID, transaction)
                     }
                     continuation.resume()
                 } catch {

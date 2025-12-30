@@ -34,8 +34,8 @@ public enum StoreKitState {
     /// 用户取消购买，返回：产品ID
     case purchaseCancelled(String)
     
-    /// 购买成功，返回：产品ID
-    case purchaseSuccess(String)
+    /// 购买成功，返回：产品ID，交易订单
+    case purchaseSuccess(String, Transaction)
     
     /// 购买失败，返回：产品ID, 错误描述
     case purchaseFailed(String, String)

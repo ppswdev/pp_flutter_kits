@@ -536,13 +536,15 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 处理状态变化
     private func handleStateChanged(_ state: StoreKitState) {
         safeLog("📨 [iOS Plugin] 处理状态变化")
-        let stateDict = StoreKitStateConverter.toDictionary(state)
-        safeLog("📤 [iOS Plugin] 发送状态变化事件到 Flutter: \(stateDict)")
-        if let stateEventSink = stateEventSink {
-            stateEventSink(stateDict)
-            safeLog("✅ [iOS Plugin] 状态变化事件已发送")
-        } else {
-            safeLog("⚠️ [iOS Plugin] stateEventSink 为 nil，无法发送状态变化事件")
+        Task {
+            let stateDict = await StoreKitStateConverter.toDictionary(state)
+            safeLog("📤 [iOS Plugin] 发送状态变化事件到 Flutter: \(stateDict)")
+            if let stateEventSink = stateEventSink {
+                stateEventSink(stateDict)
+                safeLog("✅ [iOS Plugin] 状态变化事件已发送")
+            } else {
+                safeLog("⚠️ [iOS Plugin] stateEventSink 为 nil，无法发送状态变化事件")
+            }
         }
     }
     

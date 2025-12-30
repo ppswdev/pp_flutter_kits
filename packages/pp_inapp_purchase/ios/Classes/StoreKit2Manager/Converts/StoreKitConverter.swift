@@ -59,13 +59,13 @@ public struct StoreKitConverter {
     // MARK: - StoreKitState 转换
     
     /// 将 StoreKitState 转换为 Dictionary
-    public static func stateToDictionary(_ state: StoreKitState) -> [String: Any] {
-        return StoreKitStateConverter.toDictionary(state)
+    public static func stateToDictionary(_ state: StoreKitState) async -> [String: Any] {
+        return await StoreKitStateConverter.toDictionary(state)
     }
     
     /// 将 StoreKitState 转换为 JSON 字符串
-    public static func stateToJSONString(_ state: StoreKitState) -> String? {
-        return StoreKitStateConverter.toJSONString(state)
+    public static func stateToJSONString(_ state: StoreKitState) async -> String? {
+        return await StoreKitStateConverter.toJSONString(state)
     }
     
     // MARK: - RenewalInfo 转换

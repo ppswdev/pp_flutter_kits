@@ -15,7 +15,7 @@ public struct StoreKitStateConverter {
     /// 将 StoreKitState 转换为 Dictionary（可序列化为 JSON）
     /// - Parameter state: StoreKitState 对象
     /// - Returns: Dictionary 对象，包含状态信息
-    public static func toDictionary(_ state: StoreKitState) -> [String: Any] {
+    public static func toDictionary(_ state: StoreKitState) async -> [String: Any] {
         var dict: [String: Any] = [:]
         
         switch state {
@@ -42,9 +42,10 @@ public struct StoreKitStateConverter {
             dict["type"] = "purchasePending"
             dict["productId"] = productId
             
-        case .purchaseSuccess(let productId):
+        case .purchaseSuccess(let productId, let transaction):
             dict["type"] = "purchaseSuccess"
             dict["productId"] = productId
+            dict["transaction"] = await TransactionConverter.toDictionary(transaction)
             
         case .purchaseCancelled(let productId):
             dict["type"] = "purchaseCancelled"
@@ -92,8 +93,8 @@ public struct StoreKitStateConverter {
     /// 将 StoreKitState 转换为 JSON 字符串
     /// - Parameter state: StoreKitState 对象
     /// - Returns: JSON 字符串
-    public static func toJSONString(_ state: StoreKitState) -> String? {
-        let dict = toDictionary(state)
+    public static func toJSONString(_ state: StoreKitState) async -> String? {
+        let dict = await toDictionary(state)
         return dictionaryToJSONString(dict)
     }
     
