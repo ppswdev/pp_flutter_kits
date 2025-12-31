@@ -536,7 +536,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 处理状态变化
     private func handleStateChanged(_ state: StoreKitState) {
         safeLog("📨 [iOS Plugin] 处理状态变化")
-        Task {
+        Task { @MainActor in
             let stateDict = await StoreKitStateConverter.toDictionary(state)
             safeLog("📤 [iOS Plugin] 发送状态变化事件到 Flutter: \(stateDict)")
             if let stateEventSink = stateEventSink {
@@ -551,7 +551,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 处理产品加载
     private func handleProductsLoaded(_ products: [Product]) {
         safeLog("📨 [iOS Plugin] 处理产品加载: \(products.count) 个产品")
-        Task {
+        Task { @MainActor in
             let productsDict = await ProductConverter.toDictionaryArray(products)
             safeLog("📤 [iOS Plugin] 发送产品加载事件到 Flutter: \(productsDict.count) 个产品")
             if let productsEventSink = productsEventSink {
@@ -566,7 +566,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 处理交易更新
     private func handleTransactionsUpdated(_ purchasedTransactions: [Transaction], _ latestTransactions: [Transaction]) {
         safeLog("📨 [iOS Plugin] 处理交易更新: purchasedTransactions=\(purchasedTransactions.count), latestTransactions=\(latestTransactions.count)")
-        Task {
+        Task { @MainActor in
             let purchasedTransactionsDict = await TransactionConverter.toDictionaryArray(purchasedTransactions)
             let latestTransactionsDict = await TransactionConverter.toDictionaryArray(latestTransactions)
             let transactionData: [String: Any] = [
