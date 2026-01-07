@@ -254,19 +254,13 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
             case .success(let verification):
                 do {
                     let transaction = try verifyPurchase(verification)
-                    // 打印产品详细信息
                     await printProductDetails(product)
-                    // 打印详细的交易信息
                     await printTransactionDetails(transaction)
-                    
-                    // 先完成交易
                     await transaction.finish()
-                    
                     // 然后刷新购买列表（消耗品不需要）
                     if product.type != .consumable {
                         await loadValidTransactions()
                     }
-                    
                     await MainActor.run {
                         currentState = .purchaseSuccess(transaction.productID, transaction)
                     }
@@ -805,16 +799,17 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                         
                         // 订阅已取消，触发通知（包含是否在有效订阅期间内但在免费试用期取消的信息）
                         if isSubscribedButFreeTrailCancelled {
-                            print("🔔 检测到订阅取消（有效订阅期间内，免费试用期）: \(productId)")
+                            print("🔔 检测到订阅取消（有效订阅期间内，免费试用期）: \(currentInfo.currentProductID)")
                             print("   说明：在有效订阅期间内，但是在免费试用期内取消了订阅，订阅将在试用期结束时失效")
                         } else {
-                            print("🔔 检测到订阅取消（有效订阅期间内，付费订阅期）: \(productId)")
+                            print("🔔 检测到订阅取消（有效订阅期间内，付费订阅期）: \(currentInfo.currentProductID)")
                             print("   说明：在有效订阅期间内，但是在付费订阅期内取消了订阅，订阅将在当前周期结束时失效")
                         }
                         
                         // 触发状态通知，包含是否在有效订阅期间内但在免费试用期取消的信息
                         // 外部可以通过这个信息来区分不同的取消场景，提供不同的处理逻辑
-                        self.currentState = .subscriptionCancelled(productId, isSubscribedButFreeTrailCancelled: isSubscribedButFreeTrailCancelled)
+                        // （说明：这个productId不准确,会每个产品都返回，暂时不处理，只要检测到一个就认为是取消，然后break）
+                        self.currentState = .subscriptionCancelled(currentInfo.currentProductID, isSubscribedButFreeTrailCancelled: isSubscribedButFreeTrailCancelled)
                         
                         // 打印过期日期信息，告知用户订阅何时失效
                         if let expirationDate = expirationDate {
@@ -826,6 +821,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                                 print("   订阅将在 \(formatter.string(from: expirationDate)) 过期")
                             }
                         }
+                        break;
                     }
                 }
                 

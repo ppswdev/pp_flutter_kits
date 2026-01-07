@@ -42,18 +42,18 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 初始化
     public init(channel: FlutterMethodChannel, stateEventChannel: FlutterEventChannel, productsEventChannel: FlutterEventChannel, transactionsEventChannel: FlutterEventChannel) {
-        print("🔵 [iOS Plugin] InappPurchasePlugin 初始化")
+        print("[pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化")
         self.channel = channel
         self.stateEventChannel = stateEventChannel
         self.productsEventChannel = productsEventChannel
         self.transactionsEventChannel = transactionsEventChannel
         super.init()
         setupEventChannels()
-        print("✅ [iOS Plugin] InappPurchasePlugin 初始化完成")
+        print("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化完成")
     }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        print("🔵 [iOS Plugin] 注册 InappPurchasePlugin")
+        print("[pp_inapp_purchase_ios_plugin] 注册 InappPurchasePlugin")
         let channel = FlutterMethodChannel(name: channelName, binaryMessenger: registrar.messenger())
         let stateEventChannel = FlutterEventChannel(name: stateEventChannelName, binaryMessenger: registrar.messenger())
         let productsEventChannel = FlutterEventChannel(name: productsEventChannelName, binaryMessenger: registrar.messenger())
@@ -71,21 +71,21 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         stateEventChannel.setStreamHandler(instance.stateStreamHandler)
         productsEventChannel.setStreamHandler(instance.productsStreamHandler)
         transactionsEventChannel.setStreamHandler(instance.transactionsStreamHandler)
-        print("✅ [iOS Plugin] InappPurchasePlugin 注册完成")
+        print("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 注册完成")
     }
     
     // 处理方法调用
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 收到方法调用: \(call.method)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 收到方法调用: \(call.method)")
         if let arguments = call.arguments {
-            safeLog("🔵 [iOS Plugin] 参数: \(arguments)")
+            safeLog("[pp_inapp_purchase_ios_plugin] 参数: \(arguments)")
         } else {
-            safeLog("🔵 [iOS Plugin] 参数: 无")
+            safeLog("[pp_inapp_purchase_ios_plugin] 参数: 无")
         }
         switch call.method {
         case "getPlatformVersion":
             let version = "iOS " + UIDevice.current.systemVersion
-            safeLog("✅ [iOS Plugin] getPlatformVersion 返回: \(version)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getPlatformVersion 返回: \(version)")
             result(version)
         
         case "configure":
@@ -159,44 +159,44 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
             result(nil)
         
         default:
-            safeLog("❌ [iOS Plugin] 未知方法: \(call.method)")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] 未知方法: \(call.method)")
             result(FlutterMethodNotImplemented)
         }
     }
 
      // 设置事件通道
     private func setupEventChannels() {
-        safeLog("🔵 [iOS Plugin] 设置事件通道")
+        safeLog("[pp_inapp_purchase_ios_plugin] 设置事件通道")
          // 监听状态变化
         storeKitManager.onStateChanged = { [weak self] state in
             guard let self = self else { return }
-            self.safeLog("📨 [iOS Plugin] StoreKit 状态变化回调")
+            self.safeLog("[pp_inapp_purchase_ios_plugin] StoreKit 状态变化回调")
             self.handleStateChanged(state)
         }
         
         // 监听产品加载
         storeKitManager.onProductsLoaded = { [weak self] products in
             guard let self = self else { return }
-            self.safeLog("📨 [iOS Plugin] StoreKit 产品加载回调: \(products.count) 个产品")
+            self.safeLog("[pp_inapp_purchase_ios_plugin] StoreKit 产品加载回调: \(products.count) 个产品")
             self.handleProductsLoaded(products)
         }
         
         // 监听已购买产品更新
-        storeKitManager.onPurchasedTransactionsUpdated = { [weak self] purchasedTransactions, latestTransactions in
+        storeKitManager.onPurchasedTransactionsUpdated = { [weak self] validTransactions, latestTransactions in
             guard let self = self else { return }
-            self.safeLog("📨 [iOS Plugin] StoreKit 交易更新回调: purchasedTransactions=\(purchasedTransactions.count), latestTransactions=\(latestTransactions.count)")
-            self.handleTransactionsUpdated(purchasedTransactions, latestTransactions)
+            self.safeLog("[pp_inapp_purchase_ios_plugin] StoreKit 交易更新回调: validTransactions=\(validTransactions.count), latestTransactions=\(latestTransactions.count)")
+            self.handleTransactionsUpdated(validTransactions, latestTransactions)
         }
-        safeLog("✅ [iOS Plugin] 事件通道设置完成")
+        safeLog("✅ [pp_inapp_purchase_ios_plugin] 事件通道设置完成")
     }
     
     // 配置StoreKit
     private func configure(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        print("🔵 [iOS Plugin] 开始配置 StoreKit")
+        print("[pp_inapp_purchase_ios_plugin] 开始配置 StoreKit")
         guard let arguments = call.arguments as? [String: Any],
               let productIds = arguments["productIds"] as? [String],
               let lifetimeIds = arguments["lifetimeIds"] as? [String] else {
-            print("❌ [iOS Plugin] configure 参数无效")
+            print("❌ [pp_inapp_purchase_ios_plugin] configure 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid configuration arguments", details: nil))
             return
         }
@@ -207,7 +207,7 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         _showLog = showLog
         
-        safeLog("🔵 [iOS Plugin] 配置参数:")
+        safeLog("[pp_inapp_purchase_ios_plugin] 配置参数:")
         safeLog("   - productIds: \(productIds)")
         safeLog("   - lifetimeIds: \(lifetimeIds)")
         safeLog("   - nonRenewableExpirationDays: \(nonRenewableExpirationDays)")
@@ -223,28 +223,28 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         )
         
         storeKitManager.configure(with: config)
-        safeLog("✅ [iOS Plugin] StoreKit 配置完成")
+        safeLog("✅ [pp_inapp_purchase_ios_plugin] StoreKit 配置完成")
         result(nil)
     }
     
     // 获取所有产品
     private func getAllProducts(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getAllProducts")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getAllProducts")
         Task {
             let products = await storeKitManager.getAllProducts()
-            safeLog("📥 [iOS Plugin] getAllProducts 成功: \(products.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] getAllProducts 成功: \(products.count) 个产品")
             let productsDict = await ProductConverter.toDictionaryArray(products)
-            safeLog("✅ [iOS Plugin] getAllProducts 转换完成，返回数据")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getAllProducts 转换完成，返回数据")
             result(productsDict)
         }
     }
     
     // 获取非消耗性产品
     private func getNonConsumablesProducts(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getNonConsumablesProducts")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getNonConsumablesProducts")
         Task {
             let products = await storeKitManager.getNonConsumablesProducts()
-            safeLog("📥 [iOS Plugin] getNonConsumablesProducts 成功: \(products.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] getNonConsumablesProducts 成功: \(products.count) 个产品")
             let productsDict = await ProductConverter.toDictionaryArray(products)
             result(productsDict)
         }
@@ -252,10 +252,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 获取消耗性产品
     private func getConsumablesProducts(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getConsumablesProducts")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getConsumablesProducts")
         Task {
             let products = await storeKitManager.getConsumablesProducts()
-            safeLog("📥 [iOS Plugin] getConsumablesProducts 成功: \(products.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] getConsumablesProducts 成功: \(products.count) 个产品")
             let productsDict = await ProductConverter.toDictionaryArray(products)
             result(productsDict)
         }
@@ -263,10 +263,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 获取非续订订阅产品
     private func getNonRenewablesProducts(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getNonRenewablesProducts")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getNonRenewablesProducts")
         Task {
             let products = await storeKitManager.getNonRenewablesProducts()
-            safeLog("📥 [iOS Plugin] getNonRenewablesProducts 成功: \(products.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] getNonRenewablesProducts 成功: \(products.count) 个产品")
             let productsDict = await ProductConverter.toDictionaryArray(products)
             result(productsDict)
         }
@@ -274,10 +274,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 获取自动续订订阅产品
     private func getAutoRenewablesProducts(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getAutoRenewablesProducts")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getAutoRenewablesProducts")
         Task {
             let products = await storeKitManager.getAutoRenewablesProducts()
-            safeLog("📥 [iOS Plugin] getAutoRenewablesProducts 成功: \(products.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] getAutoRenewablesProducts 成功: \(products.count) 个产品")
             let productsDict = await ProductConverter.toDictionaryArray(products)
             result(productsDict)
         }
@@ -287,21 +287,21 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func getProduct(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] getProduct 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] getProduct 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 getProduct, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getProduct, productId: \(productId)")
         if let product = storeKitManager.product(for: productId) {
-            safeLog("📥 [iOS Plugin] getProduct 找到产品: \(product.id)")
+            safeLog("[pp_inapp_purchase_ios_plugin] getProduct 找到产品: \(product.id)")
             Task {
                 let productDict = await ProductConverter.toDictionary(product)
-                safeLog("✅ [iOS Plugin] getProduct 转换完成，返回数据")
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] getProduct 转换完成，返回数据")
                 result(productDict)
             }
         } else {
-            safeLog("⚠️ [iOS Plugin] getProduct 未找到产品: \(productId)")
+            safeLog("⚠️ [pp_inapp_purchase_ios_plugin] getProduct 未找到产品: \(productId)")
             result(nil)
         }
     }
@@ -310,29 +310,29 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func purchase(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] purchase 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] purchase 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 purchase, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 purchase, productId: \(productId)")
         Task {
             await storeKitManager.purchase(productId: productId)
-            safeLog("✅ [iOS Plugin] purchase 调用成功")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] purchase 调用成功")
             result(nil)
         }
     }
     
     // 恢复购买
     private func restorePurchases(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 restorePurchases")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 restorePurchases")
         Task {
             do {
                 try await storeKitManager.restorePurchases()
-                safeLog("✅ [iOS Plugin] restorePurchases 成功")
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] restorePurchases 成功")
                 result(nil)
             } catch {
-                safeLog("❌ [iOS Plugin] restorePurchases 失败: \(error.localizedDescription)")
+                safeLog("❌ [pp_inapp_purchase_ios_plugin] restorePurchases 失败: \(error.localizedDescription)")
                 result(nil)
             }
         }
@@ -340,34 +340,34 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 刷新购买记录
     private func refreshPurchases(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 refreshPurchases")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 refreshPurchases")
         Task {
             await storeKitManager.refreshPurchases()
-            safeLog("✅ [iOS Plugin] refreshPurchases 成功")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] refreshPurchases 成功")
             result(nil)
         }
     }
     
     // 获取有效的已购买交易
     private func getValidPurchasedTransactions(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getValidPurchasedTransactions")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getValidPurchasedTransactions")
         Task {
             let transactions = await storeKitManager.getValidPurchasedTransactions()
-            safeLog("📥 [iOS Plugin] getValidPurchasedTransactions 成功: \(transactions.count) 个交易")
+            safeLog("[pp_inapp_purchase_ios_plugin] getValidPurchasedTransactions 成功: \(transactions.count) 个交易")
             let transactionsDict = await TransactionConverter.toDictionaryArray(transactions)
-            safeLog("✅ [iOS Plugin] getValidPurchasedTransactions 转换完成，返回数据")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getValidPurchasedTransactions 转换完成，返回数据")
             result(transactionsDict)
         }
     }
     
     // 获取最新交易
     private func getLatestTransactions(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 getLatestTransactions")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getLatestTransactions")
         Task {
             let transactions = await storeKitManager.getLatestTransactions()
-            safeLog("📥 [iOS Plugin] getLatestTransactions 成功: \(transactions.count) 个交易")
+            safeLog("[pp_inapp_purchase_ios_plugin] getLatestTransactions 成功: \(transactions.count) 个交易")
             let transactionsDict = await TransactionConverter.toDictionaryArray(transactions)
-            safeLog("✅ [iOS Plugin] getLatestTransactions 转换完成，返回数据")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getLatestTransactions 转换完成，返回数据")
             result(transactionsDict)
         }
     }
@@ -376,14 +376,14 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func isPurchased(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] isPurchased 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] isPurchased 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 isPurchased, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 isPurchased, productId: \(productId)")
         let isPurchased = storeKitManager.isPurchased(productId: productId)
-        safeLog("✅ [iOS Plugin] isPurchased 返回: \(isPurchased)")
+        safeLog("✅ [pp_inapp_purchase_ios_plugin] isPurchased 返回: \(isPurchased)")
         result(isPurchased)
     }
     
@@ -391,14 +391,14 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func isFamilyShared(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] isFamilyShared 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] isFamilyShared 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 isFamilyShared, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 isFamilyShared, productId: \(productId)")
         let isFamilyShared = storeKitManager.isFamilyShared(productId: productId)
-        safeLog("✅ [iOS Plugin] isFamilyShared 返回: \(isFamilyShared)")
+        safeLog("✅ [pp_inapp_purchase_ios_plugin] isFamilyShared 返回: \(isFamilyShared)")
         result(isFamilyShared)
     }
     
@@ -406,15 +406,15 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func isEligibleForIntroOffer(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] isEligibleForIntroOffer 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] isEligibleForIntroOffer 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 isEligibleForIntroOffer, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 isEligibleForIntroOffer, productId: \(productId)")
         Task {
             let isEligible = await storeKitManager.isEligibleForIntroOffer(productId: productId)
-            safeLog("✅ [iOS Plugin] isEligibleForIntroOffer 返回: \(isEligible)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] isEligibleForIntroOffer 返回: \(isEligible)")
             result(isEligible)
         }
     }
@@ -423,25 +423,25 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func isSubscribedButFreeTrailCancelled(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String else {
-            safeLog("❌ [iOS Plugin] isSubscribedButFreeTrailCancelled 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] isSubscribedButFreeTrailCancelled 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid productId", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 isSubscribedButFreeTrailCancelled, productId: \(productId)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 isSubscribedButFreeTrailCancelled, productId: \(productId)")
         Task {
             let isCancelled = await storeKitManager.isSubscribedButFreeTrailCancelled(productId: productId)
-            safeLog("✅ [iOS Plugin] isSubscribedButFreeTrailCancelled 返回: \(isCancelled)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] isSubscribedButFreeTrailCancelled 返回: \(isCancelled)")
             result(isCancelled)
         }
     }
     
     // 检查订阅状态
     private func checkSubscriptionStatus(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 checkSubscriptionStatus")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 checkSubscriptionStatus")
         Task { @MainActor in
             await storeKitManager.checkSubscriptionStatus()
-            safeLog("✅ [iOS Plugin] checkSubscriptionStatus 完成")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] checkSubscriptionStatus 完成")
             result(nil)
         }
     }
@@ -453,16 +453,16 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
               let periodTypeStr = arguments["periodType"] as? String,
               let periodType = SubscriptionPeriodType(rawValue: periodTypeStr),
               let langCode = arguments["langCode"] as? String else {
-            safeLog("❌ [iOS Plugin] getProductForVipTitle 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] getProductForVipTitle 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid arguments", details: nil))
             return
         }
         
         let isShort = arguments["isShort"] as? Bool ?? false
         
-        safeLog("🔵 [iOS Plugin] 调用 getProductForVipTitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode), isShort: \(isShort)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getProductForVipTitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode), isShort: \(isShort)")
         let title = storeKitManager.productForVipTitle(for: productId, periodType: periodType, languageCode: langCode, isShort: isShort)
-        safeLog("✅ [iOS Plugin] getProductForVipTitle 返回: \(title)")
+        safeLog("✅ [pp_inapp_purchase_ios_plugin] getProductForVipTitle 返回: \(title)")
         result(title)
     }
     
@@ -473,15 +473,15 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
               let periodTypeStr = arguments["periodType"] as? String,
               let periodType = SubscriptionPeriodType(rawValue: periodTypeStr),
               let langCode = arguments["langCode"] as? String else {
-            safeLog("❌ [iOS Plugin] getProductForVipSubtitle 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] getProductForVipSubtitle 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid arguments", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 getProductForVipSubtitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getProductForVipSubtitle, productId: \(productId), periodType: \(periodTypeStr), langCode: \(langCode)")
         Task {
             let subtitle = await storeKitManager.productForVipSubtitle(for: productId, periodType: periodType, languageCode: langCode)
-            safeLog("✅ [iOS Plugin] getProductForVipSubtitle 返回: \(subtitle)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getProductForVipSubtitle 返回: \(subtitle)")
             result(subtitle)
         }
     }
@@ -491,94 +491,94 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         guard let arguments = call.arguments as? [String: Any],
               let productId = arguments["productId"] as? String,
               let langCode = arguments["langCode"] as? String else {
-            safeLog("❌ [iOS Plugin] getProductForVipButtonText 参数无效")
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] getProductForVipButtonText 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid arguments", details: nil))
             return
         }
         
-        safeLog("🔵 [iOS Plugin] 调用 getProductForVipButtonText, productId: \(productId), langCode: \(langCode)")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 getProductForVipButtonText, productId: \(productId), langCode: \(langCode)")
         Task {
             let buttonText = await storeKitManager.productForVipButtonText(for: productId, languageCode: langCode)
-            safeLog("✅ [iOS Plugin] getProductForVipButtonText 返回: \(buttonText)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] getProductForVipButtonText 返回: \(buttonText)")
             result(buttonText)
         }
     }
     
     // 显示管理订阅界面
     private func showManageSubscriptionsSheet(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 showManageSubscriptionsSheet")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 showManageSubscriptionsSheet")
         Task { @MainActor in
             let success = await storeKitManager.showManageSubscriptionsSheet()
-            safeLog("✅ [iOS Plugin] showManageSubscriptionsSheet 返回: \(success)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] showManageSubscriptionsSheet 返回: \(success)")
             result(success)
         }
     }
     
     // 显示优惠码兑换界面
     private func presentOfferCodeRedeemSheet(_ result: @escaping FlutterResult) {
-        safeLog("🔵 [iOS Plugin] 调用 presentOfferCodeRedeemSheet")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 presentOfferCodeRedeemSheet")
         Task { @MainActor in
             let success = await storeKitManager.presentOfferCodeRedeemSheet()
-            safeLog("✅ [iOS Plugin] presentOfferCodeRedeemSheet 返回: \(success)")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] presentOfferCodeRedeemSheet 返回: \(success)")
             result(success)
         }
     }
     
     // 请求应用评分
     private func requestReview() {
-        safeLog("🔵 [iOS Plugin] 调用 requestReview")
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 requestReview")
         Task { @MainActor in
             storeKitManager.requestReview()
-            safeLog("✅ [iOS Plugin] requestReview 调用完成")
+            safeLog("✅ [pp_inapp_purchase_ios_plugin] requestReview 调用完成")
         }
     }
 
     // 处理状态变化
     private func handleStateChanged(_ state: StoreKitState) {
-        safeLog("📨 [iOS Plugin] 处理状态变化")
+        safeLog("[pp_inapp_purchase_ios_plugin] 处理状态变化")
         Task { @MainActor in
             let stateDict = await StoreKitStateConverter.toDictionary(state)
-            safeLog("📤 [iOS Plugin] 发送状态变化事件到 Flutter: \(stateDict)")
+            safeLog("[pp_inapp_purchase_ios_plugin] 发送状态变化事件到 Flutter: \(stateDict)")
             if let stateEventSink = stateEventSink {
                 stateEventSink(stateDict)
-                safeLog("✅ [iOS Plugin] 状态变化事件已发送")
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] 状态变化事件已发送")
             } else {
-                safeLog("⚠️ [iOS Plugin] stateEventSink 为 nil，无法发送状态变化事件")
+                safeLog("⚠️ [pp_inapp_purchase_ios_plugin] stateEventSink 为 nil，无法发送状态变化事件")
             }
         }
     }
     
     // 处理产品加载
     private func handleProductsLoaded(_ products: [Product]) {
-        safeLog("📨 [iOS Plugin] 处理产品加载: \(products.count) 个产品")
+        safeLog("[pp_inapp_purchase_ios_plugin] 处理产品加载: \(products.count) 个产品")
         Task { @MainActor in
             let productsDict = await ProductConverter.toDictionaryArray(products)
-            safeLog("📤 [iOS Plugin] 发送产品加载事件到 Flutter: \(productsDict.count) 个产品")
+            safeLog("[pp_inapp_purchase_ios_plugin] 发送产品加载事件到 Flutter: \(productsDict.count) 个产品")
             if let productsEventSink = productsEventSink {
                 productsEventSink(productsDict)
-                safeLog("✅ [iOS Plugin] 产品加载事件已发送")
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] 产品加载事件已发送")
             } else {
-                safeLog("⚠️ [iOS Plugin] productsEventSink 为 nil，无法发送产品加载事件")
+                safeLog("⚠️ [pp_inapp_purchase_ios_plugin] productsEventSink 为 nil，无法发送产品加载事件")
             }
         }
     }
     
     // 处理交易更新
-    private func handleTransactionsUpdated(_ purchasedTransactions: [Transaction], _ latestTransactions: [Transaction]) {
-        safeLog("📨 [iOS Plugin] 处理交易更新: purchasedTransactions=\(purchasedTransactions.count), latestTransactions=\(latestTransactions.count)")
+    private func handleTransactionsUpdated(_ validTransactions: [Transaction], _ latestTransactions: [Transaction]) {
+        safeLog("[pp_inapp_purchase_ios_plugin] 处理交易更新: validTransactions=\(validTransactions.count), latestTransactions=\(latestTransactions.count)")
         Task { @MainActor in
-            let purchasedTransactionsDict = await TransactionConverter.toDictionaryArray(purchasedTransactions)
+            let validTransactionsDict = await TransactionConverter.toDictionaryArray(validTransactions)
             let latestTransactionsDict = await TransactionConverter.toDictionaryArray(latestTransactions)
             let transactionData: [String: Any] = [
-                "purchasedTransactions": purchasedTransactionsDict,
+                "validTransactions": validTransactionsDict,
                 "latestTransactions": latestTransactionsDict
             ]
-            safeLog("📤 [iOS Plugin] 发送交易更新事件到 Flutter")
+            safeLog("[pp_inapp_purchase_ios_plugin] 发送交易更新事件到 Flutter")
             if let transactionsEventSink = transactionsEventSink {
                 transactionsEventSink(transactionData)
-                safeLog("✅ [iOS Plugin] 交易更新事件已发送")
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] 交易更新事件已发送")
             } else {
-                safeLog("⚠️ [iOS Plugin] transactionsEventSink 为 nil，无法发送交易更新事件")
+                safeLog("⚠️ [pp_inapp_purchase_ios_plugin] transactionsEventSink 为 nil，无法发送交易更新事件")
             }
         }
     }
@@ -593,16 +593,16 @@ class StateEventStreamHandler: NSObject, FlutterStreamHandler {
     }
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] StateEventStreamHandler onListen 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] StateEventStreamHandler onListen 被调用")
         plugin?.stateEventSink = events
-        plugin?.safeLog("✅ [iOS Plugin] stateEventSink 已设置")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] stateEventSink 已设置")
         return nil
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] StateEventStreamHandler onCancel 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] StateEventStreamHandler onCancel 被调用")
         plugin?.stateEventSink = nil
-        plugin?.safeLog("✅ [iOS Plugin] stateEventSink 已取消")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] stateEventSink 已取消")
         return nil
     }
 }
@@ -615,16 +615,16 @@ class ProductsEventStreamHandler: NSObject, FlutterStreamHandler {
     }
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] ProductsEventStreamHandler onListen 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] ProductsEventStreamHandler onListen 被调用")
         plugin?.productsEventSink = events
-        plugin?.safeLog("✅ [iOS Plugin] productsEventSink 已设置")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] productsEventSink 已设置")
         return nil
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] ProductsEventStreamHandler onCancel 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] ProductsEventStreamHandler onCancel 被调用")
         plugin?.productsEventSink = nil
-        plugin?.safeLog("✅ [iOS Plugin] productsEventSink 已取消")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] productsEventSink 已取消")
         return nil
     }
 }
@@ -637,16 +637,16 @@ class TransactionsEventStreamHandler: NSObject, FlutterStreamHandler {
     }
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] TransactionsEventStreamHandler onListen 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] TransactionsEventStreamHandler onListen 被调用")
         plugin?.transactionsEventSink = events
-        plugin?.safeLog("✅ [iOS Plugin] transactionsEventSink 已设置")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] transactionsEventSink 已设置")
         return nil
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        plugin?.safeLog("🔵 [iOS Plugin] TransactionsEventStreamHandler onCancel 被调用")
+        plugin?.safeLog("[pp_inapp_purchase_ios_plugin] TransactionsEventStreamHandler onCancel 被调用")
         plugin?.transactionsEventSink = nil
-        plugin?.safeLog("✅ [iOS Plugin] transactionsEventSink 已取消")
+        plugin?.safeLog("✅ [pp_inapp_purchase_ios_plugin] transactionsEventSink 已取消")
         return nil
     }
 }
