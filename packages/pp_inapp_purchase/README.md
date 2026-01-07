@@ -32,7 +32,7 @@
 
 ```yaml
 dependencies:
-  pp_inapp_purchase: ^1.0.9
+  pp_inapp_purchase: ^1.1.0
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。

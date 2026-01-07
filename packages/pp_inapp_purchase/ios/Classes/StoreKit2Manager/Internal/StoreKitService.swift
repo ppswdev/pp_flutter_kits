@@ -92,16 +92,10 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         
         transactionListener = transactionStatusStream()
         
-        // 启动订阅状态监听
-        startSubscriptionStatusListener()
-        
         Task {
             await clearUnfinishedTransactions()
             let _ = await loadProducts()
             await loadValidTransactions()
-            
-            // 初始检查订阅状态
-            await checkSubscriptionStatus()
         }
     }
     
@@ -134,7 +128,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
             if config.autoSortProducts {
                 products = sortByPrice(products)
             }
-
+            
             self.allProducts = products
             return products
         } catch {
@@ -174,7 +168,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
             }
         }
         self.latestTransactions = latestTransactions
-
+        
         // 将当前有效记录并转换成 purchasedTransactions
         var purchasedTransactions: [Transaction] = []
         for await result in Transaction.currentEntitlements {
@@ -186,7 +180,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         
         currentState = .purchasesLoaded
     }
-
+    
     /// 完成所有未完成的交易记录
     @MainActor
     func clearUnfinishedTransactions() async {
@@ -264,6 +258,14 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                     await MainActor.run {
                         currentState = .purchaseSuccess(transaction.productID, transaction)
                     }
+                    
+                    // 购买成功后启动订阅状态监听
+                    // 只针对非消耗品启动监听（订阅产品）
+                    if product.type != .consumable {
+                        await MainActor.run {
+                            self.startSubscriptionStatusListener()
+                        }
+                    }
                     continuation.resume()
                 } catch {
                     // 验证失败，通过状态返回错误
@@ -322,7 +324,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                 errorDetails = "Product.PurchaseError: \(String(describing: purchaseError))"
                 errorLocation = "StoreKitService.product.purchase"
             } else if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
-                    let storeKitError = error as? StoreKit.StoreKitError {
+                      let storeKitError = error as? StoreKit.StoreKitError {
                 // StoreKit.StoreKitError 类型的错误
                 // case networkError(URLError)
                 // case systemError(any Error)
@@ -374,7 +376,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
             
             // 根据错误类型获取详细信息
             if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
-            let storeKitError = error as? StoreKit.StoreKitError {
+               let storeKitError = error as? StoreKit.StoreKitError {
                 // StoreKit.StoreKitError 类型的错误
                 errorMessage = storeKitError.localizedDescription
                 errorDetails = "StoreKit.StoreKitError: \(String(describing: storeKitError))"
@@ -396,7 +398,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         // 同步 App Store 的购买状态
         do {
             try await AppStore.sync()
-             // 重新获取已购买产品（会更新订阅状态）
+            // 重新获取已购买产品（会更新订阅状态）
             await loadValidTransactions()
         } catch {
             // 恢复购买失败，通过状态返回错误
@@ -408,7 +410,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
             
             // 根据错误类型获取详细信息
             if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *),
-            let storeKitError = error as? StoreKit.StoreKitError {
+               let storeKitError = error as? StoreKit.StoreKitError {
                 // StoreKit.StoreKitError 类型的错误
                 errorMessage = storeKitError.localizedDescription
                 errorDetails = "StoreKit.StoreKitError: \(String(describing: storeKitError))"
@@ -479,9 +481,9 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         }
     }
     
-  
+    
     // MARK: - 私有方法
-
+    
     /// 设置订阅者
     private func setupSubscribers() {
         // 监听产品变化
@@ -604,7 +606,6 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                     }
                     
                     await self.loadValidTransactions()
-                    
                     await transaction.finish()
                 } catch {
                     print("交易处理失败: \(error)")
@@ -654,6 +655,20 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         
         // 将任务添加到任务列表，以便在停止服务时统一取消
         subscriberTasks.append(task)
+    }
+    
+    /// 停止订阅状态监听
+    ///
+    /// 功能说明：
+    /// - 取消所有订阅状态检查任务
+    /// - 清空任务列表
+    /// - 通常在检测到订阅取消后调用
+    private func stopSubscriptionStatusListener() {
+        // 取消所有订阅状态检查任务
+        subscriberTasks.forEach { $0.cancel() }
+        subscriberTasks.removeAll()
+        
+        print("🛑 订阅状态监听已停止")
     }
     
     /// 检查所有订阅的状态
@@ -811,6 +826,9 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                         // （说明：这个productId不准确,会每个产品都返回，暂时不处理，只要检测到一个就认为是取消，然后break）
                         self.currentState = .subscriptionCancelled(currentInfo.currentProductID, isSubscribedButFreeTrailCancelled: isSubscribedButFreeTrailCancelled)
                         
+                        // 检测到订阅取消后，停止订阅状态监听
+                        self.stopSubscriptionStatusListener()
+                        
                         // 打印过期日期信息，告知用户订阅何时失效
                         if let expirationDate = expirationDate {
                             let formatter = DateFormatter()
@@ -891,7 +909,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
         await checkSubscriptionStatus()
     }
     
-   
+    
 }
 
 //MARK: 订阅管理
