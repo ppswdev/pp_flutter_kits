@@ -74,8 +74,9 @@ class AppUtil {
   ///   buildNumber: "1"
   /// )
   static Future<
-      ({String appName, String packageName, String version, String buildNumber})>
-      getAppInfo() async {
+    ({String appName, String packageName, String version, String buildNumber})
+  >
+  getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return (
       appName: packageInfo.appName,
@@ -132,17 +133,15 @@ class AppUtil {
   /// 返回:
   ///   无返回值，打开失败则在日志输出异常
   static void openLink(String url) async {
-    if (GetUtils.isURL(url)) {
-      try {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri);
-        } else {
-          throw 'Could not launch $url';
-        }
-      } catch (e) {
-        Logger.log('ppkits openLink error: $e');
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        throw 'Could not launch $url';
       }
+    } catch (e) {
+      Logger.log('ppkits openLink error: $e');
     }
   }
 

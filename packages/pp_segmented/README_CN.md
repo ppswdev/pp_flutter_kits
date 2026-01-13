@@ -10,16 +10,14 @@
 
 ## Screenshots
 
-<video autoplay muted loop playsinline width="640">
-  <source src="screenshots/video.mp4" type="video/mp4">
-  <a href="screenshots/video.mp4">播放视频</a>
-</video>
+![Sample1](screenshots/output.webp)
+也可以观看视频：[视频](screenshots/video.mp4)
 
 ## Getting started
 
 ```yaml
 dependencies:
-  pp_segmented: ^1.0.0
+  pp_segmented: ^1.0.1
 ```
 
 ## Usage
