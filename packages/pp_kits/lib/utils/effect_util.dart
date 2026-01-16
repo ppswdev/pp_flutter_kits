@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
-import '../common/logger.dart';
+import '../commons/logger.dart';
 
 /// 音频池，用于实现多个音效的并发播放
 class AudioPool {

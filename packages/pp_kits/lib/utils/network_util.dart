@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:pp_kits/common/event_bus.dart';
+import 'package:pp_kits/commons/event_bus.dart';
 import 'dart:async';
 
-import 'package:pp_kits/common/logger.dart';
+import 'package:pp_kits/commons/logger.dart';
 import 'package:pp_kits/extensions/extension_on_string.dart';
 
 /// 连接的网络类型: 手机移动网络，WIFI网络、以太网、VPN网络、蓝牙网络、无网络
@@ -63,7 +63,7 @@ class NetworkUtil extends GetxController {
     'https://www.baidu.com/robots.txt',
     'https://www.huaweicloud.com/robots.txt',
     'https://www.oracle.com/robots.txt',
-    'https://www.tiktok.com/robots.txt'
+    'https://www.tiktok.com/robots.txt',
   ];
 
   List<String> extraUrls = [];
@@ -85,14 +85,15 @@ class NetworkUtil extends GetxController {
 
   late final Connectivity _connectivity;
   late final StreamSubscription<List<ConnectivityResult>>
-      _connectivitySubscription;
+  _connectivitySubscription;
 
   @override
   void onInit() {
     super.onInit();
     _connectivity = Connectivity();
-    _connectivitySubscription = _connectivity.onConnectivityChanged
-        .listen((List<ConnectivityResult> results) {
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
       Logger.trace('onConnectivityChanged');
       _updateNetworkStatus(results);
     });
@@ -144,24 +145,25 @@ class NetworkUtil extends GetxController {
       // 只有在启用健康检查时才进行防抖处理
       if (enableHealthCheck) {
         _healthCheckDebounceTimer?.cancel();
-        _healthCheckDebounceTimer =
-            Timer(Duration(seconds: healthCheckDebounceSeconds), () async {
-          final oldStatus = status.value;
-          final newStatus = await checkNetworkHealth();
-          Logger.log('网络状态改变: $oldStatus -> $newStatus');
-          if (oldStatus != newStatus) {
-            status.value = newStatus;
-            EventBus().send(NetworkChangedEvent(status.value));
-          }
-        });
+        _healthCheckDebounceTimer = Timer(
+          Duration(seconds: healthCheckDebounceSeconds),
+          () async {
+            final oldStatus = status.value;
+            final newStatus = await checkNetworkHealth();
+            Logger.log('网络状态改变: $oldStatus -> $newStatus');
+            if (oldStatus != newStatus) {
+              status.value = newStatus;
+              EventBus().send(NetworkChangedEvent(status.value));
+            }
+          },
+        );
       }
     }
   }
 
   /// 检查网络连接状态
   void checkConnectivity() async {
-    final List<ConnectivityResult> results =
-        await (_connectivity.checkConnectivity());
+    final results = await _connectivity.checkConnectivity();
     _updateNetworkStatus(results);
   }
 
@@ -499,10 +501,12 @@ class NetworkUtil extends GetxController {
       _healthCheckDebounceTimer = null;
     } else {
       // 启动定时器获取公网IP
-      _healthCheckTimer =
-          Timer.periodic(Duration(minutes: checkMinutesInterval), (timer) {
-        checkNetworkHealth();
-      });
+      _healthCheckTimer = Timer.periodic(
+        Duration(minutes: checkMinutesInterval),
+        (timer) {
+          checkNetworkHealth();
+        },
+      );
     }
   }
 
@@ -585,31 +589,33 @@ class NetworkUtil extends GetxController {
 
       Dio()
           .get(
-        url,
-        options: Options(
-          receiveTimeout: Duration(milliseconds: timeoutMs),
-          sendTimeout: Duration(milliseconds: timeoutMs),
-        ),
-        cancelToken: cancelToken,
-      )
+            url,
+            options: Options(
+              receiveTimeout: Duration(milliseconds: timeoutMs),
+              sendTimeout: Duration(milliseconds: timeoutMs),
+            ),
+            cancelToken: cancelToken,
+          )
           .then((response) {
-        stopwatch.stop();
-        final responseTime = stopwatch.elapsedMilliseconds;
-        responseTimes[url] = responseTime;
+            stopwatch.stop();
+            final responseTime = stopwatch.elapsedMilliseconds;
+            responseTimes[url] = responseTime;
 
-        Logger.log(
-            '网络健康检测: $url 响应 statusCode=${response.statusCode}, 耗时=${responseTime}ms');
+            Logger.log(
+              '网络健康检测: $url 响应 statusCode=${response.statusCode}, 耗时=${responseTime}ms',
+            );
 
-        if (response.statusCode == 200) {
-          hasSuccess = true;
-        }
-      }).catchError((e) {
-        stopwatch.stop();
-        final responseTime = stopwatch.elapsedMilliseconds;
-        responseTimes[url] = responseTime;
+            if (response.statusCode == 200) {
+              hasSuccess = true;
+            }
+          })
+          .catchError((e) {
+            stopwatch.stop();
+            final responseTime = stopwatch.elapsedMilliseconds;
+            responseTimes[url] = responseTime;
 
-        Logger.log('网络健康检测: $url 请求失败/超时，耗时=${responseTime}ms，错误: $e');
-      });
+            Logger.log('网络健康检测: $url 请求失败/超时，耗时=${responseTime}ms，错误: $e');
+          });
     }
 
     // 超时后判断最终状态

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pp_kits/common/logger.dart';
+import 'package:pp_kits/commons/logger.dart';
 import 'package:pp_kits/utils/keychain_util.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';

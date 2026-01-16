@@ -26,7 +26,7 @@ pp_kits 是一个面向 Flutter 的快速开发应用工具库，集成了常用
 
 ```yaml
 dependencies:
-  pp_kits: ^1.2.2
+  pp_kits: ^1.2.3
 ```
 
 导入至 Dart 代码：

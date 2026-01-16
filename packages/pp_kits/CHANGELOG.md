@@ -1,3 +1,8 @@
+## 1.2.3
+
+* Code comments suggest optimization and improvement.
+* Update packages latest version
+
 ## 1.2.2
 
 * Code comments suggest optimization and improvement.

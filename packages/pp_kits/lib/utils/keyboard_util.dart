@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../common/logger.dart';
+import '../commons/logger.dart';
 
 /// 键盘工具类
 ///

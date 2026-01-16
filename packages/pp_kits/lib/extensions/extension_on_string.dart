@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import '../common/logger.dart';
+import '../commons/logger.dart';
 
 /// 字符串扩展
 /// 提供一些常用的字符串操作方法
@@ -93,9 +93,7 @@ extension StringExtension on String {
   /// ```
   bool isValidIP() {
     // IPv4正则表达式
-    final ipv4Pattern = RegExp(
-      r'^(\d{1,3}\.){3}\d{1,3}$',
-    );
+    final ipv4Pattern = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
 
     // IPv6正则表达式
     final ipv6Pattern = RegExp(
