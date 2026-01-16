@@ -5,13 +5,13 @@
 Pod::Spec.new do |s|
   s.name             = 'audio_engine_player'
   s.version          = '1.0.0'
-  s.summary          = 'A new Flutter plugin project.'
+  s.summary          = 'Flutter plugin for AudioEnginePlayer, supporting iOS 14+.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+Flutter plugin for AudioEnginePlayer, supporting iOS 14+.'
                        DESC
   s.homepage         = 'https://github.com/xiaopindev/audio_engine_player'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'xiaopn166@gmail.com' }
+  s.author           = { 'ppswdev' => 'xiaopn166@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
