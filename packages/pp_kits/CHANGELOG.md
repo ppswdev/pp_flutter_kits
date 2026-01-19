@@ -1,3 +1,7 @@
+## 1.2.4
+
+* Added NetworkConnectStatusEvent
+
 ## 1.2.3
 
 * Code comments suggest optimization and improvement.

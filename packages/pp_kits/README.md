@@ -26,7 +26,7 @@ pp_kits 是一个面向 Flutter 的快速开发应用工具库，集成了常用
 
 ```yaml
 dependencies:
-  pp_kits: ^1.2.3
+  pp_kits: ^1.2.4
 ```
 
 导入至 Dart 代码：
@@ -64,21 +64,21 @@ PollingTask().start(
 
 ## 依赖说明
 
-| 功能               | 三方库               |
-| ------------------ | -------------------- |
-| 网络请求           | dio                  |
-| 状态管理           | get                  |
-| 国际化             | intl                 |
-| 文件/路径           | path, file_picker, path_provider |
-| 唯一ID/加密        | uuid, hex, encrypt   |
-| 压缩/解压          | archive              |
-| 系统设置/启动      | url_launcher, app_settings |
-| 本地/安全存储      | shared_preferences, flutter_secure_storage |
-| 结构适配/UI        | adaptive_dialog, flutter_easyloading, flutter_screenutil |
-| 设备/包/时区信息   | device_info_plus, package_info_plus, flutter_timezone |
-| 时间工具           | get_time_ago         |
-| 多媒体             | audioplayers, image_cropper, image_picker, share_plus |
-| 网络状态           | connectivity_plus    |
+| 功能             | 三方库                                                   |
+| ---------------- | -------------------------------------------------------- |
+| 网络请求         | dio                                                      |
+| 状态管理         | get                                                      |
+| 国际化           | intl                                                     |
+| 文件/路径        | path, file_picker, path_provider                         |
+| 唯一ID/加密      | uuid, hex, encrypt                                       |
+| 压缩/解压        | archive                                                  |
+| 系统设置/启动    | url_launcher, app_settings                               |
+| 本地/安全存储    | shared_preferences, flutter_secure_storage               |
+| 结构适配/UI      | adaptive_dialog, flutter_easyloading, flutter_screenutil |
+| 设备/包/时区信息 | device_info_plus, package_info_plus, flutter_timezone    |
+| 时间工具         | get_time_ago                                             |
+| 多媒体           | audioplayers, image_cropper, image_picker, share_plus    |
+| 网络状态         | connectivity_plus                                        |
 
 ## 参与贡献
 

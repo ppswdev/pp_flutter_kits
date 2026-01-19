@@ -2,6 +2,14 @@
 通用事件
 */
 
+/// 网络连接状态事件
+class NetworkConnectStatusEvent {
+  final bool isConnected;
+  final String message;
+
+  NetworkConnectStatusEvent(this.isConnected, this.message);
+}
+
 /// 主题改变事件
 class ThemeChangedEvent {
   final String message;

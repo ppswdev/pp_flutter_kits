@@ -9,6 +9,8 @@ import 'dart:async';
 import 'package:pp_kits/commons/logger.dart';
 import 'package:pp_kits/extensions/extension_on_string.dart';
 
+import '../commons/events.dart';
+
 /// 连接的网络类型: 手机移动网络，WIFI网络、以太网、VPN网络、蓝牙网络、无网络
 enum NetworkType { mobile, wifi, ethernet, vpn, bluetooth, none }
 
@@ -16,10 +18,10 @@ enum NetworkType { mobile, wifi, ethernet, vpn, bluetooth, none }
 enum NetworkStatus { available, slow, unavailable }
 
 /// 网络状态改变事件
-class NetworkChangedEvent {
+class NetworkHealthStatusEvent {
   final NetworkStatus status;
 
-  NetworkChangedEvent(this.status);
+  NetworkHealthStatusEvent(this.status);
 }
 
 /// 网络位置信息
@@ -133,15 +135,16 @@ class NetworkUtil extends GetxController {
     if (netType.value == NetworkType.none) {
       Logger.trace('网络已断开');
       isConnected.value = false;
+      EventBus().send(NetworkConnectStatusEvent(false, '网络已断开'));
       // 网络断开时，直接设置为不可用
       if (status.value != NetworkStatus.unavailable) {
         status.value = NetworkStatus.unavailable;
-        EventBus().send(NetworkChangedEvent(status.value));
+        EventBus().send(NetworkHealthStatusEvent(status.value));
       }
     } else {
       Logger.trace('网络已连接: ${netType.value}');
       isConnected.value = true;
-
+      EventBus().send(NetworkConnectStatusEvent(true, '网络已连接'));
       // 只有在启用健康检查时才进行防抖处理
       if (enableHealthCheck) {
         _healthCheckDebounceTimer?.cancel();
@@ -153,7 +156,7 @@ class NetworkUtil extends GetxController {
             Logger.log('网络状态改变: $oldStatus -> $newStatus');
             if (oldStatus != newStatus) {
               status.value = newStatus;
-              EventBus().send(NetworkChangedEvent(status.value));
+              EventBus().send(NetworkHealthStatusEvent(status.value));
             }
           },
         );
