@@ -1,0 +1,7 @@
+# 创建 .pubignore 文件，将不想发布的文件列在这里
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_tool/
+.idea/
+build/
+doc/
