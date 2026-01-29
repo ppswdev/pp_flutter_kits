@@ -1,6 +1,6 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.2.4
+version: 1.2.5
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_kits
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dio: ^5.9.0 #网络请求
+  dio: ^5.9.1 #网络请求
   get: ^4.7.3 #状态管理
   intl: ^0.20.2 #国际化
   path: ^1.9.1 #文件路径处理

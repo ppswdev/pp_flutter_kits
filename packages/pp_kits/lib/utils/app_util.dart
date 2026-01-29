@@ -26,7 +26,7 @@ class AppUtil {
   ///
   /// 返回示例:
   /// '018fc816-330b-7dab-b1f4-61109d8e9bc6'
-  static Future<String> getAppUUID() async {
+  static Future<String> getAppUUID({String? defaultUUID}) async {
     final appInfo = await getAppInfo();
     String? value;
     try {
@@ -35,7 +35,7 @@ class AppUtil {
       Logger.trace('Failed to read UUID from keychain: $e');
     }
     if (value == null) {
-      value = const Uuid().v7();
+      value = defaultUUID ?? const Uuid().v7();
       try {
         //防止触发安全机制崩溃
         Future.delayed(const Duration(milliseconds: 500));
