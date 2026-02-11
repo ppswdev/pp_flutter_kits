@@ -17,7 +17,7 @@
 
 ```yaml
 dependencies:
-  pp_segmented: ^1.0.1
+  pp_segmented: ^1.0.2
 ```
 
 ## Usage

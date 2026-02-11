@@ -155,22 +155,22 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
         iconTheme: IconThemeData(color: color),
         // 设置文本主题颜色
         textTheme: Theme.of(context).textTheme.copyWith(
-          bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: color,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-          ),
-          bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: color,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-          ),
-          labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: color,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-          ),
-        ),
+              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: color,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 16,
+                  ),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: color,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 16,
+                  ),
+              labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: color,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 16,
+                  ),
+            ),
         // 设置按钮主题颜色
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(foregroundColor: color),
@@ -181,8 +181,7 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
       ),
       child: AnimatedDefaultTextStyle(
         duration: widget.animationDuration,
-        style:
-            (isSelected
+        style: (isSelected
                 ? widget.selectedTextStyle
                 : widget.unselectedTextStyle) ??
             TextStyle(
@@ -202,9 +201,8 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
       height: widget.height,
       decoration: BoxDecoration(
         gradient: widget.backgroundGradient,
-        color: widget.backgroundGradient == null
-            ? widget.backgroundColor
-            : null,
+        color:
+            widget.backgroundGradient == null ? widget.backgroundColor : null,
         borderRadius: BorderRadius.circular(widget.borderRadius),
       ),
       child: widget.isScrollable
@@ -218,13 +216,16 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
     return LayoutBuilder(
       builder: (context, constraints) {
         final itemWidth = constraints.maxWidth / widget.items.length;
+        final isRTL = Directionality.of(context) == TextDirection.rtl;
         return Stack(
           children: [
             // 选中指示器
             AnimatedPositioned(
               duration: widget.animationDuration,
               curve: widget.animationCurve,
-              left: _selectedIndex * itemWidth,
+              left: isRTL
+                  ? (widget.items.length - _selectedIndex - 1) * itemWidth
+                  : _selectedIndex * itemWidth,
               top: 0,
               bottom: 0,
               width: itemWidth,

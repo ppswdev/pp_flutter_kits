@@ -1,4 +1,3 @@
-
 A simple and easy-to-use, highly customizable Segmented Control component.
 
 ## Features
@@ -17,7 +16,7 @@ A simple and easy-to-use, highly customizable Segmented Control component.
 
 ```yaml
 dependencies:
-  pp_segmented: ^1.0.1
+  pp_segmented: ^1.0.2
 ```
 
 ## Usage

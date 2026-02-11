@@ -1,6 +1,6 @@
 name: pp_segmented
 description: "A simple and easy-to-use, highly customizable Segmented Control component."
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_segmented
 
 environment:
@@ -21,7 +21,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  uses-material-design: true
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
