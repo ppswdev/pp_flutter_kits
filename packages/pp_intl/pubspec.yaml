@@ -1,0 +1,25 @@
+name: pp_intl
+description: "A simple, easy-to-use, universal and standardized localized text content."
+version: 1.0.0
+homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_intl
+
+environment:
+  sdk: ^3.10.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+# For information on generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  assets:
+    - assets/languages/

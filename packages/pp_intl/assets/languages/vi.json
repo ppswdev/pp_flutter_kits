@@ -1,0 +1,23 @@
+{
+  "hello": "Xin chào",
+  "welcome": "Chào mừng",
+  "goodbye": "Tạm biệt",
+  "thankYou": "Cảm ơn",
+  "sorry": "Xin lỗi",
+  "yes": "Có",
+  "no": "Không",
+  "ok": "OK",
+  "cancel": "Hủy",
+  "save": "Lưu",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "add": "Thêm",
+  "search": "Tìm kiếm",
+  "settings": "Cài đặt",
+  "profile": "Hồ sơ",
+  "help": "Trợ giúp",
+  "about": "Về",
+  "language": "Ngôn ngữ",
+  "helloName": "Xin chào {name}",
+  "welcomeName": "Chào mừng {name}"
+}

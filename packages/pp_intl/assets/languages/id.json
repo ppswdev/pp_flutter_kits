@@ -1,0 +1,23 @@
+{
+    "hello": "Halo",
+    "welcome": "Selamat datang",
+    "goodbye": "Selamat tinggal",
+    "thankYou": "Terima kasih",
+    "sorry": "Maaf",
+    "yes": "Ya",
+    "no": "Tidak",
+    "ok": "OK",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "add": "Tambah",
+    "search": "Cari",
+    "settings": "Pengaturan",
+    "profile": "Profil",
+    "help": "Bantuan",
+    "about": "Tentang",
+    "language": "Bahasa",
+    "helloName": "Halo {name}",
+    "welcomeName": "Selamat datang {name}"
+}

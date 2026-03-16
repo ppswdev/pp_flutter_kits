@@ -1,0 +1,23 @@
+{
+    "hello": "Kamusta",
+    "welcome": "Maligayang pagdating",
+    "goodbye": "Paalam",
+    "thankYou": "Salamat",
+    "sorry": "Pasensya na",
+    "yes": "Oo",
+    "no": "Hindi",
+    "ok": "Okay",
+    "cancel": "Kanselahin",
+    "save": "I-save",
+    "delete": "Tanggalin",
+    "edit": "I-edit",
+    "add": "Magdagdag",
+    "search": "Maghanap",
+    "settings": "Mga setting",
+    "profile": "Profil",
+    "help": "Tulong",
+    "about": "Tungkol sa",
+    "language": "Wika",
+    "helloName": "Kamusta {name}",
+    "welcomeName": "Maligayang pagdating {name}"
+}

@@ -1,0 +1,23 @@
+{
+  "hello": "Merhaba",
+  "welcome": "Hoş geldiniz",
+  "goodbye": "Güle güle",
+  "thankYou": "Teşekkür ederim",
+  "sorry": "Özür dilerim",
+  "yes": "Evet",
+  "no": "Hayır",
+  "ok": "Tamam",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "delete": "Sil",
+  "edit": "Düzenle",
+  "add": "Ekle",
+  "search": "Ara",
+  "settings": "Ayarlar",
+  "profile": "Profil",
+  "help": "Yardım",
+  "about": "Hakkında",
+  "language": "Dil",
+  "helloName": "Merhaba {name}",
+  "welcomeName": "Hoş geldiniz {name}"
+}

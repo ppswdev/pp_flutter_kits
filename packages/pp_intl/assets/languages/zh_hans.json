@@ -1,0 +1,23 @@
+{
+  "hello": "你好",
+  "welcome": "欢迎",
+  "goodbye": "再见",
+  "thankYou": "谢谢",
+  "sorry": "对不起",
+  "yes": "是",
+  "no": "否",
+  "ok": "好的",
+  "cancel": "取消",
+  "save": "保存",
+  "delete": "删除",
+  "edit": "编辑",
+  "add": "添加",
+  "search": "搜索",
+  "settings": "设置",
+  "profile": "个人资料",
+  "help": "帮助",
+  "about": "关于",
+  "language": "语言",
+  "helloName": "你好 {name}",
+  "welcomeName": "欢迎 {name}"
+}

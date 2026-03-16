@@ -1,0 +1,23 @@
+{
+  "hello": "Ciao",
+  "welcome": "Benvenuto",
+  "goodbye": "Arrivederci",
+  "thankYou": "Grazie",
+  "sorry": "Mi dispiace",
+  "yes": "Sì",
+  "no": "No",
+  "ok": "OK",
+  "cancel": "Annulla",
+  "save": "Salva",
+  "delete": "Elimina",
+  "edit": "Modifica",
+  "add": "Aggiungi",
+  "search": "Cerca",
+  "settings": "Impostazioni",
+  "profile": "Profilo",
+  "help": "Aiuto",
+  "about": "Informazioni",
+  "language": "Lingua",
+  "helloName": "Ciao {name}",
+  "welcomeName": "Benvenuto {name}"
+}

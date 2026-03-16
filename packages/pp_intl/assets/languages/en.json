@@ -1,0 +1,23 @@
+{
+  "hello": "Hello",
+  "welcome": "Welcome",
+  "goodbye": "Goodbye",
+  "thankYou": "Thank you",
+  "sorry": "Sorry",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "settings": "Settings",
+  "profile": "Profile",
+  "help": "Help",
+  "about": "About",
+  "language": "Language",
+  "helloName": "Hello {name}",
+  "welcomeName": "Welcome {name}"
+}

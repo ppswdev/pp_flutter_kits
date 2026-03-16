@@ -1,0 +1,23 @@
+{
+  "hello": "こんにちは",
+  "welcome": "ようこそ",
+  "goodbye": "さようなら",
+  "thankYou": "ありがとう",
+  "sorry": "ごめんなさい",
+  "yes": "はい",
+  "no": "いいえ",
+  "ok": "OK",
+  "cancel": "キャンセル",
+  "save": "保存",
+  "delete": "削除",
+  "edit": "編集",
+  "add": "追加",
+  "search": "検索",
+  "settings": "設定",
+  "profile": "プロフィール",
+  "help": "ヘルプ",
+  "about": "について",
+  "language": "言語",
+  "helloName": "こんにちは {name}",
+  "welcomeName": "ようこそ {name}"
+}

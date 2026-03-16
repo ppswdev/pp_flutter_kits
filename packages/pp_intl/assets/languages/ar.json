@@ -1,0 +1,23 @@
+{
+  "hello": "مرحبا",
+  "welcome": "مرحبا بكم",
+  "goodbye": "مع السلامة",
+  "thankYou": "شكرا",
+  "sorry": "آسف",
+  "yes": "نعم",
+  "no": "لا",
+  "ok": "حسنا",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "delete": "حذف",
+  "edit": "تحرير",
+  "add": "إضافة",
+  "search": "بحث",
+  "settings": "إعدادات",
+  "profile": "حساب",
+  "help": "مساعدة",
+  "about": "حول",
+  "language": "لغة",
+  "helloName": "مرحبا {name}",
+  "welcomeName": "مرحبا بكم {name}"
+}

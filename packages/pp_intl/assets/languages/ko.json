@@ -1,0 +1,23 @@
+{
+  "hello": "안녕하세요",
+  "welcome": "환영합니다",
+  "goodbye": "안녕히 가세요",
+  "thankYou": "감사합니다",
+  "sorry": "죄송합니다",
+  "yes": "네",
+  "no": "아니요",
+  "ok": "확인",
+  "cancel": "취소",
+  "save": "저장",
+  "delete": "삭제",
+  "edit": "편집",
+  "add": "추가",
+  "search": "검색",
+  "settings": "설정",
+  "profile": "프로필",
+  "help": "도움말",
+  "about": "정보",
+  "language": "언어",
+  "helloName": "안녕하세요 {name}",
+  "welcomeName": "환영합니다 {name}"
+}
