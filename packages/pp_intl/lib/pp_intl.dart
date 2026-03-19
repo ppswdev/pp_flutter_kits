@@ -26,7 +26,21 @@ class PPIntl {
     final instance = PPIntl.instance;
     final lang = languageCode?.toLowerCase() ?? instance._currentLanguage;
 
-    await instance._loadTranslations(lang);
+    // 如果缓存中没有该语言的数据，则异步加载
+    if (!instance._translationsCache.containsKey(lang)) {
+      await instance._loadTranslations(lang);
+    }
+    return instance._getTranslatedText(key, lang, params);
+  }
+
+  /// 同步获取本地化文本（仅在缓存存在时使用）
+  static String textSync(
+    PPIntlKey key, [
+    String? languageCode,
+    Map<String, dynamic>? params,
+  ]) {
+    final instance = PPIntl.instance;
+    final lang = languageCode?.toLowerCase() ?? instance._currentLanguage;
     return instance._getTranslatedText(key, lang, params);
   }
 

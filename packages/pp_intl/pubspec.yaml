@@ -1,5 +1,5 @@
 name: pp_intl
-description: "A simple, easy-to-use, universal and standardized localized text content."
+description: "A lightweight Flutter internationalization package that supports 18 languages. Solve the cumbersome task of frequently manually organizing and translating multiple projects, and improve the efficiency of development delivery."
 version: 1.0.0
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_intl
 
