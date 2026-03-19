@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.0
+  pp_intl: ^1.0.1
 ```
 
 然后运行：
