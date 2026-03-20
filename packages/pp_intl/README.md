@@ -193,6 +193,7 @@ print(unknownKey); // 输出: Unknown
 | --------------------- | -------------------- | -------- |
 | `success`             | Success              | 成功     |
 | `failed`              | Something went wrong | 操作失败 |
+| `enabled`             | Enabled              | 已启用   |
 | `savedSuccessfully`   | Saved successfully   | 保存成功 |
 | `deletedSuccessfully` | Deleted successfully | 删除成功 |
 | `addedSuccessfully`   | Added successfully   | 添加成功 |
@@ -371,6 +372,7 @@ print(unknownKey); // 输出: Unknown
 | `iapPurchaseNow`             | Purchase Now                                             | 立即购买                                   |
 | `iapLifetimeAccess`          | Lifetime Access                                          | 终身使用                                   |
 | `iapShowNormalSubscriptions` | View Standard Plans                                      | 查看标准套餐                               |
+| `iapFreeTrialDays`           | Free {value} days trial                                  | 免费试用{value}天                          |
 | `iapFreeTrialStart`          | Start Free Trial                                         | 开始免费试用                               |
 | `iapFreeTrialZero`           | Free Trial                                               | 0元试用                                    |
 | `iapFreeTrail`               | Free Trial                                               | 免费试用                                   |

@@ -99,6 +99,8 @@ enum PPIntlKey {
   success,
   /// Something went wrong | 操作失败
   failed,
+  /// Enabled | 已启用
+  enabled,
   /// Saved successfully | 保存成功
   savedSuccessfully,
   /// Deleted successfully | 删除成功
@@ -351,6 +353,8 @@ enum PPIntlKey {
   iapLifetimeAccess,
   /// View Standard Plans | 查看标准套餐
   iapShowNormalSubscriptions,
+  /// Free {value} days trial | 免费试用{value}天
+  iapFreeTrialDays,
   /// Start Free Trial | 开始免费试用
   iapFreeTrialStart,
   /// Free Trial | 0元试用
