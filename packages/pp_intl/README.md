@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.1
+  pp_intl: ^1.0.3
 ```
 
 然后运行：
@@ -61,12 +61,20 @@ import 'package:pp_intl/pp_intl.dart';
 #### 异步方法（推荐用于首次加载）
 
 ```dart
-// 获取本地化文本
-String hello = await PPIntl.text(PPIntlKey.hello, 'en');
+// 获取本地化文本（使用默认语言）
+String hello = await PPIntl.text(PPIntlKey.hello);
 print(hello); // 输出: Hello
 
+// 指定语言获取
+String helloZh = await PPIntl.text(PPIntlKey.hello, languageCode: 'zh_Hans');
+print(helloZh); // 输出: 你好
+
 // 获取带参数的本地化文本
-String helloJohn = await PPIntl.text(PPIntlKey.helloName, 'en', {'name': 'John'});
+String helloJohn = await PPIntl.text(
+  PPIntlKey.helloName,
+  languageCode: 'en',
+  params: {'name': 'John'},
+);
 print(helloJohn); // 输出: Hello John
 ```
 
@@ -78,6 +86,18 @@ print(helloJohn); // 输出: Hello John
 
 String hello = PPIntl.textSync(PPIntlKey.hello);
 print(hello); // 输出: 你好
+
+// 指定语言获取（需已缓存）
+String helloEn = PPIntl.textSync(PPIntlKey.hello, langCode: 'en');
+print(helloEn); // 输出: Hello
+
+// 带参数的同步调用
+String helloJohn = PPIntl.textSync(
+  PPIntlKey.helloName,
+  langCode: 'en',
+  params: {'name': 'John'},
+);
+print(helloJohn); // 输出: Hello John
 ```
 
 ### 设置默认语言
@@ -103,8 +123,8 @@ print(helloAsync); // 输出: 你好
 await PPIntl.instance.setLanguage('zh_Hans');
 print(PPIntl.textSync(PPIntlKey.hello)); // 输出: 你好
 
-// 临时使用英语
-String helloEn = await PPIntl.text(PPIntlKey.hello, 'en');
+// 临时使用英语（不改变默认语言）
+String helloEn = await PPIntl.text(PPIntlKey.hello, langCode: 'en');
 print(helloEn); // 输出: Hello
 
 // 切换默认语言为英语
@@ -115,12 +135,12 @@ print(PPIntl.textSync(PPIntlKey.hello)); // 输出: Hello
 ### 错误处理
 
 ```dart
-// 尝试获取不存在的语言
-String helloUnknown = await PPIntl.text(PPIntlKey.hello, 'xx');
-print(helloUnknown); // 输出: Unknown（回退到英语）
+// 尝试获取不存在的语言（会回退到英语）
+String helloUnknown = await PPIntl.text(PPIntlKey.hello, langCode: 'xx');
+print(helloUnknown); // 输出: Hello
 
 // 尝试获取不存在的键
-String unknownKey = await PPIntl.text(PPIntlKey.values[999], 'en');
+String unknownKey = await PPIntl.text(PPIntlKey.values[999], langCode: 'en');
 print(unknownKey); // 输出: Unknown
 ```
 
@@ -510,7 +530,7 @@ Widget build(BuildContext context) {
 
 // 3. 在需要临时使用其他语言时使用异步方法
 Future<void> showGreeting(String languageCode) async {
-  String greeting = await PPIntl.text(PPIntlKey.hello, languageCode);
+  String greeting = await PPIntl.text(PPIntlKey.hello, languageCode: languageCode);
   print('$languageCode: $greeting');
 }
 ```
@@ -521,7 +541,7 @@ Future<void> showGreeting(String languageCode) async {
 Future<void> preloadLanguages() async {
   List<String> languages = ['en', 'zh_Hans', 'ja', 'ko'];
   for (String lang in languages) {
-    await PPIntl.text(PPIntlKey.hello, lang);
+    await PPIntl.text(PPIntlKey.hello, languageCode: lang);
     print('预加载 $lang 完成');
   }
 }

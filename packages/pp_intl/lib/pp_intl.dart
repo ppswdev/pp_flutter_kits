@@ -19,10 +19,10 @@ class PPIntl {
   }
 
   static Future<String> text(
-    PPIntlKey key, [
+    PPIntlKey key, {
     String? languageCode,
     Map<String, dynamic>? params,
-  ]) async {
+  }) async {
     final instance = PPIntl.instance;
     final lang = languageCode?.toLowerCase() ?? instance._currentLanguage;
 
@@ -35,21 +35,21 @@ class PPIntl {
 
   /// 同步获取本地化文本（仅在缓存存在时使用）
   static String textSync(
-    PPIntlKey key, [
-    String? languageCode,
+    PPIntlKey key, {
+    String? langCode,
     Map<String, dynamic>? params,
-  ]) {
+  }) {
     final instance = PPIntl.instance;
-    final lang = languageCode?.toLowerCase() ?? instance._currentLanguage;
+    final lang = langCode?.toLowerCase() ?? instance._currentLanguage;
     return instance._getTranslatedText(key, lang, params);
   }
 
   String _getTranslatedText(
     PPIntlKey key,
-    String languageCode,
+    String langCode,
     Map<String, dynamic>? params,
   ) {
-    final translations = _translationsCache[languageCode];
+    final translations = _translationsCache[langCode];
     var text =
         translations?[key] ?? _translationsCache['en']?[key] ?? 'Unknown';
 
