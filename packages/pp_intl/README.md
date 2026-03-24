@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.3
+  pp_intl: ^1.0.4
 ```
 
 然后运行：
@@ -62,16 +62,16 @@ import 'package:pp_intl/pp_intl.dart';
 
 ```dart
 // 获取本地化文本（使用默认语言）
-String hello = await PPIntl.text(PPIntlKey.hello);
+String hello = await PPIntl.text(.hello);
 print(hello); // 输出: Hello
 
 // 指定语言获取
-String helloZh = await PPIntl.text(PPIntlKey.hello, languageCode: 'zh_Hans');
+String helloZh = await PPIntl.text(.hello, languageCode: 'zh_Hans');
 print(helloZh); // 输出: 你好
 
 // 获取带参数的本地化文本
 String helloJohn = await PPIntl.text(
-  PPIntlKey.helloName,
+  .helloName,
   languageCode: 'en',
   params: {'name': 'John'},
 );
@@ -84,16 +84,16 @@ print(helloJohn); // 输出: Hello John
 // 注意：使用同步方法前，必须确保该语言已经被加载到缓存中
 // 例如，通过之前的异步调用或设置默认语言
 
-String hello = PPIntl.textSync(PPIntlKey.hello);
+String hello = PPIntl.textSync(.hello);
 print(hello); // 输出: 你好
 
 // 指定语言获取（需已缓存）
-String helloEn = PPIntl.textSync(PPIntlKey.hello, langCode: 'en');
+String helloEn = PPIntl.textSync(.hello, langCode: 'en');
 print(helloEn); // 输出: Hello
 
 // 带参数的同步调用
 String helloJohn = PPIntl.textSync(
-  PPIntlKey.helloName,
+  .helloName,
   langCode: 'en',
   params: {'name': 'John'},
 );
@@ -108,11 +108,11 @@ await PPIntl.instance.setLanguage('zh_Hans');
 print('默认语言设置为中文');
 
 // 现在可以使用同步方法获取本地化文本
-String hello = PPIntl.textSync(PPIntlKey.hello);
+String hello = PPIntl.textSync(.hello);
 print(hello); // 输出: 你好
 
 // 仍然可以使用异步方法（会自动检查缓存）
-String helloAsync = await PPIntl.text(PPIntlKey.hello);
+String helloAsync = await PPIntl.text(.hello);
 print(helloAsync); // 输出: 你好
 ```
 
@@ -121,26 +121,26 @@ print(helloAsync); // 输出: 你好
 ```dart
 // 设置默认语言为中文
 await PPIntl.instance.setLanguage('zh_Hans');
-print(PPIntl.textSync(PPIntlKey.hello)); // 输出: 你好
+print(PPIntl.textSync(.hello)); // 输出: 你好
 
 // 临时使用英语（不改变默认语言）
-String helloEn = await PPIntl.text(PPIntlKey.hello, langCode: 'en');
+String helloEn = await PPIntl.text(.hello, langCode: 'en');
 print(helloEn); // 输出: Hello
 
 // 切换默认语言为英语
 await PPIntl.instance.setLanguage('en');
-print(PPIntl.textSync(PPIntlKey.hello)); // 输出: Hello
+print(PPIntl.textSync(.hello)); // 输出: Hello
 ```
 
 ### 错误处理
 
 ```dart
 // 尝试获取不存在的语言（会回退到英语）
-String helloUnknown = await PPIntl.text(PPIntlKey.hello, langCode: 'xx');
+String helloUnknown = await PPIntl.text(.hello, langCode: 'xx');
 print(helloUnknown); // 输出: Hello
 
 // 尝试获取不存在的键
-String unknownKey = await PPIntl.text(PPIntlKey.values[999], langCode: 'en');
+String unknownKey = await PPIntl.text(.values[999], langCode: 'en');
 print(unknownKey); // 输出: Unknown
 ```
 
@@ -214,6 +214,8 @@ print(unknownKey); // 输出: Unknown
 | `success`             | Success              | 成功     |
 | `failed`              | Something went wrong | 操作失败 |
 | `enabled`             | Enabled              | 已启用   |
+| `disabled`            | Disabled             | 已禁用   |
+| `isEnabled`           | Is enabled!          | 已启用！ |
 | `savedSuccessfully`   | Saved successfully   | 保存成功 |
 | `deletedSuccessfully` | Deleted successfully | 删除成功 |
 | `addedSuccessfully`   | Added successfully   | 添加成功 |
@@ -409,7 +411,9 @@ print(unknownKey); // 输出: Unknown
 | `iapWeeklyVip`               | Weekly Plan                                              | 每周会员                                   |
 | `iapMonthlyVip`              | Monthly Plan                                             | 每月会员                                   |
 | `iapYearlyVip`               | Yearly Plan                                              | 每年会员                                   |
-| `iapNoPaymentNow`            | No payment today                                         | 现在无需付款                               |
+| `iapNoPaymentNow`            | No payment now                                           | 现在无需付款                               |
+| `iapNoPaymentToday`          | No payment today                                         | 今天无需付款                               |
+| `iapNoChargeToday`           | No charge today                                          | 今天不收费                                 |
 | `iapCancelAnytime`           | Cancel anytime                                           | 随时取消                                   |
 | `iapProtectByApple`          | Secured by Apple                                         | 受Apple保护                                |
 | `iapRestore`                 | Restore                                                  | 恢复                                       |

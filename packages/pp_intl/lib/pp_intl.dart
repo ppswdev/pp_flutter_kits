@@ -106,7 +106,7 @@ class PPIntl {
         return translations;
       }
     } catch (e) {
-      print('Failed to load translations for $languageCode: $e');
+      //print('Failed to load translations for $languageCode: $e');
       return {};
     }
   }
