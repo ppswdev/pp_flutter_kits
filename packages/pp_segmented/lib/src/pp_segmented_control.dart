@@ -476,16 +476,6 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
       ),
     );
   }
-
-  /// 构建滚动模式的指示器（已废弃，保留为了兼容性）
-  Widget _buildScrollableIndicator() {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return const SizedBox.shrink(); // 简化版本，暂时不显示指示器
-      },
-    );
-  }
 }
 
 /// 选项数据类
