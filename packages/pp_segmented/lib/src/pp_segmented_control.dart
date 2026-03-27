@@ -132,7 +132,6 @@ class PPSegmentedControl<T> extends StatefulWidget {
 class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _animation;
   int _selectedIndex = 0;
   final ScrollController _scrollController = ScrollController();
   final List<GlobalKey> _itemKeys = [];
@@ -143,12 +142,6 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
     _animationController = AnimationController(
       duration: widget.animationDuration,
       vsync: this,
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: widget.animationCurve,
-      ),
     );
 
     // 初始化选中索引

@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
             numberModeSample2(),
             SizedBox(height: 15),
             // 数字模式示例3- 圆角
-            numberModelSample3(),
+            numberModeSample3(),
             SizedBox(height: 15),
             // 文字模式
             textModeSample1(),
@@ -363,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget numberModelSample3() {
+  Widget numberModeSample3() {
     return PPSegmentedControl<int>(
       items: List.generate(
         9,
