@@ -67,6 +67,30 @@ class PPSegmentedControl<T> extends StatefulWidget {
   /// 可选：选项内边距，仅在滚动模式下有效
   final EdgeInsets itemPadding;
 
+  /// 可选：选中项背景色，仅在滚动模式下有效
+  final Color? selectedItemBackgroundColor;
+
+  /// 可选：选中项渐变色，仅在滚动模式下有效
+  final Gradient? selectedItemBackgroundGradient;
+
+  /// 可选：选中项圆角，仅在滚动模式下有效
+  final double? selectedItemBorderRadius;
+
+  /// 可选：未选中项背景色，仅在滚动模式下有效
+  final Color? unselectedItemBackgroundColor;
+
+  /// 可选：未选中项渐变色，仅在滚动模式下有效
+  final Gradient? unselectedItemBackgroundGradient;
+
+  /// 可选：未选中项圆角，仅在滚动模式下有效
+  final double? unselectedItemBorderRadius;
+
+  /// 可选：是否启用点击时自动滚动，仅在滚动模式下有效
+  final bool autoScrollOnTap;
+
+  /// 可选：Item之间的间距，默认5
+  final double itemSpacing;
+
   const PPSegmentedControl({
     super.key,
     required this.items,
@@ -91,6 +115,14 @@ class PPSegmentedControl<T> extends StatefulWidget {
     this.isScrollable = false,
     this.minItemWidth = 60,
     this.itemPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    this.selectedItemBackgroundColor,
+    this.selectedItemBackgroundGradient,
+    this.selectedItemBorderRadius,
+    this.unselectedItemBackgroundColor,
+    this.unselectedItemBackgroundGradient,
+    this.unselectedItemBorderRadius,
+    this.autoScrollOnTap = true,
+    this.itemSpacing = 5,
   });
 
   @override
@@ -102,6 +134,8 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
   late AnimationController _animationController;
   late Animation<double> _animation;
   int _selectedIndex = 0;
+  final ScrollController _scrollController = ScrollController();
+  final List<GlobalKey> _itemKeys = [];
 
   @override
   void initState() {
@@ -119,6 +153,10 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
 
     // 初始化选中索引
     _updateSelectedIndex();
+
+    // 初始化item keys
+    _itemKeys
+        .addAll(List.generate(widget.items.length, (index) => GlobalKey()));
   }
 
   @override
@@ -126,6 +164,13 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedValue != widget.selectedValue) {
       _updateSelectedIndex();
+    }
+
+    // 更新item keys数量
+    if (oldWidget.items.length != widget.items.length) {
+      _itemKeys.clear();
+      _itemKeys
+          .addAll(List.generate(widget.items.length, (index) => GlobalKey()));
     }
   }
 
@@ -144,6 +189,7 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -194,6 +240,79 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
     );
   }
 
+  /// 自动滚动到指定索引
+  void _autoScrollToIndex(int index) {
+    if (!widget.autoScrollOnTap || !widget.isScrollable) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+
+      // 获取当前item的位置
+      final itemContext = _itemKeys[index].currentContext;
+      if (itemContext == null) return;
+
+      final renderObject = itemContext.findRenderObject();
+      if (renderObject == null) return;
+
+      final renderBox = renderObject as RenderBox;
+      final itemPosition = renderBox.localToGlobal(Offset.zero);
+      final itemSize = renderBox.size;
+
+      // 获取滚动视图的尺寸
+      final scrollContext =
+          _scrollController.position.context.notificationContext;
+      if (scrollContext == null) return;
+
+      final scrollRenderObject = scrollContext.findRenderObject();
+      if (scrollRenderObject == null) return;
+
+      final scrollRenderBox = scrollRenderObject as RenderBox;
+      final scrollPosition = scrollRenderBox.localToGlobal(Offset.zero);
+      final scrollSize = scrollRenderBox.size;
+
+      // 计算目标位置
+      final itemCenter = itemPosition.dx + itemSize.width / 2;
+      final scrollCenter = scrollPosition.dx + scrollSize.width / 2;
+      final offsetDifference = itemCenter - scrollCenter;
+
+      // 当前滚动偏移
+      final currentScrollOffset = _scrollController.offset;
+
+      // 目标滚动偏移
+      final targetScrollOffset = currentScrollOffset + offsetDifference;
+
+      // 边界检查
+      final maxScrollExtent = _scrollController.position.maxScrollExtent;
+      final minScrollExtent = _scrollController.position.minScrollExtent;
+
+      // 边界处理：前3个和后3个不滚动到中心
+      final edgeThreshold = 3;
+      final isInLeftEdge = index < edgeThreshold;
+      final isInRightEdge = index >= widget.items.length - edgeThreshold;
+
+      double finalScrollOffset;
+
+      if (isInLeftEdge) {
+        // 左边边界：保持在左侧
+        finalScrollOffset = minScrollExtent;
+      } else if (isInRightEdge) {
+        // 右边边界：保持在右侧
+        finalScrollOffset = maxScrollExtent;
+      } else {
+        // 中间区域：滚动到中心
+        finalScrollOffset =
+            targetScrollOffset.clamp(minScrollExtent, maxScrollExtent);
+      }
+
+      // 执行滚动
+      _scrollController.animateTo(
+        finalScrollOffset,
+        duration: widget.animationDuration,
+        curve: widget.animationCurve,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -215,7 +334,9 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
   Widget _buildFixedContent() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final itemWidth = constraints.maxWidth / widget.items.length;
+        final totalSpacing = widget.itemSpacing * (widget.items.length - 1);
+        final availableWidth = constraints.maxWidth - totalSpacing;
+        final itemWidth = availableWidth / widget.items.length;
         final isRTL = Directionality.of(context) == TextDirection.rtl;
         return Stack(
           children: [
@@ -224,8 +345,9 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
               duration: widget.animationDuration,
               curve: widget.animationCurve,
               left: isRTL
-                  ? (widget.items.length - _selectedIndex - 1) * itemWidth
-                  : _selectedIndex * itemWidth,
+                  ? (widget.items.length - _selectedIndex - 1) *
+                      (itemWidth + widget.itemSpacing)
+                  : _selectedIndex * (itemWidth + widget.itemSpacing),
               top: 0,
               bottom: 0,
               width: itemWidth,
@@ -251,26 +373,33 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
                 final item = widget.items[index];
                 final isSelected = index == _selectedIndex;
 
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                      _animationController.forward(from: 0);
-                      widget.onChanged?.call(item.value);
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      width: itemWidth,
-                      height: widget.height,
-                      child: Center(
-                        child: _buildItemWithTheme(
-                          item.child,
-                          isSelected
-                              ? widget.selectedTextColor
-                              : widget.unselectedTextColor,
-                          isSelected,
+                return Padding(
+                  padding: EdgeInsets.only(
+                      right: index < widget.items.length - 1
+                          ? widget.itemSpacing
+                          : 0),
+                  child: SizedBox(
+                    width: itemWidth,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                        _animationController.forward(from: 0);
+                        widget.onChanged?.call(item.value);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        width: itemWidth,
+                        height: widget.height,
+                        child: Center(
+                          child: _buildItemWithTheme(
+                            item.child,
+                            isSelected
+                                ? widget.selectedTextColor
+                                : widget.unselectedTextColor,
+                            isSelected,
+                          ),
                         ),
                       ),
                     ),
@@ -286,52 +415,69 @@ class _PPSegmentedControlState<T> extends State<PPSegmentedControl<T>>
 
   /// 构建滚动内容（自适应宽度）
   Widget _buildScrollableContent() {
-    return Stack(
-      children: [
-        // 滚动视图
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: IntrinsicWidth(
-            child: Row(
-              children: List.generate(widget.items.length, (index) {
-                final item = widget.items[index];
-                final isSelected = index == _selectedIndex;
+    return SingleChildScrollView(
+      controller: _scrollController,
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: List.generate(widget.items.length, (index) {
+          final item = widget.items[index];
+          final isSelected = index == _selectedIndex;
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                    _animationController.forward(from: 0);
-                    widget.onChanged?.call(item.value);
-                  },
-                  child: Container(
-                    constraints: BoxConstraints(minWidth: widget.minItemWidth),
-                    padding: widget.itemPadding,
-                    height: widget.height,
-                    child: Center(
-                      child: _buildItemWithTheme(
-                        item.child,
-                        isSelected
-                            ? widget.selectedTextColor
-                            : widget.unselectedTextColor,
-                        isSelected,
-                      ),
-                    ),
+          return Padding(
+            padding: EdgeInsets.only(
+                right:
+                    index < widget.items.length - 1 ? widget.itemSpacing : 0),
+            child: GestureDetector(
+              key: _itemKeys[index],
+              onTap: () {
+                setState(() {
+                  _selectedIndex = index;
+                });
+                _animationController.forward(from: 0);
+                widget.onChanged?.call(item.value);
+                _autoScrollToIndex(index);
+              },
+              child: Container(
+                constraints: BoxConstraints(minWidth: widget.minItemWidth),
+                padding: widget.itemPadding,
+                height: widget.height,
+                decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? widget.selectedItemBackgroundGradient
+                      : widget.unselectedItemBackgroundGradient,
+                  color: (isSelected
+                              ? widget.selectedItemBackgroundGradient
+                              : widget.unselectedItemBackgroundGradient) ==
+                          null
+                      ? (isSelected
+                          ? widget.selectedItemBackgroundColor
+                          : widget.unselectedItemBackgroundColor)
+                      : null,
+                  borderRadius: BorderRadius.circular(
+                    isSelected
+                        ? (widget.selectedItemBorderRadius ?? 0)
+                        : (widget.unselectedItemBorderRadius ?? 0),
                   ),
-                );
-              }),
+                ),
+                child: Center(
+                  child: _buildItemWithTheme(
+                    item.child,
+                    isSelected
+                        ? widget.selectedTextColor
+                        : widget.unselectedTextColor,
+                    isSelected,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-        // 选中指示器（滚动模式）
-        if (widget.indicator == null) _buildScrollableIndicator(),
-      ],
+          );
+        }),
+      ),
     );
   }
 
-  /// 构建滚动模式的指示器
+  /// 构建滚动模式的指示器（已废弃，保留为了兼容性）
   Widget _buildScrollableIndicator() {
     return AnimatedBuilder(
       animation: _animation,

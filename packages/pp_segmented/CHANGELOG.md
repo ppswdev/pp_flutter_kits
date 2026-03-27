@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Optimize the scrolling mode
+- Extend custom styles
+
 ## 1.0.2
 
 - Fix RTL layout issue
