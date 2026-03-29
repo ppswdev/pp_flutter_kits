@@ -8,7 +8,6 @@
 /// Logger.log('普通日志');
 /// Logger.trace('带调用堆栈信息的日志');
 /// ```
-
 class Logger {
   /// 普通日志输出，仅在debug/dev模式下生效，release版自动忽略。
   ///
@@ -49,11 +48,15 @@ class Logger {
     String formattedDate = DateTime.now().toString();
 
     var currentStack = StackTrace.current;
-    var formattedStack =
-        currentStack.toString().split("\n")[1].trim(); // 获取调用 log 方法的位置
+    var formattedStack = currentStack
+        .toString()
+        .split("\n")[1]
+        .trim(); // 获取调用 log 方法的位置
 
     // 提取文件名、方法名和行号信息
-    var match = RegExp(r'^#1\s+(.+)\s\((.+):(\d+):(\d+)\)$').firstMatch(formattedStack);
+    var match = RegExp(
+      r'^#1\s+(.+)\s\((.+):(\d+):(\d+)\)$',
+    ).firstMatch(formattedStack);
     var methodName = match?.group(1) ?? 'unknown method';
     var fileName = match?.group(2) ?? 'unknown file';
     var line = match?.group(3) ?? 'unknown line';

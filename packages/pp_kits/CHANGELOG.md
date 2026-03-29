@@ -1,3 +1,7 @@
+## 1.2.6
+
+- Supplementary optimization and improvement
+
 ## 1.2.5
 
 - Supplementary optimization and improvement

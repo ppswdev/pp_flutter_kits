@@ -20,8 +20,9 @@ import 'package:flutter/material.dart';
 ///
 /// 参数说明：
 /// - [radius]: 容器的圆角半径，默认为 30.0。
-/// - [color]: 背景颜色，默认为白色。
-/// - [borderColor]: 边框颜色，默认为白色。
+/// - [color]: 背景颜色，默认为透明。
+/// - [borderColor]: 边框颜色，默认为透明。
+/// - [borderWidth]: 边框宽度，默认为 0.0。
 /// - [opacity]: 背景颜色透明度，取值范围 0.0 ~ 1.0，默认为0.3。
 ///
 /// 返回值：
@@ -36,17 +37,21 @@ class BlurBox extends StatelessWidget {
   /// 边框颜色
   final Color? borderColor;
 
+  /// 边框宽度
+  final double? borderWidth;
+
   /// 透明度
   final double? opacity;
 
   /// [BlurBox] 构造函数。
   ///
-  /// 你可以自定义圆角半径、背景色、边框颜色和透明度。
+  /// 你可以自定义圆角半径、背景色、边框颜色、边框宽度和透明度。
   const BlurBox({
     super.key,
     this.radius = 30.0, // 默认圆角半径
-    this.color = Colors.white, // 默认背景颜色
-    this.borderColor = Colors.white, // 默认边框颜色
+    this.color = Colors.white, // 默认背景颜色为透明
+    this.borderColor = Colors.transparent, // 默认边框颜色为透明
+    this.borderWidth = 0.0, // 默认边框宽度为0
     this.opacity = 0.3, // 默认透明度
     this.child,
   });
@@ -67,10 +72,10 @@ class BlurBox extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 毛玻璃效果
           child: Container(
             decoration: BoxDecoration(
-              color: color!.withOpacity(opacity!), // 半透明效果
+              color: color!.withValues(alpha: opacity),
               borderRadius: BorderRadius.circular(radius!),
               border: Border.all(
-                width: 2.0,
+                width: borderWidth!,
                 style: BorderStyle.solid,
                 color: borderColor!, // 边框颜色
               ),

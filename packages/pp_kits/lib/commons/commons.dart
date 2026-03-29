@@ -5,6 +5,7 @@ export 'alert.dart';
 export 'bottom_sheet.dart';
 export 'center_dialog.dart';
 export 'constants.dart';
+export 'count_down.dart';
 export 'event_bus.dart';
 export 'events.dart';
 export 'functions.dart';

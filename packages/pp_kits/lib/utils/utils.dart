@@ -2,6 +2,7 @@ library;
 
 export 'app_util.dart';
 export 'common_util.dart';
+export 'country_util.dart';
 export 'device_util.dart';
 export 'effect_util.dart';
 export 'encrypt_util.dart';
