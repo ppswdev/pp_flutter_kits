@@ -38,3 +38,10 @@ class LanguageChangedEvent {
 
   LanguageChangedEvent(this.message);
 }
+
+/// 收藏改变事件
+class FavoriteChangedEvent {
+  final String message;
+
+  FavoriteChangedEvent(this.message);
+}
