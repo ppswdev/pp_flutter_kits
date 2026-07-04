@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Saisir une suggestion",
   "formSubmitSuccess": "Envoyé avec succès",
   "formSubmitFailed": "Échec de l’envoi",
-  "inputRoleNumber": "Règles de saisie : doit être un entier valide. La valeur minimale doit être ≥ 0 et inférieure à la valeur maximale. La valeur maximale doit être < {max} et supérieure à la valeur minimale."
+  "inputRoleNumber": "Règles de saisie : doit être un entier valide. La valeur minimale doit être ≥ 0 et inférieure à la valeur maximale. La valeur maximale doit être < {max} et supérieure à la valeur minimale.",
+  "agreementTipText": "Veuillez accepter la politique de confidentialité et les conditions d'utilisation"
 }

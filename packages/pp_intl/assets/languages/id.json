@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Masukkan saran",
   "formSubmitSuccess": "Berhasil dikirim",
   "formSubmitFailed": "Gagal mengirim",
-  "inputRoleNumber": "Harus bilangan bulat ≥ 0 dan < {max}"
+  "inputRoleNumber": "Harus bilangan bulat ≥ 0 dan < {max}",
+  "agreementTipText": "Silakan setujui Kebijakan Privasi dan Perjanjian Lisensi Pengguna Akhir"
 }

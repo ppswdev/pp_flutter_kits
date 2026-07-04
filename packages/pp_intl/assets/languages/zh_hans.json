@@ -68,6 +68,7 @@
   "agreementAgree": "我已阅读并同意 隐私政策 和 最终用户许可协议，并同意按照上述说明处理必要数据",
   "agreementAgreeContinue": "同意并继续",
   "agreementUnagreeExit": "不同意并退出",
+  "agreementTipText": "请先勾选同意隐私政策和用户协议",
   "deleteConfirmTitle": "确认删除",
   "deleteConfirmMessage": "确定要删除此项目吗？",
   "exitConfirmTitle": "确定要退出吗？",

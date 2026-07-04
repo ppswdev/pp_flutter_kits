@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Introduza a sugestão",
   "formSubmitSuccess": "Enviado com sucesso",
   "formSubmitFailed": "Falha no envio",
-  "inputRoleNumber": "Deve ser um número inteiro ≥ 0 e < {max}"
+  "inputRoleNumber": "Deve ser um número inteiro ≥ 0 e < {max}",
+  "agreementTipText": "Por favor, concorde com a Política de Privacidade e o Contrato de Licença de Usuário Final"
 }

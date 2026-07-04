@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "أدخل اقتراحك",
   "formSubmitSuccess": "تم الإرسال بنجاح",
   "formSubmitFailed": "فشل الإرسال",
-  "inputRoleNumber": "يجب أن يكون رقمًا صحيحًا ≥ 0 وأقل من {max}"
+  "inputRoleNumber": "يجب أن يكون رقمًا صحيحًا ≥ 0 وأقل من {max}",
+  "agreementTipText": "يرجى الموافقة على سياسة الخصوصية واتفاقية ترخيص المستخدم النهائي"
 }

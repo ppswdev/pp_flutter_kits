@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Enter suggestion",
   "formSubmitSuccess": "Submitted successfully",
   "formSubmitFailed": "Submission failed",
-  "inputRoleNumber": "Must be a valid integer ≥ 0 and < {max}"
+  "inputRoleNumber": "Must be a valid integer ≥ 0 and < {max}",
+  "agreementTipText": "Mangyaring sumang-ayon sa Privacy Policy at End User License Agreement"
 }

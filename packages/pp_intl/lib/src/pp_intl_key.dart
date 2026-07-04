@@ -213,6 +213,9 @@ enum PPIntlKey {
   /// To ensure the app runs properly... | 为保障应用正常运行并改进体验...
   agreementText,
 
+  /// Please agree to the Privacy Policy and End User License Agreement | 请先勾选同意隐私政策和用户协议
+  agreementTipText,
+
   // --- 确认弹窗 ---
   /// Confirm Deletion | 确认删除
   deleteConfirmTitle,

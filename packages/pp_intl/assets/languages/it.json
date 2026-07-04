@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Inserisci suggerimento",
   "formSubmitSuccess": "Inviato con successo",
   "formSubmitFailed": "Invio non riuscito",
-  "inputRoleNumber": "Deve essere un intero ≥ 0 e < {max}"
+  "inputRoleNumber": "Deve essere un intero ≥ 0 e < {max}",
+  "agreementTipText": "Si prega di accettare l'informativa sulla privacy e il contratto di licenza per l'utente finale"
 }

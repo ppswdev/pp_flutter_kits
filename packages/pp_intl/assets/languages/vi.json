@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Nhập gợi ý",
   "formSubmitSuccess": "Gửi thành công",
   "formSubmitFailed": "Gửi thất bại",
-  "inputRoleNumber": "Phải là số nguyên ≥ 0 và < {max}"
+  "inputRoleNumber": "Phải là số nguyên ≥ 0 và < {max}",
+  "agreementTipText": "Vui lòng đồng ý với Chính sách Quyền riêng tư và Thỏa thuận Giấy phép Người dùng Cuối cùng"
 }

@@ -246,6 +246,7 @@ print(unknownKey); // 输出: Unknown
 | `agreementAgreeContinue`   | Agree and Continue                                    | 同意并继续                 |
 | `agreementUnagreeExit`     | Disagree and Exit                                    | 不同意并退出               |
 | `agreementText`            | To ensure the app runs properly and improve your experience... | 为保障应用正常运行并改进体验... |
+| `agreementTipText`         | Please agree to the Privacy Policy and End User License Agreement | 请先勾选同意隐私政策和用户协议 |
 
 #### 确认弹窗
 

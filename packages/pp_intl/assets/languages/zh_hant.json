@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "輸入建議",
   "formSubmitSuccess": "送出成功",
   "formSubmitFailed": "送出失敗",
-  "inputRoleNumber": "必須為 ≥ 0 且小於 {max} 的整數"
+  "inputRoleNumber": "必須為 ≥ 0 且小於 {max} 的整數",
+  "agreementTipText": "請先勾選同意隱私政策和使用者協議"
 }

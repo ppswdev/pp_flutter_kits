@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Vorschlag eingeben",
   "formSubmitSuccess": "Erfolgreich gesendet",
   "formSubmitFailed": "Senden fehlgeschlagen",
-  "inputRoleNumber": "Eingaberegeln: Muss eine gültige ganze Zahl sein. Der Mindestwert muss ≥ 0 und kleiner als der Maximalwert sein. Der Maximalwert muss < {max} und größer als der Mindestwert sein."
+  "inputRoleNumber": "Eingaberegeln: Muss eine gültige ganze Zahl sein. Der Mindestwert muss ≥ 0 und kleiner als der Maximalwert sein. Der Maximalwert muss < {max} und größer als der Mindestwert sein.",
+  "agreementTipText": "Bitte stimmen Sie der Datenschutzrichtlinie und den Nutzungsbedingungen zu"
 }

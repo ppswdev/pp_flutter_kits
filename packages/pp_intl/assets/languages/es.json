@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Introduce tu sugerencia",
   "formSubmitSuccess": "Enviado correctamente",
   "formSubmitFailed": "Error al enviar",
-  "inputRoleNumber": "Reglas: debe ser un entero válido ≥ 0 y < {max}"
+  "inputRoleNumber": "Reglas: debe ser un entero válido ≥ 0 y < {max}",
+  "agreementTipText": "Por favor, acepte la política de privacidad y el acuerdo de licencia de usuario final"
 }

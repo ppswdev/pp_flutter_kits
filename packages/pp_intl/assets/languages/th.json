@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "กรอกข้อเสนอแนะ",
   "formSubmitSuccess": "ส่งสำเร็จ",
   "formSubmitFailed": "ส่งไม่สำเร็จ",
-  "inputRoleNumber": "ต้องเป็นจำนวนเต็ม ≥ 0 และ < {max}"
+  "inputRoleNumber": "ต้องเป็นจำนวนเต็ม ≥ 0 และ < {max}",
+  "agreementTipText": "กรุณายอมรับนโยบายความเป็นส่วนตัวและข้อตกลงการใช้งาน"
 }

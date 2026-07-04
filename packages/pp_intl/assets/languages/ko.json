@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "제안 입력",
   "formSubmitSuccess": "제출되었습니다",
   "formSubmitFailed": "제출 실패",
-  "inputRoleNumber": "입력 규칙: 유효한 정수여야 합니다. 최소값은 0 이상, 최대값 미만이며 최대값은 {max}보다 작고 최소값보다 커야 합니다."
+  "inputRoleNumber": "입력 규칙: 유효한 정수여야 합니다. 최소값은 0 이상, 최대값 미만이며 최대값은 {max}보다 작고 최소값보다 커야 합니다.",
+  "agreementTipText": "개인정보 처리방침 및 이용약관에 동의해주세요"
 }

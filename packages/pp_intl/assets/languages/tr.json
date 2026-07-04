@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Öneri gir",
   "formSubmitSuccess": "Başarıyla gönderildi",
   "formSubmitFailed": "Gönderim başarısız",
-  "inputRoleNumber": "{max} değerinden küçük ve ≥ 0 bir tam sayı olmalıdır"
+  "inputRoleNumber": "{max} değerinden küçük ve ≥ 0 bir tam sayı olmalıdır",
+  "agreementTipText": "Lütfen Gizlilik Politikası ve Son Kullanıcı Lisans Sözleşmesine kabul edin"
 }

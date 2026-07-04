@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "ご提案を入力",
   "formSubmitSuccess": "送信しました",
   "formSubmitFailed": "送信に失敗しました",
-  "inputRoleNumber": "0以上かつ{max}未満の整数を入力してください"
+  "inputRoleNumber": "0以上かつ{max}未満の整数を入力してください",
+  "agreementTipText": "プライバシーポリシーと利用規約に同意してください"
 }

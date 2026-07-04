@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Wprowadź sugestię",
   "formSubmitSuccess": "Wysłano pomyślnie",
   "formSubmitFailed": "Wysyłanie nie powiodło się",
-  "inputRoleNumber": "Musi być liczbą całkowitą ≥ 0 i < {max}"
+  "inputRoleNumber": "Musi być liczbą całkowitą ≥ 0 i < {max}",
+  "agreementTipText": "Proszę zaakceptować Politykę Prywatności i Umowę Licencyjną Użytkownika Końcowego"
 }

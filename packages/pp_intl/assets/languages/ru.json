@@ -265,5 +265,6 @@
   "formSuggestPlaceholder": "Введите предложение",
   "formSubmitSuccess": "Отправлено успешно",
   "formSubmitFailed": "Ошибка отправки",
-  "inputRoleNumber": "Должно быть целое число ≥ 0 и < {max}"
+  "inputRoleNumber": "Должно быть целое число ≥ 0 и < {max}",
+  "agreementTipText": "Пожалуйста, согласитесь с Политикой конфиденциальности и Лицензионным соглашением"
 }
