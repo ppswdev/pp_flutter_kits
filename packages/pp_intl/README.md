@@ -242,9 +242,10 @@ print(unknownKey); // 输出: Unknown
 | `agreementEulaAttr`        | Terms                                                 | 条款                       |
 | `agreementSubsciption`     | Subscription Agreement                                | 订阅协议                   |
 | `agreementSubsciptionAttr` | Subscription                                          | 订阅                       |
-| `agreementAgree`           | I have read and agree to                              | 我已阅读并同意             |
-| `agreementText`            | [n] and [m]                                           | [n] 和 [m]                 |
-| `agreementUnagreeAlert`    | Please read and agree to the terms before continuing. | 请先阅读并同意条款再继续。 |
+| `agreementAgree`           | I have read and agree to the Privacy Policy and End User License Agreement | 我已阅读并同意隐私政策和最终用户许可协议 |
+| `agreementAgreeContinue`   | Agree and Continue                                    | 同意并继续                 |
+| `agreementUnagreeExit`     | Disagree and Exit                                    | 不同意并退出               |
+| `agreementText`            | To ensure the app runs properly and improve your experience... | 为保障应用正常运行并改进体验... |
 
 #### 确认弹窗
 

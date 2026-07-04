@@ -204,11 +204,14 @@ enum PPIntlKey {
   /// I have read and agree to | 我已阅读并同意
   agreementAgree,
 
-  /// [n] and [m] | [n] 和 [m]
-  agreementText,
+  /// Agree and Continue | 同意并继续
+  agreementAgreeContinue,
 
-  /// Please read and agree to the terms before continuing. | 请先阅读并同意条款再继续。
-  agreementUnagreeAlert,
+  /// Disagree and Exit | 不同意并退出
+  agreementUnagreeExit,
+
+  /// To ensure the app runs properly... | 为保障应用正常运行并改进体验...
+  agreementText,
 
   // --- 确认弹窗 ---
   /// Confirm Deletion | 确认删除
