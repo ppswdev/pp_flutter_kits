@@ -25,6 +25,7 @@ abstract class InappPurchasePlatform extends PlatformInterface {
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
     bool showLog = true,
+    bool deferAndroidAcknowledgement = false,
   });
 
   /// 获取所有产品信息
@@ -48,6 +49,16 @@ abstract class InappPurchasePlatform extends PlatformInterface {
   /// 购买产品
   Future<void> purchase({required String productId});
 
+  /// Completes Android purchase processing after backend verification.
+  ///
+  /// iOS callers do not need this method. Android can defer acknowledgement
+  /// until the backend has verified and durably recorded the purchase token.
+  Future<void> completePurchaseVerification({
+    required String purchaseToken,
+    required bool approved,
+    bool emitPurchaseSuccess = false,
+  });
+
   /// 恢复购买
   Future<void> restorePurchases();
 
@@ -70,7 +81,7 @@ abstract class InappPurchasePlatform extends PlatformInterface {
   Future<bool> isEligibleForIntroOffer({required String productId});
 
   /// 检查产品是否在有效订阅期间内但在免费试用期已取消
-  /// 
+  ///
   /// [productId] - 要检查的产品ID
   /// 返回 true 表示在有效订阅期间内但在免费试用期已取消，false 表示不是
   Future<bool> isSubscribedButFreeTrailCancelled({required String productId});

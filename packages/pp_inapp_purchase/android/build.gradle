@@ -47,11 +47,6 @@ android {
         minSdk = 24
     }
 
-    dependencies {
-        testImplementation("org.jetbrains.kotlin:kotlin-test")
-        testImplementation("org.mockito:mockito-core:5.0.0")
-    }
-
     testOptions {
         unitTests.all {
             useJUnitPlatform()
@@ -63,4 +58,13 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    // The public plugin class implements PurchasesUpdatedListener, so the host
+    // compilation classpath must also see the Billing Client API.
+    api("com.android.billingclient:billing-ktx:9.1.0")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.mockito:mockito-core:5.0.0")
 }

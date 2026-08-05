@@ -113,6 +113,10 @@ public class StoreKit2Manager {
     ///   - config: 配置对象
     ///   - delegate: 代理对象
     public func configure(with config: StoreKitConfig, delegate: StoreKitDelegate) {
+        // Reconfiguration can happen after a Flutter-side retry. Stop the previous
+        // service first so Transaction.updates and subscription polling stay single-instance.
+        service?.stop()
+        resetStoreSnapshot()
         self.config = config
         self.delegate = delegate
         self.service = StoreKitService(config: config, delegate: self)
@@ -122,6 +126,10 @@ public class StoreKit2Manager {
     /// 使用闭包配置管理器
     /// - Parameter config: 配置对象
     public func configure(with config: StoreKitConfig) {
+        // Reconfiguration can happen after a Flutter-side retry. Stop the previous
+        // service first so Transaction.updates and subscription polling stay single-instance.
+        service?.stop()
+        resetStoreSnapshot()
         self.config = config
         self.service = StoreKitService(config: config, delegate: self)
         service?.start()
@@ -324,12 +332,35 @@ public class StoreKit2Manager {
     /// 恢复购买
     /// - Throws: StoreKit2Error.restorePurchasesFailed 如果恢复失败
     public func restorePurchases() async throws {
-        await service?.restorePurchases()
+        guard let service else {
+            throw StoreKitServiceError.entitlementVerificationFailed
+        }
+        try await service.restorePurchases()
     }
     
-    /// 手动刷新已购买产品交易信息，包括：有效的订阅交易信息，每个产品的最新交易信息
-    public func refreshPurchases() async {
-        await service?.loadValidTransactions()
+    /// 手动刷新已购买产品交易信息。
+    ///
+    /// `validTransactions` 只包含经 StoreKit 验签且通过插件权益规则的交易；
+    /// `latestTransactions` 仅作为历史和统计信息，不得用于授权。
+    /// - Returns: StoreKit 已初始化且当前权益全部验证通过时返回 true。
+    public func refreshPurchases() async -> Bool {
+        guard let service = service else {
+            currentState = .error(
+                "StoreKit2Manager.refreshPurchases",
+                "Service not started",
+                "Call configure before refreshing purchases"
+            )
+            return false
+        }
+        guard await service.loadValidTransactions() else {
+            return false
+        }
+
+        // Combine 通知会在主队列异步投递。在方法返回前直接同步快照，
+        // 避免 Flutter 紧接着读取时拿到上一轮的权益结果。
+        validTransactions = service.validTransactions
+        latestTransactions = service.latestTransactions
+        return true
     }
     
     // MARK: - 查询方法
@@ -338,7 +369,7 @@ public class StoreKit2Manager {
     /// - Parameter productId: 产品ID
     /// - Returns: 如果已购买返回 true
     public func isPurchased(productId: String) -> Bool {
-        return latestTransactions.contains(where: { $0.productID == productId })
+        return validTransactions.contains(where: { $0.productID == productId })
     }
     
     /// 检查产品是否通过家庭共享获得
@@ -346,7 +377,7 @@ public class StoreKit2Manager {
     /// - Returns: 如果是通过家庭共享获得返回 true，否则返回 false
     /// - Note: 只有支持家庭共享的产品才能通过家庭共享获得
     public func isFamilyShared(productId: String) -> Bool {
-        guard let transaction = latestTransactions.first(where: { $0.productID == productId }) else {
+        guard let transaction = validTransactions.first(where: { $0.productID == productId }) else {
             return false
         }
         return transaction.ownershipType == .familyShared
@@ -387,8 +418,8 @@ public class StoreKit2Manager {
             let statuses = try await subscription.status
             guard let currentStatus = statuses.first(where: { $0.state == .subscribed }) else {
                 // 如果没有找到 .subscribed 状态，打印所有状态用于调试
-                print("❌ [isSubscribedButFreeTrailCancelled] 未找到 .subscribed 状态: \(productId)")
-                print("   当前状态列表: \(statuses.map { "\($0.state)" })")
+                ppInAppPurchaseLog("❌ [isSubscribedButFreeTrailCancelled] 未找到 .subscribed 状态: \(productId)")
+                ppInAppPurchaseLog("   当前状态列表: \(statuses.map { "\($0.state)" })")
                 return false
             }
             
@@ -415,7 +446,7 @@ public class StoreKit2Manager {
             // 只有在有效订阅期间内、已取消且处于免费试用期时，才返回 true
             return isFreeTrial
         } catch {
-            print("获取订阅状态失败: \(productId), 错误: \(error)")
+            ppInAppPurchaseLog("获取订阅状态失败: \(productId), 错误: \(error)")
             return false
         }
     }
@@ -448,8 +479,8 @@ public class StoreKit2Manager {
     }
    
     // MARK: - 交易相关
-    /// 获取有效的已购买交易
-    /// - Returns: 有效（未过期、未撤销、未退款）的已购买交易数组
+    /// 获取可用于授予权益的已购买交易。
+    /// - Returns: 已验签、未过期、未撤销、未退款且商品类型匹配的交易数组。
     public func getValidPurchasedTransactions() async -> [Transaction] {
         return validTransactions
     }
@@ -515,7 +546,7 @@ public class StoreKit2Manager {
                 return renewalInfo
             }
         } catch {
-            print("获取续订信息失败: \(error)")
+            ppInAppPurchaseLog("获取续订信息失败: \(error)")
             return nil
         }
         return nil
@@ -574,8 +605,15 @@ public class StoreKit2Manager {
         service = nil
         config = nil
         delegate = nil
+        resetStoreSnapshot()
+    }
+
+    /// Clears data owned by the current StoreKit service without changing callbacks.
+    private func resetStoreSnapshot() {
         currentState = .idle
         allProducts = []
+        validTransactions = []
+        latestTransactions = []
     }
 }
 
@@ -607,6 +645,8 @@ extension StoreKit2Manager: StoreKitServiceDelegate {
     @MainActor
     func service(_ service: StoreKitService, didUpdatePurchasedTransactions validTrans: [Transaction], latestTrans: [Transaction]) {
         validTransactions = validTrans
+        // iOS 订阅整改：同步保存最新历史交易，供 Dart 层完整解析退款/撤销元数据。
+        latestTransactions = latestTrans
         
         // 通知代理
         delegate?.storeKit(self, didUpdatePurchasedTransactions: validTrans, latestTrans: latestTrans)
@@ -615,4 +655,3 @@ extension StoreKit2Manager: StoreKitServiceDelegate {
         onPurchasedTransactionsUpdated?(validTrans, latestTrans)
     }
 }
-

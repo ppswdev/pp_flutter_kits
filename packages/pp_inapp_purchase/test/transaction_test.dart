@@ -8,9 +8,7 @@ void main() {
   group('Transaction tests', () {
     test('Parse transaction.json file', () {
       // Read the JSON file
-      final file = File(
-        '/Users/xiaopin/Desktop/AppDev/Projects/pp_flutter_kits/packages/pp_inapp_purchase/example/json/transaction.json',
-      );
+      final file = File('json/transaction.json');
       final jsonString = file.readAsStringSync();
       final List<dynamic> jsonList = json.decode(jsonString);
 

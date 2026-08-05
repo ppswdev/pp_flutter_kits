@@ -11,7 +11,10 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          return '42';
+          if (methodCall.method == 'getPlatformVersion') {
+            return '42';
+          }
+          return <Object?>[];
         });
   });
 
@@ -22,5 +25,58 @@ void main() {
 
   test('getPlatformVersion', () async {
     expect(await platform.getPlatformVersion(), '42');
+  });
+
+  test('completePurchaseVerification forwards safe Android decision', () async {
+    MethodCall? capturedCall;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+          capturedCall = methodCall;
+          return null;
+        });
+
+    await platform.completePurchaseVerification(
+      purchaseToken: 'purchase-token',
+      approved: true,
+      emitPurchaseSuccess: true,
+    );
+
+    expect(capturedCall?.method, 'completePurchaseVerification');
+    expect(capturedCall?.arguments, {
+      'purchaseToken': 'purchase-token',
+      'approved': true,
+      'emitPurchaseSuccess': true,
+    });
+  });
+
+  test('getValidPurchasedTransactions parses a complete response', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+          return <Object?>[
+            <String, Object?>{
+              'id': 'transaction-1',
+              'productID': 'lifetime-product',
+              'productType': 'nonConsumable',
+              'hasRevocation': false,
+            },
+          ];
+        });
+
+    final transactions = await platform.getValidPurchasedTransactions();
+
+    expect(transactions, hasLength(1));
+    expect(transactions.single.id, 'transaction-1');
+  });
+
+  test('getValidPurchasedTransactions fails on malformed items', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+          return <Object?>['not-a-transaction'];
+        });
+
+    expect(
+      platform.getValidPurchasedTransactions(),
+      throwsA(isA<FormatException>()),
+    );
   });
 }

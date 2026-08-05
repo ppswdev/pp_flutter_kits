@@ -1,3 +1,13 @@
+## 1.2.0
+
+* 增加 Android 平台支持，接入 Google Play Billing Library 9.1.0。
+* 支持自动续订订阅与非消耗型一次性商品的查询、购买、恢复和当前购买刷新。
+* 支持 Google Play base plan/offer 自动选择以及免费试用、PENDING、取消和失败状态。
+* 支持默认自动 acknowledge 与可选的服务端验单后延迟 acknowledge 两种模式。
+* 返回 order ID、product ID 和脱敏日志可追踪的 purchase token，供业务服务端验证。
+* 支持打开 Google Play 订阅管理页、Android 订阅文案本地化和统一事件流。
+* Android 原生实现按日志、数据转换、本地化和 Billing 管理职责拆分，便于维护。
+
 ## 1.1.0
 
 * 功能补充和优化完善

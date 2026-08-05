@@ -36,24 +36,24 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     // 安全日志输出方法
     fileprivate func safeLog(_ message: String) {
         if _showLog {
-            print(message)
+            ppInAppPurchaseLog(message)
         }
     }
     
     // 初始化
     public init(channel: FlutterMethodChannel, stateEventChannel: FlutterEventChannel, productsEventChannel: FlutterEventChannel, transactionsEventChannel: FlutterEventChannel) {
-        print("[pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化")
+        ppInAppPurchaseLog("[pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化")
         self.channel = channel
         self.stateEventChannel = stateEventChannel
         self.productsEventChannel = productsEventChannel
         self.transactionsEventChannel = transactionsEventChannel
         super.init()
         setupEventChannels()
-        print("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化完成")
+        ppInAppPurchaseLog("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 初始化完成")
     }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        print("[pp_inapp_purchase_ios_plugin] 注册 InappPurchasePlugin")
+        ppInAppPurchaseLog("[pp_inapp_purchase_ios_plugin] 注册 InappPurchasePlugin")
         let channel = FlutterMethodChannel(name: channelName, binaryMessenger: registrar.messenger())
         let stateEventChannel = FlutterEventChannel(name: stateEventChannelName, binaryMessenger: registrar.messenger())
         let productsEventChannel = FlutterEventChannel(name: productsEventChannelName, binaryMessenger: registrar.messenger())
@@ -71,17 +71,13 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         stateEventChannel.setStreamHandler(instance.stateStreamHandler)
         productsEventChannel.setStreamHandler(instance.productsStreamHandler)
         transactionsEventChannel.setStreamHandler(instance.transactionsStreamHandler)
-        print("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 注册完成")
+        ppInAppPurchaseLog("✅ [pp_inapp_purchase_ios_plugin] InappPurchasePlugin 注册完成")
     }
     
     // 处理方法调用
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         safeLog("[pp_inapp_purchase_ios_plugin] 收到方法调用: \(call.method)")
-        if let arguments = call.arguments {
-            safeLog("[pp_inapp_purchase_ios_plugin] 参数: \(arguments)")
-        } else {
-            safeLog("[pp_inapp_purchase_ios_plugin] 参数: 无")
-        }
+        // Method arguments can contain purchase credentials. Log only the method name.
         switch call.method {
         case "getPlatformVersion":
             let version = "iOS " + UIDevice.current.systemVersion
@@ -111,6 +107,10 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         
         case "purchase":
             purchase(call, result)
+
+        case "completePurchaseVerification":
+            // Android-only lifecycle hook. StoreKit verifies and finishes its own transactions.
+            result(nil)
         
         case "restorePurchases":
             restorePurchases(result)
@@ -192,11 +192,9 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     
     // 配置StoreKit
     private func configure(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        print("[pp_inapp_purchase_ios_plugin] 开始配置 StoreKit")
         guard let arguments = call.arguments as? [String: Any],
               let productIds = arguments["productIds"] as? [String],
               let lifetimeIds = arguments["lifetimeIds"] as? [String] else {
-            print("❌ [pp_inapp_purchase_ios_plugin] configure 参数无效")
             result(FlutterError(code: "invalid_arguments", message: "Invalid configuration arguments", details: nil))
             return
         }
@@ -206,6 +204,8 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         let showLog = arguments["showLog"] as? Bool ?? false
         
         _showLog = showLog
+        setPPInAppPurchaseLoggingEnabled(showLog)
+        ppInAppPurchaseLog("[pp_inapp_purchase_ios_plugin] 开始配置 StoreKit")
         
         safeLog("[pp_inapp_purchase_ios_plugin] 配置参数:")
         safeLog("   - productIds: \(productIds)")
@@ -333,7 +333,11 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
                 result(nil)
             } catch {
                 safeLog("❌ [pp_inapp_purchase_ios_plugin] restorePurchases 失败: \(error.localizedDescription)")
-                result(nil)
+                result(FlutterError(
+                    code: "restore_purchases_failed",
+                    message: error.localizedDescription,
+                    details: String(describing: error)
+                ))
             }
         }
     }
@@ -342,9 +346,18 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
     private func refreshPurchases(_ result: @escaping FlutterResult) {
         safeLog("[pp_inapp_purchase_ios_plugin] 调用 refreshPurchases")
         Task {
-            await storeKitManager.refreshPurchases()
-            safeLog("✅ [pp_inapp_purchase_ios_plugin] refreshPurchases 成功")
-            result(nil)
+            let refreshed = await storeKitManager.refreshPurchases()
+            if refreshed {
+                safeLog("✅ [pp_inapp_purchase_ios_plugin] refreshPurchases 成功")
+                result(nil)
+            } else {
+                safeLog("❌ [pp_inapp_purchase_ios_plugin] refreshPurchases 失败")
+                result(FlutterError(
+                    code: "purchase_refresh_failed",
+                    message: "StoreKit is unavailable or entitlement verification failed",
+                    details: nil
+                ))
+            }
         }
     }
     
@@ -538,7 +551,11 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
         safeLog("[pp_inapp_purchase_ios_plugin] 处理状态变化")
         Task { @MainActor in
             let stateDict = await StoreKitStateConverter.toDictionary(state)
-            safeLog("[pp_inapp_purchase_ios_plugin] 发送状态变化事件到 Flutter: \(stateDict)")
+            safeLog(
+                "[pp_inapp_purchase_ios_plugin] 发送状态变化事件到 Flutter: " +
+                "type=\(stateDict["type"] ?? "unknown"), " +
+                "productId=\(stateDict["productId"] ?? "none")"
+            )
             if let stateEventSink = stateEventSink {
                 stateEventSink(stateDict)
                 safeLog("✅ [pp_inapp_purchase_ios_plugin] 状态变化事件已发送")

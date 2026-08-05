@@ -19,6 +19,7 @@ class StoreKitState {
   static const purchasesLoaded = 'purchasesLoaded';
   static const purchasing = 'purchasing';
   static const purchaseSuccess = 'purchaseSuccess';
+  static const purchaseVerificationRequired = 'purchaseVerificationRequired';
   static const purchasePending = 'purchasePending';
   static const purchaseCancelled = 'purchaseCancelled';
   static const purchaseFailed = 'purchaseFailed';

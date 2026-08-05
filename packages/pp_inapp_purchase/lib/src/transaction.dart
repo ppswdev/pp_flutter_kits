@@ -18,7 +18,9 @@ class Transaction {
   final bool? isUpgraded;
   final bool? hasRevocation;
   final int? revocationDate;
-  final int? revocationReason;
+
+  /// StoreKit 返回的退款或撤销原因，未撤销时为 `null`。
+  final String? revocationReason;
   final String? environment;
   final String? appAccountToken;
   final String? appBundleID;
@@ -90,7 +92,8 @@ class Transaction {
       isUpgraded: map['isUpgraded'] as bool?,
       hasRevocation: map['hasRevocation'] as bool?,
       revocationDate: map['revocationDate'] as int?,
-      revocationReason: map['revocationReason'] as int?,
+      // iOS 订阅整改：StoreKit 传入字符串，同时兼容旧数字格式，避免整笔交易解析失败。
+      revocationReason: map['revocationReason']?.toString(),
       environment: map['environment'] as String?,
       appAccountToken: map['appAccountToken'] as String?,
       appBundleID: map['appBundleID'] as String?,

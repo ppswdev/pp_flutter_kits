@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -83,37 +84,49 @@ class DScreenUtil {
   /// 获取顶部安全距离高度（状态栏高度）
   ///
   /// 返回结果: [double] 顶部安全区高度（单位: dp）
+  /// 使用 viewPadding 解决Android平台padding不准确的经典问题
   ///
   /// 示例：
   /// ```dart
   /// double safeTop = DScreenUtil.topSafeHeight();
   /// ```
   static double topSafeHeight() {
-    return Get.mediaQuery.padding.top;
+    final topPadding = Get.mediaQuery.viewPadding.top;
+    if (Platform.isAndroid) {
+      return topPadding > 0 ? topPadding : 24.0;
+    }
+    return topPadding;
   }
 
   /// 获取底部安全距离高度
   ///
   /// 返回结果: [double] 底部安全区高度（单位: dp）
+  /// 使用 viewPadding 解决Android平台padding不准确的经典问题
   ///
   /// 示例：
   /// ```dart
   /// double safeBottom = DScreenUtil.bottomSafeHeight();
   /// ```
   static double bottomSafeHeight() {
-    return Get.mediaQuery.padding.bottom;
+    final bottomPadding = Get.mediaQuery.viewPadding.bottom;
+    if (Platform.isAndroid) {
+      return bottomPadding > 0 ? bottomPadding : 0.0;
+    }
+    return bottomPadding;
   }
 
   /// 获取AppBar默认高度
   ///
   /// 返回结果: [double] AppBar高度（单位: dp）
+  /// - iOS: 状态栏高度 + kToolbarHeight
+  /// - Android: 自适应状态栏高度 + kToolbarHeight
   ///
   /// 示例：
   /// ```dart
   /// double appBar = DScreenUtil.appBarHeight();
   /// ```
   static double appBarHeight() {
-    return Get.mediaQuery.padding.top + kToolbarHeight;
+    return topSafeHeight() + kToolbarHeight;
   }
 
   /// 获取底部导航栏高度
@@ -131,13 +144,15 @@ class DScreenUtil {
   /// 获取底部TabBar高度+底部安全距离高度
   ///
   /// 返回结果: [double] TabBar高度 + 底部安全区（单位: dp）
+  /// - iOS: kBottomNavigationBarHeight + 底部安全区
+  /// - Android: kBottomNavigationBarHeight + 自适应底部安全区
   ///
   /// 示例：
   /// ```dart
   /// double tabBarTotal = DScreenUtil.bottomBarTotalHeight();
   /// ```
   static double bottomBarTotalHeight() {
-    return kBottomNavigationBarHeight + Get.mediaQuery.padding.bottom;
+    return kBottomNavigationBarHeight + bottomSafeHeight();
   }
 
   /// 获取屏幕方向
@@ -179,27 +194,28 @@ class DScreenUtil {
   /// 获取状态栏高度
   ///
   /// 返回结果: [double] 状态栏高度（单位: dp）
+  /// - iOS: 使用系统padding.top（动态获取刘海屏等）
+  /// - Android: 在低版本中可能有不同的表现，保底24dp
   ///
   /// 示例：
   /// ```dart
   /// double statusH = DScreenUtil.statusBarHeight();
   /// ```
   static double statusBarHeight() {
-    return Get.mediaQuery.padding.top;
+    return topSafeHeight();
   }
 
   /// 获取可用屏幕高度（减去状态栏和底部安全区域）
   ///
   /// 返回结果: [double] 可用屏幕高度（单位: dp）
+  /// - iOS: 减去系统顶部和底部安全区
+  /// - Android: 减去自适应顶部和底部安全区
   ///
   /// 示例：
   /// ```dart
   /// double available = DScreenUtil.availableScreenHeight();
   /// ```
   static double availableScreenHeight() {
-    final mediaQuery = Get.mediaQuery;
-    return mediaQuery.size.height -
-        mediaQuery.padding.top -
-        mediaQuery.padding.bottom;
+    return Get.height - topSafeHeight() - bottomSafeHeight();
   }
 }

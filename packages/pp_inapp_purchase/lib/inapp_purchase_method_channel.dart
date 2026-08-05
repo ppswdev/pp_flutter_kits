@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -22,25 +21,84 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   );
 
   /// 是否显示日志
-  bool _showLog = true;
+  bool _showLog = false;
 
   /// 安全日志输出方法
   void safeLog(String message, {Object? error, StackTrace? stackTrace}) {
     if (_showLog) {
-      if (error != null && stackTrace != null) {
-        developer.log(
-          message,
-          name: 'pp_inapp_purchase',
-          error: error,
-          stackTrace: stackTrace,
-        );
-      } else {
-        developer.log(message, name: 'pp_inapp_purchase');
+      final formattedMessage = '[pp_inapp_purchase][DART] $message';
+      debugPrint(formattedMessage);
+      if (error != null) {
+        debugPrint('[pp_inapp_purchase][DART] error=$error');
+      }
+      if (stackTrace != null) {
+        debugPrint('[pp_inapp_purchase][DART] stackTrace=$stackTrace');
       }
     }
   }
 
-  /// 递归转换 Map，处理嵌套的 _Map<Object?, Object?> 到 Map<String, dynamic>
+  String _maskedSuffix(Object? value) {
+    final text = value?.toString() ?? '';
+    if (text.isEmpty) return 'none';
+    final suffix = text.length <= 6 ? text : text.substring(text.length - 6);
+    return '***$suffix';
+  }
+
+  String _transactionLogSummary(dynamic transaction) {
+    if (transaction is! Map) return 'none';
+    try {
+      final map = _deepConvertMap(transaction);
+      final token = map['appTransactionID'] ?? map['originalID'];
+      return 'productId=${map['productID'] ?? 'unknown'} '
+          'productType=${map['productType'] ?? 'unknown'} '
+          'order=${_maskedSuffix(map['id'])} '
+          'token=${_maskedSuffix(token)}';
+    } catch (_) {
+      return 'unparseable:${transaction.runtimeType}';
+    }
+  }
+
+  String _stateEventLogSummary(dynamic event) {
+    if (event is! Map) return 'invalid:${event.runtimeType}';
+    try {
+      final map = _deepConvertMap(event);
+      final error = map['error']?.toString();
+      final safeError = error == null
+          ? 'none'
+          : error.substring(0, error.length > 160 ? 160 : error.length);
+      return 'type=${map['type'] ?? 'unknown'} '
+          'productId=${map['productId'] ?? 'none'} '
+          'error=$safeError '
+          'transaction=${_transactionLogSummary(map['transaction'])}';
+    } catch (_) {
+      return 'unparseable:${event.runtimeType}';
+    }
+  }
+
+  String _transactionSnapshotLogSummary(dynamic event) {
+    if (event is! Map) return 'invalid:${event.runtimeType}';
+    try {
+      final map = _deepConvertMap(event);
+      final valid = map['validTransactions'] is List
+          ? map['validTransactions'] as List
+          : const [];
+      final latest = map['latestTransactions'] is List
+          ? map['latestTransactions'] as List
+          : const [];
+      final validProducts = valid
+          .whereType<Map>()
+          .map((item) => item['productID'])
+          .whereType<String>()
+          .join(',');
+      return 'valid=${valid.length} latest=${latest.length} '
+          'validProducts=[$validProducts]';
+    } catch (_) {
+      return 'unparseable:${event.runtimeType}';
+    }
+  }
+
+  /// 递归转换 Map，处理嵌套的 `_Map<Object?, Object?>` 到
+  /// `Map<String, dynamic>`。
   Map<String, dynamic> _deepConvertMap(dynamic map) {
     if (map is Map<String, dynamic>) {
       return map;
@@ -75,6 +133,34 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     return value;
   }
 
+  /// 严格解析交易列表。
+  ///
+  /// 权益同步不允许将单笔解析失败当成“没有有效交易”，
+  /// 否则可能在原生层存在权益时误清本地 VIP。
+  List<Transaction> _parseTransactions(dynamic result, String methodName) {
+    if (result is! List) {
+      throw FormatException(
+        '$methodName expected List, got ${result.runtimeType}',
+      );
+    }
+
+    final transactions = <Transaction>[];
+    for (var index = 0; index < result.length; index++) {
+      final item = result[index];
+      if (item is! Map) {
+        throw FormatException(
+          '$methodName item[$index] expected Map, got ${item.runtimeType}',
+        );
+      }
+      try {
+        transactions.add(Transaction.fromMap(_deepConvertMap(item)));
+      } catch (error) {
+        throw FormatException('$methodName item[$index] parse failed: $error');
+      }
+    }
+    return transactions;
+  }
+
   /// 构造函数
   MethodChannelInappPurchase() {
     safeLog('初始化 MethodChannelInappPurchase');
@@ -85,7 +171,6 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   void setupMethodCallHandler() {
     methodChannel.setMethodCallHandler((call) async {
       safeLog('收到方法调用: ${call.method}');
-      safeLog('参数: ${call.arguments}');
       // 只处理请求-响应式的方法调用，事件处理现在通过EventChannel实现
       return null;
     });
@@ -114,6 +199,7 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
     bool showLog = true,
+    bool deferAndroidAcknowledgement = false,
   }) async {
     _showLog = showLog;
     safeLog('调用 configure');
@@ -122,6 +208,7 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     safeLog('nonRenewableExpirationDays: $nonRenewableExpirationDays');
     safeLog('autoSortProducts: $autoSortProducts');
     safeLog('showLog: $showLog');
+    safeLog('deferAndroidAcknowledgement: $deferAndroidAcknowledgement');
     try {
       await methodChannel.invokeMethod('configure', {
         'productIds': productIds,
@@ -129,6 +216,7 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
         'nonRenewableExpirationDays': nonRenewableExpirationDays,
         'autoSortProducts': autoSortProducts,
         'showLog': showLog,
+        'deferAndroidAcknowledgement': deferAndroidAcknowledgement,
       });
       safeLog('✅ configure 成功');
     } catch (e, stackTrace) {
@@ -356,14 +444,37 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
 
   @override
   Future<void> purchase({required String productId}) async {
-    safeLog('调用 purchase, productId: $productId');
+    safeLog('[PURCHASE][01] 请求原生购买 productId=$productId');
     try {
       await methodChannel.invokeMethod('purchase', {'productId': productId});
-      safeLog('✅ purchase 调用成功');
+      safeLog(
+        '[PURCHASE][02] Google Play 购买页启动请求已受理 productId=$productId；最终结果等待事件流',
+      );
     } catch (e, stackTrace) {
-      safeLog('❌ purchase 失败: $e', error: e, stackTrace: stackTrace);
+      safeLog(
+        '[PURCHASE][ERROR] 启动购买失败 productId=$productId error=$e',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
+  }
+
+  @override
+  Future<void> completePurchaseVerification({
+    required String purchaseToken,
+    required bool approved,
+    bool emitPurchaseSuccess = false,
+  }) async {
+    safeLog(
+      '[VERIFY] complete approved=$approved '
+      'token=${_maskedSuffix(purchaseToken)} emitSuccess=$emitPurchaseSuccess',
+    );
+    await methodChannel.invokeMethod('completePurchaseVerification', {
+      'purchaseToken': purchaseToken,
+      'approved': approved,
+      'emitPurchaseSuccess': emitPurchaseSuccess,
+    });
   }
 
   @override
@@ -400,26 +511,14 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
       safeLog(
         'getValidPurchasedTransactions 返回: ${result is List ? result.length : 'null'} 个交易',
       );
-      if (result is List) {
-        final transactions = result
-            .whereType<Map>()
-            .map((item) {
-              try {
-                final map = _deepConvertMap(item);
-                return Transaction.fromMap(map);
-              } catch (e) {
-                safeLog('⚠️ getValidPurchasedTransactions 解析单个交易失败: $e');
-                return null;
-              }
-            })
-            .whereType<Transaction>()
-            .toList();
-        safeLog(
-          '✅ getValidPurchasedTransactions 解析成功: ${transactions.length} 个交易',
-        );
-        return transactions;
-      }
-      return [];
+      final transactions = _parseTransactions(
+        result,
+        'getValidPurchasedTransactions',
+      );
+      safeLog(
+        '✅ getValidPurchasedTransactions 解析成功: ${transactions.length} 个交易',
+      );
+      return transactions;
     } catch (e, stackTrace) {
       safeLog(
         '❌ getValidPurchasedTransactions 失败: $e',
@@ -438,24 +537,9 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
       safeLog(
         'getLatestTransactions 返回: ${result is List ? result.length : 'null'} 个交易',
       );
-      if (result is List) {
-        final transactions = result
-            .whereType<Map>()
-            .map((item) {
-              try {
-                final map = _deepConvertMap(item);
-                return Transaction.fromMap(map);
-              } catch (e) {
-                safeLog('⚠️ getLatestTransactions 解析单个交易失败: $e');
-                return null;
-              }
-            })
-            .whereType<Transaction>()
-            .toList();
-        safeLog('✅ getLatestTransactions 解析成功: ${transactions.length} 个交易');
-        return transactions;
-      }
-      return [];
+      final transactions = _parseTransactions(result, 'getLatestTransactions');
+      safeLog('✅ getLatestTransactions 解析成功: ${transactions.length} 个交易');
+      return transactions;
     } catch (e, stackTrace) {
       safeLog(
         '❌ getLatestTransactions 失败: $e',
@@ -702,7 +786,7 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     return stateEventChannel
         .receiveBroadcastStream('inapp_purchase/state_events')
         .map((event) {
-          safeLog('收到状态变化事件: $event');
+          safeLog('[STATE] ${_stateEventLogSummary(event)}');
           if (event is Map) {
             // 使用 _deepConvertMap 递归转换嵌套的 Map，确保所有字段都被正确转换
             try {
@@ -751,7 +835,7 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
     return transactionsEventChannel
         .receiveBroadcastStream('inapp_purchase/transactions_events')
         .map((event) {
-          safeLog('收到交易更新事件: $event');
+          safeLog('[SNAPSHOT] ${_transactionSnapshotLogSummary(event)}');
           // 安全处理event为Map<String, dynamic>的情况，递归转换嵌套的Map
           Map<String, dynamic> transactionMap = {};
           if (event is Map) {

@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="https://developer.apple.com/assets/elements/icons/storekit/storekit-128x128_2x.png" alt="StoreKit2">
-</p>
-
-# inapp_purchase
+# pp_inapp_purchase
 
 一个功能完整的 Flutter 应用内购插件，支持 Apple(StoreKit2) 和 Android 平台，提供统一的 API 接口来管理应用内购买功能。
 
@@ -10,19 +6,22 @@
 |----------|----------------|----------|
 | iOS      | ✅ 已支持       | 15.0+    |
 | macOS    | 🧪 开发测试中   | —        |
-| Android  | ❌ 暂不支持     | —        |
+| Android  | ✅ 已支持       | API 24+  |
 | HarmonyOS| ❌ 暂不支持     | —        |
+
+Android 使用 Google Play Billing Library 9.1.0。商品配置、接口语义、测试流程和服务端验证要求见 [ANDROID_BILLING.md](ANDROID_BILLING.md)。
 
 ## 功能特性
 
-- ✅ 支持消耗型产品、非消耗型产品和订阅产品
+- ✅ iOS 支持消耗型、非消耗型和订阅产品
+- ✅ Android 支持自动续订和非消耗型一次性商品
 - ✅ 提供产品信息获取和管理功能
 - ✅ 支持购买、恢复购买和刷新购买信息
 - ✅ 提供订阅状态检查和管理功能
-- ✅ 支持家庭共享检查
+- ✅ 支持 iOS 家庭共享检查
 - ✅ 支持介绍性优惠资格检查
-- ✅ 提供应用内评价请求功能
-- ✅ 支持订阅管理页面和优惠码兑换
+- ✅ 支持订阅管理页面
+- ✅ iOS 支持优惠码兑换
 - ✅ 提供状态变化、产品加载和交易更新的流事件
 - ✅ 支持产品自动排序和自定义配置
 
@@ -32,7 +31,7 @@
 
 ```yaml
 dependencies:
-  pp_inapp_purchase: ^1.1.0
+  pp_inapp_purchase: ^1.2.0
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。
@@ -54,8 +53,111 @@ await inappPurchase.configure(
   nonRenewableExpirationDays: 7,
   autoSortProducts: true,
   showLog: false,
+  // Android only. false: acknowledge first; true: verify first.
+  deferAndroidAcknowledgement: false,
 );
 ```
+
+### Android 配置与购买
+
+Android 支持 Google Play 自动续订订阅和非消耗型一次性商品。商品 ID 必须已经在
+Google Play Console 创建并激活，并包含在上传到测试轨道的应用版本中。
+
+```dart
+import 'dart:io';
+
+import 'package:pp_inapp_purchase/inapp_purchase.dart';
+
+const androidSubscriptions = <String>[
+  'your_weekly_subscription',
+  'your_yearly_subscription',
+];
+const androidLifetime = 'your_lifetime_product';
+
+final purchase = InappPurchase.instance;
+
+await purchase.configure(
+  productIds: <String>[
+    ...androidSubscriptions,
+    androidLifetime,
+  ],
+  lifetimeIds: const <String>[androidLifetime],
+  showLog: true,
+  deferAndroidAcknowledgement: false,
+);
+
+final products = await purchase.getAllProducts();
+await purchase.purchase(productId: androidSubscriptions.first);
+
+// 冷启动、回到前台和恢复购买后都应主动刷新并读取当前购买。
+await purchase.refreshPurchases();
+final currentPurchases =
+    await purchase.getValidPurchasedTransactions();
+
+if (Platform.isAndroid) {
+  await purchase.showManageSubscriptionsSheet();
+}
+```
+
+`deferAndroidAcknowledgement: false` 是默认模式。BillingClient 收到 `PURCHASED`
+后先 acknowledge，成功后发送 `purchaseSuccess`。应用可立即展示短期临时权益，
+但必须将 purchase token 发送业务服务端，并使用 Google Play Developer API 的
+结果覆盖客户端状态。
+
+### Android purchase token 与服务端验证
+
+```dart
+purchase.onStateChanged.listen((state) async {
+  if (state['type'] != StoreKitState.purchaseSuccess ||
+      state['transaction'] is! Map) {
+    return;
+  }
+
+  final transaction = Transaction.fromMap(
+    Map<String, dynamic>.from(state['transaction'] as Map),
+  );
+  final purchaseToken =
+      transaction.appTransactionID ?? transaction.originalID;
+  if (purchaseToken == null || purchaseToken.isEmpty) return;
+
+  // TODO: 通过 HTTPS 把 productID 和 purchaseToken 发给业务服务端。
+  // 订阅使用 purchases.subscriptionsv2.get；一次性商品使用
+  // purchases.products.get。不要在客户端保存服务账号密钥。
+});
+```
+
+如果业务要求服务端通过后才 acknowledge，可启用延迟确认模式：
+
+```dart
+await purchase.configure(
+  productIds: const ['your_weekly_subscription', 'your_lifetime_product'],
+  lifetimeIds: const ['your_lifetime_product'],
+  deferAndroidAcknowledgement: true,
+);
+
+purchase.onStateChanged.listen((state) async {
+  if (state['type'] != StoreKitState.purchaseVerificationRequired ||
+      state['transaction'] is! Map) {
+    return;
+  }
+
+  final transaction = Transaction.fromMap(
+    Map<String, dynamic>.from(state['transaction'] as Map),
+  );
+  final token = transaction.appTransactionID ?? transaction.originalID;
+  if (token == null || token.isEmpty) return;
+
+  final approved = await verifyPurchaseWithYourBackend(transaction);
+  await purchase.completePurchaseVerification(
+    purchaseToken: token,
+    approved: approved,
+    emitPurchaseSuccess: approved,
+  );
+});
+```
+
+上例中的 `verifyPurchaseWithYourBackend` 由接入方实现。服务端不可用时不要传入
+`approved: true`，并应在下一次启动、回到前台或恢复购买时重试。
 
 ### 监听事件流
 
@@ -75,6 +177,18 @@ inappPurchase.onPurchasedTransactionsUpdated.listen((transaction) {
   print('交易更新: $transaction');
 });
 ```
+
+常用 Android 状态：
+
+| 状态 | 说明 |
+| --- | --- |
+| `purchasing` | 已开始拉起 Google Play 购买流程 |
+| `purchasePending` | 付款待处理，不应授予权益 |
+| `purchaseSuccess` | 已完成 acknowledge；默认模式的购买成功事件 |
+| `purchaseVerificationRequired` | 延迟确认模式下等待业务后台验证 |
+| `purchaseCancelled` | 用户关闭购买页 |
+| `purchaseFailed` | BillingClient 或 acknowledge 失败 |
+| `purchasesLoaded` | 当前 SUBS/INAPP 购买快照已刷新 |
 
 ### 获取产品信息
 
@@ -127,7 +241,7 @@ bool isPurchased = await inappPurchase.isPurchased(productId: 'product_id_1');
 bool isFamilyShared = await inappPurchase.isFamilyShared(productId: 'product_id_1');
 
 // 检查产品是否在有效订阅期间内但在免费试用期已取消
-bool isFamilyShared = await inappPurchase.isSubscribedButFreeTrailCancelled(productId: 'product_id_1');
+bool isTrialCancelled = await inappPurchase.isSubscribedButFreeTrailCancelled(productId: 'product_id_1');
 
 // 检查订阅状态
 await inappPurchase.checkSubscriptionStatus();
@@ -160,6 +274,7 @@ inappPurchase.requestReview();
   - `nonRenewableExpirationDays`: 非续订订阅的过期天数
   - `autoSortProducts`: 是否自动按价格排序产品
   - `showLog`: 是否显示日志
+  - `deferAndroidAcknowledgement`: Android 是否等待业务后台验证后再 acknowledge，默认 `false`
 
 ### 产品管理
 
@@ -210,9 +325,21 @@ inappPurchase.requestReview();
 
 ### Android
 
-1. 在 `AndroidManifest.xml` 文件中添加必要的权限
-2. 在 Google Play Console 中创建应用内购买产品
-3. 配置 billing_client 版本
+1. 在 Google Play Console 中创建并激活订阅、base plan 和一次性商品
+2. 上传 AAB 到测试轨道，并使用 License testing 账号安装测试
+3. Billing 权限和 Billing Library 9.1.0 由插件 Android 模块提供
+4. 按 [ANDROID_BILLING.md](ANDROID_BILLING.md) 接入服务端 purchase token 验证
+
+Android 注意事项：
+
+- 当前不支持消耗型商品、预付费订阅、订阅升级/降级和手动选择多个 base plan。
+- `queryPurchasesAsync()` 不提供权威订阅到期时间，不能使用客户端时间推算权益。
+- `getLatestTransactions()` 仅代表本次进程观察到的购买，不是完整历史订单。
+- 终身商品必须在 `lifetimeIds` 中声明，并在 Play Console 配置为非消耗型一次性商品。
+- 退款、撤销、到期、Grace period 和 Account hold 应由服务端结合 RTDN 与
+  Voided Purchases API 维护。
+- 普通日志不得输出完整 purchase token；插件日志统一使用
+  `[pp_inapp_purchase]` 前缀并对 token 脱敏。
 
 ## 注意事项
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../widgets/elastic_dialog.dart';
+import 'elastic_dialog.dart';
 
 /// 居中弹窗
 ///

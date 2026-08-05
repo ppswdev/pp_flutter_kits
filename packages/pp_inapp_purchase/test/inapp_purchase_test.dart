@@ -19,6 +19,7 @@ class MockInappPurchasePlatform
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
     bool showLog = false,
+    bool deferAndroidAcknowledgement = false,
   }) => Future.value();
 
   @override
@@ -44,6 +45,13 @@ class MockInappPurchasePlatform
   Future<void> purchase({required String productId}) => Future.value();
 
   @override
+  Future<void> completePurchaseVerification({
+    required String purchaseToken,
+    required bool approved,
+    bool emitPurchaseSuccess = false,
+  }) => Future.value();
+
+  @override
   Future<void> restorePurchases() => Future.value();
 
   @override
@@ -64,6 +72,10 @@ class MockInappPurchasePlatform
 
   @override
   Future<bool> isEligibleForIntroOffer({required String productId}) =>
+      Future.value(false);
+
+  @override
+  Future<bool> isSubscribedButFreeTrailCancelled({required String productId}) =>
       Future.value(false);
 
   @override
@@ -110,6 +122,7 @@ class MockInappPurchasePlatform
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   final InappPurchasePlatform initialPlatform = InappPurchasePlatform.instance;
 
   test('$MethodChannelInappPurchase is the default instance', () {

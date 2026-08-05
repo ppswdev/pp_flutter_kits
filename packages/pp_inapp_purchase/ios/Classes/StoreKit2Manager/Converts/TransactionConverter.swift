@@ -538,7 +538,7 @@ public struct TransactionConverter {
             // 只有在有效订阅期间内、已取消且处于免费试用期时，才返回 true
             return isFreeTrial
         } catch {
-            print("查询订阅状态失败: \(productID), 错误: \(error)")
+            ppInAppPurchaseLog("查询订阅状态失败: \(productID), 错误: \(error)")
             return false
         }
     }

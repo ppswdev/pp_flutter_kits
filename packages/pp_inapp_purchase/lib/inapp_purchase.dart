@@ -36,6 +36,7 @@ class InappPurchase {
     int nonRenewableExpirationDays = 7,
     bool autoSortProducts = true,
     bool showLog = false,
+    bool deferAndroidAcknowledgement = false,
   }) {
     return InappPurchasePlatform.instance.configure(
       productIds: productIds,
@@ -43,6 +44,7 @@ class InappPurchase {
       nonRenewableExpirationDays: nonRenewableExpirationDays,
       autoSortProducts: autoSortProducts,
       showLog: showLog,
+      deferAndroidAcknowledgement: deferAndroidAcknowledgement,
     );
   }
 
@@ -81,6 +83,19 @@ class InappPurchase {
   /// [productId] - 要购买的产品ID
   Future<void> purchase({required String productId}) {
     return InappPurchasePlatform.instance.purchase(productId: productId);
+  }
+
+  /// Confirms or rejects an Android purchase after backend verification.
+  Future<void> completePurchaseVerification({
+    required String purchaseToken,
+    required bool approved,
+    bool emitPurchaseSuccess = false,
+  }) {
+    return InappPurchasePlatform.instance.completePurchaseVerification(
+      purchaseToken: purchaseToken,
+      approved: approved,
+      emitPurchaseSuccess: emitPurchaseSuccess,
+    );
   }
 
   /// 恢复购买
