@@ -4,14 +4,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'pp_inapp_purchase'
-  s.version          = '1.1.0'
+  s.version          = '1.2.0'
   s.summary          = 'Flutter in-app purchase plugin, supporting iOS (StoreKit2) , providing a unified API interface to manage in-app purchase functionality.'
   s.description      = <<-DESC
 Flutter in-app purchase plugin, supporting iOS (StoreKit2) , providing a unified API interface to manage in-app purchase functionality.
                        DESC
   s.homepage         = 'https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_inapp_purchase'  
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'ppswdev' => 'xiaopin166@gmail.com' }
+  s.author           = { 'ppswdev' => 'ppswdev@outlook.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'

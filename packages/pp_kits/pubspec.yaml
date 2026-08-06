@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dio: ^5.9.2 #网络请求
+  dio: ^5.11.0 #网络请求
   get: ^4.7.3 #状态管理
-  intl: ^0.20.2 #国际化
+  intl: ^0.20.3 #国际化
   path: ^1.9.1 #文件路径处理
   uuid: ^4.5.3 #生成唯一标识符
   hex: ^0.2.0 #十六进制转换
@@ -21,22 +21,22 @@ dependencies:
   archive: ^4.0.9 #压缩和解压缩文件
   url_launcher: ^6.3.2 #链接启动
   app_settings: ^7.0.0 #打开系统设置
-  audioplayers: ^6.6.0 #audio播放
-  connectivity_plus: ^7.0.0 #网络连接状态
+  audioplayers: ^6.7.1 #audio播放
+  connectivity_plus: ^7.3.1 #网络连接状态
   file_picker: ^10.3.10 #文件选择
-  adaptive_dialog: ^2.7.1 #对话框
-  flutter_easyloading: ^3.0.5 #加载动画
+  adaptive_dialog: ^2.8.0 #对话框
+  flutter_easyloading: ^4.0.2 #加载动画
   flutter_screenutil: ^5.9.3 #屏幕适配
-  flutter_secure_storage: ^10.0.0 #安全存储
-  flutter_timezone: ^5.0.1 #时区处理
-  get_time_ago: ^2.3.2 #时间处理
+  flutter_secure_storage: ^10.3.1 #安全存储
+  flutter_timezone: ^5.1.0 #时区处理
+  get_time_ago: ^2.4.1 #时间处理
   image_cropper: ^11.0.0 #图片裁剪
-  image_picker: ^1.2.1 #图片选择
+  image_picker: ^1.2.3 #图片选择
   device_info_plus: ^12.3.0 #设备信息
-  package_info_plus: ^9.0.0 #应用包信息
+  package_info_plus: ^9.0.1 #应用包信息
   path_provider: ^2.1.5 #文件路径提供
-  share_plus: ^12.0.1 #分享功能
-  shared_preferences: ^2.5.4 #本地存储
+  share_plus: ^12.0.2 #分享功能
+  shared_preferences: ^2.5.5 #本地存储
 
 dev_dependencies:
   flutter_test:

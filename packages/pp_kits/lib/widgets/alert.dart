@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../commons/logger.dart';
+
 /// PPAlert
 ///
 /// 全局弹窗工具类，提供加载中、提示、成功、错误、信息、警告、进度、SnackBar、系统对话框等功能的静态方法。
@@ -43,6 +45,63 @@ class PPAlert {
 
   /// 是否已弹出系统对话框
   static var isAlerted = false;
+
+  /// Resolves a context below the app navigator for dialogs triggered from
+  /// asynchronous callbacks, where [Get.context] can point at a disposed page.
+  static BuildContext? _resolveDialogContext(BuildContext? context) {
+    final dialogContext = context ?? Get.overlayContext ?? Get.context;
+    if (dialogContext == null || !dialogContext.mounted) {
+      Logger.log('PPAlert: dialog context is unavailable.');
+      return null;
+    }
+    return dialogContext;
+  }
+
+  /// Uses Flutter's native Material route on Android instead of the adaptive
+  /// dialog transition route, which can fail to paint in some app themes.
+  static Future<OkCancelResult> _showAndroidAlert({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required String okLabelText,
+    String? cancelLabelText,
+    bool barrierDismissible = true,
+  }) async {
+    final result = await showDialog<OkCancelResult>(
+      context: context,
+      useRootNavigator: true,
+      barrierDismissible: barrierDismissible,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+        final isDark = theme.brightness == Brightness.dark;
+        final foregroundColor = isDark ? Colors.white : Colors.black87;
+        final actionColor = isDark ? Colors.white : Colors.black87;
+        return AlertDialog(
+          backgroundColor: isDark
+              ? theme.scaffoldBackgroundColor
+              : Colors.white,
+          title: Text(title, style: TextStyle(color: foregroundColor)),
+          content: Text(message, style: TextStyle(color: foregroundColor)),
+          actions: [
+            if (cancelLabelText != null)
+              TextButton(
+                style: TextButton.styleFrom(foregroundColor: actionColor),
+                onPressed: () =>
+                    Navigator.of(dialogContext).pop(OkCancelResult.cancel),
+                child: Text(cancelLabelText),
+              ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: actionColor),
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(OkCancelResult.ok),
+              child: Text(okLabelText),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? OkCancelResult.cancel;
+  }
 
   /// 显示加载中弹窗
   ///
@@ -255,6 +314,7 @@ class PPAlert {
   /// );
   /// ```
   static Future<void> showSysAlert({
+    BuildContext? context,
     String title = 'Tips',
     String message = 'Messages',
     String okLabelText = 'OK',
@@ -263,18 +323,32 @@ class PPAlert {
     if (isAlerted) {
       return;
     }
+    final dialogContext = _resolveDialogContext(context);
+    if (dialogContext == null) return;
+
     isAlerted = true;
-    final result = await showOkAlertDialog(
-      context: Get.context!,
-      title: title,
-      message: message,
-      okLabel: okLabelText,
-    );
-    isAlerted = false;
-    if (result == OkCancelResult.ok) {
-      if (onOK != null) {
-        onOK();
+    try {
+      if (!dialogContext.mounted) return;
+      final result = GetPlatform.isAndroid
+          ? await _showAndroidAlert(
+              context: dialogContext,
+              title: title,
+              message: message,
+              okLabelText: okLabelText,
+            )
+          : await showOkAlertDialog(
+              context: dialogContext,
+              title: title,
+              message: message,
+              okLabel: okLabelText,
+            );
+      if (result == OkCancelResult.ok) {
+        if (onOK != null) {
+          onOK();
+        }
       }
+    } finally {
+      isAlerted = false;
     }
   }
 
@@ -296,6 +370,7 @@ class PPAlert {
   /// );
   /// ```
   static Future<void> showSysConfirm({
+    BuildContext? context,
     String title = 'Confirm',
     String message = 'Do you want to do it?',
     String cancelLabelText = 'Cancel',
@@ -306,23 +381,39 @@ class PPAlert {
     if (isAlerted) {
       return;
     }
+    final dialogContext = _resolveDialogContext(context);
+    if (dialogContext == null) return;
+
     isAlerted = true;
-    final result = await showOkCancelAlertDialog(
-      context: Get.context!,
-      title: title,
-      message: message,
-      cancelLabel: cancelLabelText,
-      okLabel: okLabelText,
-      barrierDismissible: false,
-      defaultType: OkCancelAlertDefaultType.cancel,
-    );
-    isAlerted = false;
-    if (result == OkCancelResult.ok) {
-      onConfirm();
-    } else if (result == OkCancelResult.cancel) {
-      if (onCancel != null) {
-        onCancel();
+    try {
+      if (!dialogContext.mounted) return;
+      final result = GetPlatform.isAndroid
+          ? await _showAndroidAlert(
+              context: dialogContext,
+              title: title,
+              message: message,
+              cancelLabelText: cancelLabelText,
+              okLabelText: okLabelText,
+              barrierDismissible: false,
+            )
+          : await showOkCancelAlertDialog(
+              context: dialogContext,
+              title: title,
+              message: message,
+              cancelLabel: cancelLabelText,
+              okLabel: okLabelText,
+              barrierDismissible: false,
+              defaultType: OkCancelAlertDefaultType.cancel,
+            );
+      if (result == OkCancelResult.ok) {
+        onConfirm();
+      } else if (result == OkCancelResult.cancel) {
+        if (onCancel != null) {
+          onCancel();
+        }
       }
+    } finally {
+      isAlerted = false;
     }
   }
 
@@ -346,6 +437,7 @@ class PPAlert {
   /// );
   /// ```
   static Future<String> showSingleTextInput({
+    BuildContext? context,
     String title = 'Title',
     String message = '',
     String initialText = '',
@@ -353,8 +445,11 @@ class PPAlert {
     String cancelLabelText = 'Cancel',
     String okLabelText = 'OK',
   }) async {
+    final dialogContext = _resolveDialogContext(context);
+    if (dialogContext == null) return '';
+
     final texts = await showTextInputDialog(
-      context: Get.context!,
+      context: dialogContext,
       title: title,
       message: message.isNotEmpty ? message : null,
       textFields: [
@@ -385,6 +480,7 @@ class PPAlert {
   /// );
   /// ```
   static Future<List<String>> showDoubleTextInput({
+    BuildContext? context,
     String title = 'Title',
     String message = '',
     List<String>? initialTexts,
@@ -392,8 +488,11 @@ class PPAlert {
     String cancelLabelText = 'Cancel',
     String okLabelText = 'OK',
   }) async {
+    final dialogContext = _resolveDialogContext(context);
+    if (dialogContext == null) return ['', ''];
+
     final texts = await showTextInputDialog(
-      context: Get.context!,
+      context: dialogContext,
       title: title,
       message: message.isNotEmpty ? message : null,
       textFields: [

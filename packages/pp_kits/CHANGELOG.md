@@ -1,6 +1,6 @@
-## 1.2.7
+## 1.3.0
 
-- Supplementary optimization and improvement
+- Requirements: Flutter 3.41.0+, Dart 3.11.0+
 
 ## 1.2.6
 
