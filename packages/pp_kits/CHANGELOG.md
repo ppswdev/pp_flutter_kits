@@ -1,3 +1,7 @@
+## 1.3.1
+
+- Fix compatibility issue
+
 ## 1.3.0
 
 - Requirements: Flutter 3.41.0+, Dart 3.11.0+
