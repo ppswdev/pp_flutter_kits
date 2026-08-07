@@ -572,9 +572,6 @@ enum PPIntlKey {
   /// Cancel anytime | 随时取消
   iapCancelAnytime,
 
-  /// Secured by Apple | 受Apple保护
-  iapProtectByApple,
-
   /// Restore | 恢复
   iapRestore,
 
@@ -617,8 +614,11 @@ enum PPIntlKey {
   /// How to cancel? | 如何取消？
   iapHowCancel,
 
-  /// To cancel, go to Settings > Apple ID > Subscriptions, select the app, then tap " | 要取消，请前往设置 > Apple ID > 订阅，点击应用，然后选择"取消订阅"并确认。
-  iapCancelDesc,
+  /// To cancel, go to Settings > Apple ID > Subscriptions, select the app, then tap "Cancel Subscription" and confirm. | 要取消，请前往设置 > Apple ID > 订阅，点击应用，然后选择“取消订阅”并确认。
+  iapCancelDescForIOS,
+
+  /// To cancel, open Google Play, tap your profile picture, go to Payments & subscriptions > Subscriptions, select the app, then tap Cancel subscription and follow the prompts. | 要取消，请打开Google Play，点击个人资料图片，前往“付款和订阅”>“订阅”，选择应用后点击“取消订阅”，再按照提示操作。
+  iapCancelDescForAndroid,
 
   /// Money-back guarantee | 退款保证
   iapRefund,
@@ -675,6 +675,12 @@ enum PPIntlKey {
   /// You must be signed in with a valid App Store account | 必须登录有效的AppStore账号
   solutionAppStoreAccountDesc,
 
+  /// Google Play account | Google Play账号
+  solutionGooglePlayAccount,
+
+  /// You must be signed in to Google Play with a valid Google account | 必须使用有效的Google账号登录Google Play
+  solutionGooglePlayAccountDesc,
+
   /// Payment method | 支付方式
   solutionPaymentMethod,
 
@@ -696,11 +702,23 @@ enum PPIntlKey {
   /// Go to Settings > App Store and make sure you're signed in | 打开设置 > AppStore，确认已登录有效账号
   solutionVerifyAppStoreDesc,
 
+  /// Verify Google Play login | 验证Google Play登录
+  solutionVerifyGooglePlay,
+
+  /// Open Google Play, tap your profile picture, and make sure you are signed in with the correct Google account | 打开Google Play，点击个人资料图片，确认已使用正确的Google账号登录
+  solutionVerifyGooglePlayDesc,
+
   /// Check payment method | 检查支付方式
   solutionCheckPayment,
 
   /// Make sure your payment method is valid and not expired | 在AppStore中确认支付方式有效且未过期
   solutionCheckPaymentDesc,
+
+  /// Check Google Play payment method | 检查Google Play支付方式
+  solutionCheckGooglePlayPayment,
+
+  /// In Google Play, make sure a valid payment method is available and that your payments profile is in good standing | 在Google Play中确认已添加有效的支付方式，且付款资料状态正常
+  solutionCheckGooglePlayPaymentDesc,
 
   /// Restart the app | 重启应用
   solutionRestartApp,
@@ -713,6 +731,12 @@ enum PPIntlKey {
 
   /// The minimum supported version is iOS 15.0, but we recommend updating to iOS 18.0 | 系统默认最低支持15.0版本，但我们建议更新系统到iOS 18.0或以上版本
   solutionUpdateSystemDesc,
+
+  /// Update Android system | 更新Android系统
+  solutionUpdateAndroidSystem,
+
+  /// Update Android to the latest version supported by your device and install available Google Play system updates | 将Android更新到设备支持的最新版本，并安装可用的Google Play系统更新
+  solutionUpdateAndroidSystemDesc,
 
   /// Try again | 尝试重试
   solutionRetry,
