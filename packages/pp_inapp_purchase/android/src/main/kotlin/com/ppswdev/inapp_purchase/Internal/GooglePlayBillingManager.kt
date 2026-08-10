@@ -55,6 +55,16 @@ internal class GooglePlayBillingManager(
     private val latestPurchasesByToken = linkedMapOf<String, Purchase>()
     private val entitlementLeaseExpiryByToken = linkedMapOf<String, Long>()
 
+    /**
+     * Coalesces concurrent acknowledgement requests for the same purchase token.
+     *
+     * Returning from the Google Play purchase sheet can trigger an app-resume refresh while
+     * [onPurchasesUpdated] is still acknowledging the new purchase. BillingClient must receive
+     * only one acknowledgement request; every caller waits for that same authoritative result.
+     */
+    private val acknowledgementWaitersByToken =
+        mutableMapOf<String, MutableList<(BillingResult) -> Unit>>()
+
     private data class PendingReadyAction(
         val onReady: () -> Unit,
         val onError: (BillingResult) -> Unit
@@ -412,6 +422,14 @@ internal class GooglePlayBillingManager(
 
     fun close() {
         pendingReadyActions.clear()
+        val disconnected =
+            errorBillingResult(
+                BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
+                "Billing client closed"
+            )
+        val acknowledgementWaiters = acknowledgementWaitersByToken.values.flatten()
+        acknowledgementWaitersByToken.clear()
+        acknowledgementWaiters.forEach { callback -> callback(disconnected) }
         billingClient?.endConnection()
         billingClient = null
         connecting = false
@@ -824,7 +842,7 @@ internal class GooglePlayBillingManager(
             purchases.filter { purchase ->
                 purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
                     !purchase.isAcknowledged
-            }
+            }.distinctBy { purchase -> purchase.purchaseToken }
         if (pendingAcknowledgements.isEmpty()) {
             logFlow("ACK", "no pending acknowledgement count=${purchases.size}")
             onComplete(okBillingResult())
@@ -846,19 +864,7 @@ internal class GooglePlayBillingManager(
         val pending = AtomicInteger(pendingAcknowledgements.size)
         var firstError: BillingResult? = null
         pendingAcknowledgements.forEach { purchase ->
-            logFlow("ACK", "request ${purchaseSummary(purchase)}")
-            val params =
-                AcknowledgePurchaseParams
-                    .newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .build()
-            client.acknowledgePurchase(params) { billingResult ->
-                logFlow(
-                    "ACK",
-                    "result productId=${converter.primaryProductId(purchase) ?: "unknown"} " +
-                        "token=${logger.maskedSuffix(purchase.purchaseToken)} " +
-                        resultSummary(billingResult)
-                )
+            acknowledgePurchaseOnce(client, purchase) { billingResult ->
                 if (billingResult.responseCode != BillingClient.BillingResponseCode.OK &&
                     firstError == null
                 ) {
@@ -868,6 +874,42 @@ internal class GooglePlayBillingManager(
                     onComplete(firstError ?: okBillingResult())
                 }
             }
+        }
+    }
+
+    private fun acknowledgePurchaseOnce(
+        client: BillingClient,
+        purchase: Purchase,
+        onComplete: (BillingResult) -> Unit
+    ) {
+        val token = purchase.purchaseToken
+        val existingWaiters = acknowledgementWaitersByToken[token]
+        if (existingWaiters != null) {
+            existingWaiters.add(onComplete)
+            logFlow(
+                "ACK",
+                "coalesced productId=${converter.primaryProductId(purchase) ?: "unknown"} " +
+                    "token=${logger.maskedSuffix(token)} waiters=${existingWaiters.size}"
+            )
+            return
+        }
+
+        acknowledgementWaitersByToken[token] = mutableListOf(onComplete)
+        logFlow("ACK", "request ${purchaseSummary(purchase)}")
+        val params =
+            AcknowledgePurchaseParams
+                .newBuilder()
+                .setPurchaseToken(token)
+                .build()
+        client.acknowledgePurchase(params) { billingResult ->
+            logFlow(
+                "ACK",
+                "result productId=${converter.primaryProductId(purchase) ?: "unknown"} " +
+                    "token=${logger.maskedSuffix(token)} " +
+                    resultSummary(billingResult)
+            )
+            val waiters = acknowledgementWaitersByToken.remove(token).orEmpty().toList()
+            waiters.forEach { callback -> callback(billingResult) }
         }
     }
 

@@ -136,9 +136,7 @@ class InappPurchase {
 
   /// 检查是否符合享受介绍性优惠资格
   Future<bool> isEligibleForIntroOffer({required String productId}) {
-    return InappPurchasePlatform.instance.isEligibleForIntroOffer(
-      productId: productId,
-    );
+    return InappPurchasePlatform.instance.isEligibleForIntroOffer(productId: productId);
   }
 
   /// 检查产品是否在有效订阅期间内但在免费试用期已取消
@@ -146,9 +144,7 @@ class InappPurchase {
   /// [productId] - 要检查的产品ID
   /// 返回 true 表示在有效订阅期间内但在免费试用期已取消，false 表示不是
   Future<bool> isSubscribedButFreeTrailCancelled({required String productId}) {
-    return InappPurchasePlatform.instance.isSubscribedButFreeTrailCancelled(
-      productId: productId,
-    );
+    return InappPurchasePlatform.instance.isSubscribedButFreeTrailCancelled(productId: productId);
   }
 
   /// 检查订阅状态
@@ -194,14 +190,8 @@ class InappPurchase {
   ///
   /// [productId] - 产品ID
   /// [langCode] - 语言代码
-  Future<String> getProductForVipButtonText({
-    required String productId,
-    required String langCode,
-  }) {
-    return InappPurchasePlatform.instance.getProductForVipButtonText(
-      productId: productId,
-      langCode: langCode,
-    );
+  Future<String> getProductForVipButtonText({required String productId, required String langCode}) {
+    return InappPurchasePlatform.instance.getProductForVipButtonText(productId: productId, langCode: langCode);
   }
 
   /// 打开订阅管理页面

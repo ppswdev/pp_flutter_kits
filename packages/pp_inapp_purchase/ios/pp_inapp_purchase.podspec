@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'pp_inapp_purchase'
-  s.version          = '1.2.0'
+  s.version          = '1.2.1'
   s.summary          = 'Flutter in-app purchase plugin, supporting iOS (StoreKit2) , providing a unified API interface to manage in-app purchase functionality.'
   s.description      = <<-DESC
 Flutter in-app purchase plugin, supporting iOS (StoreKit2) , providing a unified API interface to manage in-app purchase functionality.

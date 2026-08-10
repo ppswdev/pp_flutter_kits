@@ -108,10 +108,7 @@ abstract class InappPurchasePlatform extends PlatformInterface {
   /// 获取VIP订阅产品的按钮文本
   /// [productId] 产品ID
   /// [langCode] 语言代码，例如"en"、"zh-Hans"等
-  Future<String> getProductForVipButtonText({
-    required String productId,
-    required String langCode,
-  });
+  Future<String> getProductForVipButtonText({required String productId, required String langCode});
 
   /// 打开订阅管理页面
   Future<void> showManageSubscriptionsSheet();

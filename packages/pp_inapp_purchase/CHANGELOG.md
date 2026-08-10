@@ -1,3 +1,7 @@
+## 1.2.1
+
+* 修复问题并优化 Android 购买与订阅支持。
+
 ## 1.2.0
 
 * 增加 Android 平台支持，接入 Google Play Billing Library 9.1.0。

@@ -1,6 +1,6 @@
 # pp_inapp_purchase example
 
-该示例展示 `pp_inapp_purchase 1.2.0` 在 iOS StoreKit 2 和 Android Google Play
+该示例展示 `pp_inapp_purchase 1.2.1` 在 iOS StoreKit 2 和 Android Google Play
 Billing Library 9.1.0 上的统一调用方式。
 
 ## Android 运行准备
@@ -56,7 +56,7 @@ purchase token，不包含业务服务器地址、加密方式或服务账号。
 
 ## 说明
 
-- Android 1.2.0 支持自动续订订阅和非消耗型一次性商品，暂不支持消耗型商品。
+- Android 1.2.1 支持自动续订订阅和非消耗型一次性商品，暂不支持消耗型商品。
 - 当前购买快照不是完整购买历史，也不能提供 Android 权威订阅到期时间。
 - 不要在客户端放置 Google Play 服务账号 JSON 或其他服务端密钥。
 - 完整 purchase token 不应写入正式日志。
