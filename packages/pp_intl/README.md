@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.4
+  pp_intl: ^1.0.7
 ```
 
 然后运行：
@@ -417,7 +417,6 @@ print(unknownKey); // 输出: Unknown
 | `iapNoPaymentToday`          | No payment today                                         | 今天无需付款                               |
 | `iapNoChargeToday`           | No charge today                                          | 今天不收费                                 |
 | `iapCancelAnytime`           | Cancel anytime                                           | 随时取消                                   |
-| `iapProtectByApple`          | Secured by Apple                                         | 受Apple保护                                |
 | `iapRestore`                 | Restore                                                  | 恢复                                       |
 | `iapCancelSubscription`      | Cancel Subscription                                      | 取消订阅                                   |
 | `iapUserPreferred`           | Most Popular                                             | 用户首选                                   |
@@ -432,7 +431,8 @@ print(unknownKey); // 输出: Unknown
 | `iapFTISubText2`             | You can enjoy full access for the day or cancel anytime. | 您仍然可以享受一整天的服务或提前取消订阅。 |
 | `iapFTISubText3`             | You will be charged later, but you can cancel anytime.   | 您稍后会被收费，但可以随时取消。           |
 | `iapHowCancel`               | How to cancel?                                           | 如何取消？                                 |
-| `iapCancelDesc`              | To cancel, go to Settings > Apple ID > Subscriptions...  | 要取消，请前往设置 > Apple ID > 订阅...    |
+| `iapCancelDescForIOS`        | To cancel, go to Settings > Apple ID > Subscriptions...  | 要取消，请前往设置 > Apple ID > 订阅...    |
+| `iapCancelDescForAndroid`    | To cancel, open Google Play, tap your profile picture... | 要取消，请打开Google Play，点击个人资料图片... |
 | `iapRefund`                  | Money-back guarantee                                     | 退款保证                                   |
 | `iapWhatDoYouGet`            | What you get                                             | 您将获得什么？                             |
 | `iapTBUW`                    | Trusted by users worldwide                               | 全球用户信赖                               |
@@ -456,6 +456,8 @@ print(unknownKey); // 输出: Unknown
 | `solutionNetworkConnectionDesc` | A stable network connection is required...                | 需要稳定的网络连接才能完成支付          |
 | `solutionAppStoreAccount`       | App Store account                                         | AppStore账号                            |
 | `solutionAppStoreAccountDesc`   | You must be signed in with a valid App Store account      | 必须登录有效的AppStore账号              |
+| `solutionGooglePlayAccount`     | Google Play account                                       | Google Play账号                         |
+| `solutionGooglePlayAccountDesc` | You must be signed in to Google Play with a valid Google account | 必须使用有效的Google账号登录Google Play |
 | `solutionPaymentMethod`         | Payment method                                            | 支付方式                                |
 | `solutionPaymentMethodDesc`     | Your account must have a valid payment method             | 账号必须绑定有效的支付方式              |
 | `solutionSolutions`             | Solutions                                                 | 解决方案                                |
@@ -463,12 +465,18 @@ print(unknownKey); // 输出: Unknown
 | `solutionCheckNetworkDesc`      | Make sure your device is connected to a stable WiFi...    | 确保设备连接到稳定的WiFi或蜂窝网络      |
 | `solutionVerifyAppStore`        | Verify App Store login                                    | 验证AppStore登录                        |
 | `solutionVerifyAppStoreDesc`    | Go to Settings > App Store and make sure you're signed in | 打开设置 > AppStore，确认已登录有效账号 |
+| `solutionVerifyGooglePlay`      | Verify Google Play login                                  | 验证Google Play登录                     |
+| `solutionVerifyGooglePlayDesc`  | Open Google Play, tap your profile picture...             | 打开Google Play，点击个人资料图片...    |
 | `solutionCheckPayment`          | Check payment method                                      | 检查支付方式                            |
 | `solutionCheckPaymentDesc`      | Make sure your payment method is valid and not expired    | 在AppStore中确认支付方式有效且未过期    |
+| `solutionCheckGooglePlayPayment` | Check Google Play payment method                         | 检查Google Play支付方式                 |
+| `solutionCheckGooglePlayPaymentDesc` | In Google Play, make sure a valid payment method is available... | 在Google Play中确认已添加有效的支付方式，且付款资料状态正常 |
 | `solutionRestartApp`            | Restart the app                                           | 重启应用                                |
 | `solutionRestartAppDesc`        | Close the app completely and reopen it                    | 完全关闭应用后重新打开                  |
 | `solutionUpdateSystem`          | Update system                                             | 更新系统                                |
 | `solutionUpdateSystemDesc`      | The minimum supported version is iOS 15.0...              | 系统默认最低支持15.0版本...             |
+| `solutionUpdateAndroidSystem`   | Update Android system                                     | 更新Android系统                         |
+| `solutionUpdateAndroidSystemDesc` | Update Android to the latest version supported by your device... | 将Android更新到设备支持的最新版本，并安装可用的Google Play系统更新 |
 | `solutionRetry`                 | Try again                                                 | 尝试重试                                |
 | `solutionRetryDesc`             | Retrying may resolve most issues automatically            | 尝试重试可以解决大部分问题...           |
 | `solutionContactSupport`        | Contact support                                           | 联系支持                                |
