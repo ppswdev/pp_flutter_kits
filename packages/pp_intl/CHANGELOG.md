@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Added App Tracking Transparency (ATT) authorization copy for all supported languages.
+
 ## 1.0.7
 
 - Added Android / Google Play purchase support copy and platform-specific subscription cancellation instructions.

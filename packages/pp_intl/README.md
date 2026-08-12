@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.7
+  pp_intl: ^1.0.8
 ```
 
 然后运行：
@@ -352,6 +352,14 @@ print(unknownKey); // 输出: Unknown
 | `permissionDenied`       | Permission denied                               | 权限被拒绝                              |
 | `permissionRequired`     | Permission required to continue                 | 需要此权限才能继续                      |
 | `openSettings`           | Open Settings                                   | 打开设置                                |
+| `attAuthTitle`           | A better experience for you                     | 为您提供更好的使用体验                  |
+| `attAuthDesc1`           | We use device identifiers to                    | 我们会使用设备标识符来                  |
+| `attAuthDesc2`           | Measure app installs and feature usage          | 统计应用安装和功能使用情况              |
+| `attAuthDesc3`           | Improve product experience and performance      | 优化产品体验与性能                      |
+| `attAuthDesc4`           | Recommend more relevant content                 | 为你推荐更相关的内容                    |
+| `attAuthDesc5`           | Data is used only for analytics...              | 数据仅用于分析，不会用于识别你的个人身份。 |
+| `attAuthAgreeYes`        | Agree and continue                              | 同意并继续                              |
+| `attAuthAgreeNo`         | Not now                                         | 暂不                                    |
 
 #### 版本更新
 

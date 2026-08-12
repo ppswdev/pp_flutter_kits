@@ -405,6 +405,31 @@ enum PPIntlKey {
   /// Open Settings | 打开设置
   openSettings,
 
+  // --- ATT 授权 ---
+  /// A better experience for you | 为您提供更好的使用体验
+  attAuthTitle,
+
+  /// We use device identifiers to | 我们会使用设备标识符来
+  attAuthDesc1,
+
+  /// Measure app installs and feature usage | 统计应用安装和功能使用情况
+  attAuthDesc2,
+
+  /// Improve product experience and performance | 优化产品体验与性能
+  attAuthDesc3,
+
+  /// Recommend more relevant content | 为你推荐更相关的内容
+  attAuthDesc4,
+
+  /// Data is used only for analytics and will not be used to identify you personally. | 数据仅用于分析，不会用于识别你的个人身份。
+  attAuthDesc5,
+
+  /// Agree and continue | 同意并继续
+  attAuthAgreeYes,
+
+  /// Not now | 暂不
+  attAuthAgreeNo,
+
   // --- 版本更新 ---
   /// New Version Available | 发现新版本
   upgradeTitle,
