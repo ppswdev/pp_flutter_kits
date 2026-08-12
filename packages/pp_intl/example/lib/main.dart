@@ -67,50 +67,44 @@ class _MyHomePageState extends State<MyHomePage> {
     print('\n4. 测试多语言支持');
 
     // 英语
-    String helloEn = await PPIntl.text(PPIntlKey.hello, 'en');
+    String helloEn = await PPIntl.text(PPIntlKey.hello, languageCode: 'en');
     print('英语: $helloEn');
 
     // 日语
-    String helloJa = await PPIntl.text(PPIntlKey.hello, 'ja');
+    String helloJa = await PPIntl.text(PPIntlKey.hello, languageCode: 'ja');
     print('日语: $helloJa');
 
     // 韩语
-    String helloKo = await PPIntl.text(PPIntlKey.hello, 'ko');
+    String helloKo = await PPIntl.text(PPIntlKey.hello, languageCode: 'ko');
     print('韩语: $helloKo');
 
     // 法语
-    String helloFr = await PPIntl.text(PPIntlKey.hello, 'fr');
+    String helloFr = await PPIntl.text(PPIntlKey.hello, languageCode: 'fr');
     print('法语: $helloFr');
 
     // 5. 测试参数化字符串
     print('\n5. 测试参数化字符串');
 
-    String helloJohn = await PPIntl.text(PPIntlKey.helloName, 'en', {
-      'name': 'John',
-    });
+    String helloJohn = await PPIntl.text(PPIntlKey.helloName, languageCode: 'en', params: {'name': 'John'});
     print('英语带参数: $helloJohn');
 
-    String helloZhang = await PPIntl.text(PPIntlKey.helloName, 'zh_Hans', {
-      'name': '张三',
-    });
+    String helloZhang = await PPIntl.text(PPIntlKey.helloName, languageCode: 'zh_Hans', params: {'name': '张三'});
     print('中文带参数: $helloZhang');
 
-    String welcomeAlice = await PPIntl.text(PPIntlKey.welcomeName, 'ja', {
-      'name': 'アリス',
-    });
+    String welcomeAlice = await PPIntl.text(PPIntlKey.welcomeName, languageCode: 'ja', params: {'name': 'アリス'});
     print('日语带参数: $welcomeAlice');
 
     // 6. 测试同步方法获取已缓存的其他语言
     print('\n6. 测试同步方法获取已缓存的其他语言');
-    String helloEnSync = PPIntl.textSync(PPIntlKey.hello, 'en');
+    String helloEnSync = PPIntl.textSync(PPIntlKey.hello, langCode: 'en');
     print('同步获取英语: $helloEnSync');
 
-    String helloJaSync = PPIntl.textSync(PPIntlKey.hello, 'ja');
+    String helloJaSync = PPIntl.textSync(PPIntlKey.hello, langCode: 'ja');
     print('同步获取日语: $helloJaSync');
 
     // 7. 测试错误处理（不存在的语言）
     print('\n7. 测试错误处理');
-    String helloUnknown = await PPIntl.text(PPIntlKey.hello, 'xx');
+    String helloUnknown = await PPIntl.text(PPIntlKey.hello, languageCode: 'xx');
     print('不存在的语言: $helloUnknown');
 
     // 8. 测试切换默认语言
@@ -125,19 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.title)),
       body: Center(
         child: Column(
           mainAxisAlignment: .center,
           children: [
             const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
       ),

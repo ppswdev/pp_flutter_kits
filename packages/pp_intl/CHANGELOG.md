@@ -1,8 +1,3 @@
-## 1.0.7
-
-- Added Android / Google Play purchase support copy and platform-specific subscription cancellation instructions.
-- Removed the Apple-specific payment protection copy.
-
 ## 1.0.6
 
 - Optimizations and improvements
