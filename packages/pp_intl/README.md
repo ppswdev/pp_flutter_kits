@@ -39,7 +39,7 @@
 
 ```yaml
 dependencies:
-  pp_intl: ^1.0.8
+  pp_intl: ^1.0.9
 ```
 
 然后运行：
@@ -226,11 +226,16 @@ print(unknownKey); // 输出: Unknown
 | 键名                      | 英文                                                      | 中文                          |
 | ------------------------- | --------------------------------------------------------- | ----------------------------- |
 | `appReviewRateTheApp`     | Rate                                                      | 评分                          |
-| `appReviewAppstoreRating` | Rate on the App Store                                     | 在 App Store 评分             |
-| `appReviewLater`          | Later                                                     | 稍后                          |
-| `appReviewYes`            | Yes, I like it                                            | 是的，我喜欢                  |
-| `appReviewText`           | We are committed to providing the best user experience... | 我们致力于提供最佳用户体验... |
-| `appReviewText2`          | Thank you for your support...                             | 感谢您的支持...               |
+| `appReviewRateText`       | Are you satisfied with App?                              | 您对应用满意吗？              |
+| `appReviewRateStar1`      | Sorry to hear that. We will try to improve...            | 很抱歉听到您的反馈。我们会努力改进应用。 |
+| `appReviewRateStar2`      | We are sorry that the experience was not perfect...       | 很抱歉此次体验未能尽善尽美。我们会持续改进。 |
+| `appReviewRateStar3`      | Thank you for your feedback. We will continue...          | 感谢您的反馈。我们会持续改进应用。 |
+| `appReviewRateStar4`      | Thank you for your support, we will try...                | 感谢您的支持，我们会努力让应用变得更好！ |
+| `appReviewRateStar5`      | Thank you for your support! We are happy...               | 感谢您的支持！很高兴您喜欢我们的应用！ |
+| `appReviewRateBtnExcellent` | Excellent                                                | 非常好                        |
+| `appReviewRateBtnLater`   | Later                                                     | 稍后                          |
+| `appReviewRateBtnFeedback` | Feedback                                                 | 反馈                          |
+| `appReviewRateBtnRateUs`  | Rate us                                                   | 给我们评分                    |
 
 #### 协议与隐私
 
@@ -238,6 +243,8 @@ print(unknownKey); // 输出: Unknown
 | -------------------------- | ----------------------------------------------------- | -------------------------- |
 | `agreementPrivacyPolicy`   | Privacy Policy                                        | 隐私政策                   |
 | `agreementPrivacyAttr`     | Privacy                                               | 隐私                       |
+| `agreementTermsOfUse`      | Terms of Use                                          | 使用条款                   |
+| `agreementTermsAttr`       | Terms                                                 | 条款                       |
 | `agreementEula`            | End User License Agreement                            | 最终用户许可协议           |
 | `agreementEulaAttr`        | Terms                                                 | 条款                       |
 | `agreementSubsciption`     | Subscription Agreement                                | 订阅协议                   |

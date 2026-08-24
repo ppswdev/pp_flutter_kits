@@ -1,3 +1,7 @@
+## 1.0.9
+
+- Added Terms of Use agreement copy for all supported languages.
+
 ## 1.0.8
 
 - Added App Tracking Transparency (ATT) authorization copy for all supported languages.

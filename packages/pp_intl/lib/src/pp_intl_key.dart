@@ -167,20 +167,35 @@ enum PPIntlKey {
   /// Rate | 评分
   appReviewRateTheApp,
 
-  /// Rate on the App Store | 在 App Store 评分
-  appReviewAppstoreRating,
+  /// Are you satisfied with App? | 您对应用满意吗？
+  appReviewRateText,
+
+  /// Sorry to hear that. We will try to improve the application. | 很抱歉听到您的反馈。我们会努力改进应用。
+  appReviewRateStar1,
+
+  /// We are sorry that the experience was not perfect. We will keep improving. | 很抱歉此次体验未能尽善尽美。我们会持续改进。
+  appReviewRateStar2,
+
+  /// Thank you for your feedback. We will continue to improve the application. | 感谢您的反馈。我们会持续改进应用。
+  appReviewRateStar3,
+
+  /// Thank you for your support, we will try to make the application better! | 感谢您的支持，我们会努力让应用变得更好！
+  appReviewRateStar4,
+
+  /// Thank you for your support! We are happy that you enjoy our application! | 感谢您的支持！很高兴您喜欢我们的应用！
+  appReviewRateStar5,
+
+  /// Excellent | 非常好
+  appReviewRateBtnExcellent,
 
   /// Later | 稍后
-  appReviewLater,
+  appReviewRateBtnLater,
 
-  /// Yes, I like it | 是的，我喜欢
-  appReviewYes,
+  /// Feedback | 反馈
+  appReviewRateBtnFeedback,
 
-  /// We are committed to providing the best user experience. If you enjoy using this  | 我们致力于提供最佳用户体验。如果您喜欢这款应用，请给我们五星好评😘😘😘
-  appReviewText,
-
-  /// Thank you for your support. We will keep improving the app! | 感谢您的支持，我们会努力让应用变得更好！
-  appReviewText2,
+  /// Rate us | 给我们评分
+  appReviewRateBtnRateUs,
 
   // --- 协议与隐私 ---
   /// Privacy Policy | 隐私政策
@@ -188,6 +203,12 @@ enum PPIntlKey {
 
   /// Privacy | 隐私
   agreementPrivacyAttr,
+
+  /// Terms of Use | 使用条款
+  agreementTermsOfUse,
+
+  /// Terms | 条款
+  agreementTermsAttr,
 
   /// End User License Agreement | 最终用户许可协议
   agreementEula,
