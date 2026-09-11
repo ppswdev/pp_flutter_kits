@@ -842,6 +842,9 @@ enum PPIntlKey {
   /// FAQ | 常见问题
   settingsFaq,
 
+  /// Open Source License | 开源许可证
+  settingsOpenSourceLicense,
+
   /// About | 关于
   settingsAbout,
 

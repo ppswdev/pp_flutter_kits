@@ -516,6 +516,7 @@ print(unknownKey); // 输出: Unknown
 | `settingsFeedbackTip3`          | Your feedback is very important to us...        | 您的反馈对我们非常重要...        |
 | `settingsFeedbackTip4`          | Would you like to send your feedback via email? | 想要通过电子邮件转发您的反馈吗？ |
 | `settingsFaq`                   | FAQ                                             | 常见问题                         |
+| `settingsOpenSourceLicense`     | Open Source License                             | 开源许可证                       |
 | `settingsAbout`                 | About                                           | 关于                             |
 
 #### 表单相关

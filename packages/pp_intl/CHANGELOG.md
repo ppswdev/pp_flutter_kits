@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Optimizations and improvements
+
 ## 1.0.9
 
 - Added Terms of Use agreement copy for all supported languages.
