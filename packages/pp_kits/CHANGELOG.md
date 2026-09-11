@@ -1,3 +1,7 @@
+## 1.3.2
+
+- Supplementary optimization and improvement
+  
 ## 1.3.1
 
 - Fix compatibility issue
