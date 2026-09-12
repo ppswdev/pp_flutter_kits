@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Optimizations and improvements
+
 ## 1.1.0
 
 - Optimizations and improvements

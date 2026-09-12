@@ -848,6 +848,12 @@ enum PPIntlKey {
   /// About | 关于
   settingsAbout,
 
+  /// App Website | 应用官网
+  settingsAppWebSite,
+
+  /// Service Email | 服务邮箱
+  settingsServiceEmail,
+
   // --- 表单相关 ---
   /// Email | 邮箱
   formEmailTitle,

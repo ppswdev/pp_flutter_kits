@@ -275,6 +275,8 @@
   "settingsFaq": "FAQ",
   "settingsOpenSourceLicense": "Open Source License",
   "settingsAbout": "About",
+  "settingsAppWebSite": "App Website",
+  "settingsServiceEmail": "Service Email",
   "formEmailTitle": "Email",
   "formEmailEmpty": "Email cannot be empty",
   "formEmailFormatError": "Invalid email format",
