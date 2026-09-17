@@ -250,7 +250,7 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
     }
     
     /// 购买产品（带并发保护）
-    func purchase(_ product: Product) async {
+    func purchase(_ product: Product, appAccountToken: UUID? = nil) async {
         // 并发购买保护
         await withCheckedContinuation { continuation in
             purchasingQueue.async { [weak self] in
@@ -281,20 +281,35 @@ internal final class StoreKitService: ObservableObject,@unchecked Sendable {
                         }
                     }
                     
-                    await self.performPurchase(product, continuation: continuation)
+                    await self.performPurchase(
+                        product,
+                        appAccountToken: appAccountToken,
+                        continuation: continuation
+                    )
                 }
             }
         }
     }
     
     /// 执行购买
-    private func performPurchase(_ product: Product, continuation: CheckedContinuation<Void, Never>) async {
+    private func performPurchase(
+        _ product: Product,
+        appAccountToken: UUID?,
+        continuation: CheckedContinuation<Void, Never>
+    ) async {
         await MainActor.run {
             currentState = .purchasing(product.id)
         }
         
         do {
-            let result = try await product.purchase()
+            let result: Product.PurchaseResult
+            if let appAccountToken {
+                result = try await product.purchase(
+                    options: [.appAccountToken(appAccountToken)]
+                )
+            } else {
+                result = try await product.purchase()
+            }
             
             switch result {
             case .success(let verification):

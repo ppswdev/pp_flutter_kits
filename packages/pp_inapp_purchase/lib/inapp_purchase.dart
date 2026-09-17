@@ -81,8 +81,16 @@ class InappPurchase {
   /// 购买指定产品
   ///
   /// [productId] - 要购买的产品ID
-  Future<void> purchase({required String productId}) {
-    return InappPurchasePlatform.instance.purchase(productId: productId);
+  /// [appAccountToken] - 可选的稳定 UUID。iOS 会把它传给
+  /// StoreKit 的 `Product.PurchaseOption.appAccountToken`。
+  Future<void> purchase({
+    required String productId,
+    String? appAccountToken,
+  }) {
+    return InappPurchasePlatform.instance.purchase(
+      productId: productId,
+      appAccountToken: appAccountToken,
+    );
   }
 
   /// Confirms or rejects an Android purchase after backend verification.

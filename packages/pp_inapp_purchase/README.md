@@ -31,7 +31,7 @@ Android 使用 Google Play Billing Library 9.1.0。商品配置、接口语义�
 
 ```yaml
 dependencies:
-  pp_inapp_purchase: ^1.2.1
+  pp_inapp_purchase: ^1.2.2
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。

@@ -385,10 +385,17 @@ class MethodChannelInappPurchase extends InappPurchasePlatform {
   }
 
   @override
-  Future<void> purchase({required String productId}) async {
+  Future<void> purchase({
+    required String productId,
+    String? appAccountToken,
+  }) async {
     safeLog('[PURCHASE][01] 请求原生购买 productId=$productId');
     try {
-      await methodChannel.invokeMethod('purchase', {'productId': productId});
+      final arguments = <String, dynamic>{'productId': productId};
+      if (appAccountToken != null) {
+        arguments['appAccountToken'] = appAccountToken;
+      }
+      await methodChannel.invokeMethod('purchase', arguments);
       safeLog('[PURCHASE][02] Google Play 购买页启动请求已受理 productId=$productId；最终结果等待事件流');
     } catch (e, stackTrace) {
       safeLog('[PURCHASE][ERROR] 启动购买失败 productId=$productId error=$e', error: e, stackTrace: stackTrace);

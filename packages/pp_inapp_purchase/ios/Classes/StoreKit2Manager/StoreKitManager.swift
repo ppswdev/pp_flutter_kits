@@ -311,22 +311,22 @@ public class StoreKit2Manager {
     
     /// 通过产品ID购买
     /// - Parameter productId: 产品ID
-    public func purchase(productId: String) async {
+    public func purchase(productId: String, appAccountToken: UUID? = nil) async {
         guard let product = allProducts.first(where: { $0.id == productId }) else {
             currentState = .error("StoreKit2Manager.purchase","Product not found","产品未找到: \(productId)")
             return
         }
-        await service?.purchase(product)
+        await service?.purchase(product, appAccountToken: appAccountToken)
     }
 
     /// 通过产品对象购买
     /// - Parameter product: 产品对象
-    public func purchase(_ product: Product) async {
+    public func purchase(_ product: Product, appAccountToken: UUID? = nil) async {
         guard let service = service else {
             currentState = .error("StoreKit2Manager.purchase","Service not started","服务未启动，请先调用 configure 方法")
             return
         }
-        await service.purchase(product)
+        await service.purchase(product, appAccountToken: appAccountToken)
     }
     
     /// 恢复购买

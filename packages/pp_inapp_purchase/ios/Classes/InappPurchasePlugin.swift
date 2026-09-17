@@ -315,9 +315,23 @@ public class InappPurchasePlugin: NSObject, FlutterPlugin {
             return
         }
         
-        safeLog("[pp_inapp_purchase_ios_plugin] 调用 purchase, productId: \(productId)")
+        let appAccountToken = arguments["appAccountToken"] as? String
+        if let appAccountToken, UUID(uuidString: appAccountToken) == nil {
+            safeLog("❌ [pp_inapp_purchase_ios_plugin] appAccountToken 不是合法 UUID")
+            result(FlutterError(
+                code: "invalid_app_account_token",
+                message: "appAccountToken must be a valid UUID",
+                details: nil
+            ))
+            return
+        }
+
+        safeLog("[pp_inapp_purchase_ios_plugin] 调用 purchase, productId: \(productId), hasAppAccountToken: \(appAccountToken != nil)")
         Task {
-            await storeKitManager.purchase(productId: productId)
+            await storeKitManager.purchase(
+                productId: productId,
+                appAccountToken: appAccountToken.flatMap(UUID.init(uuidString:))
+            )
             safeLog("✅ [pp_inapp_purchase_ios_plugin] purchase 调用成功")
             result(nil)
         }

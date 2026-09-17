@@ -42,7 +42,10 @@ class MockInappPurchasePlatform
       Future.value(null);
 
   @override
-  Future<void> purchase({required String productId}) => Future.value();
+  Future<void> purchase({
+    required String productId,
+    String? appAccountToken,
+  }) => Future.value();
 
   @override
   Future<void> completePurchaseVerification({

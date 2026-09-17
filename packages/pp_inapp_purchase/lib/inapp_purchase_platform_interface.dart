@@ -46,8 +46,14 @@ abstract class InappPurchasePlatform extends PlatformInterface {
   /// 获取产品信息
   Future<Product?> getProduct({required String productId});
 
-  /// 购买产品
-  Future<void> purchase({required String productId});
+  /// 购买产品。
+  ///
+  /// iOS 使用 [appAccountToken] 将 StoreKit 交易和 App 用户关联；
+  /// 其值必须是标准 UUID 字符串。
+  Future<void> purchase({
+    required String productId,
+    String? appAccountToken,
+  });
 
   /// Completes Android purchase processing after backend verification.
   ///
