@@ -221,7 +221,7 @@ class _MyAppState extends State<MyApp> {
     try {
       _allProducts = await _inappPurchase.getAllProducts();
       _nonConsumables = await _inappPurchase.getNonConsumablesProducts();
-      // Android 1.2.1 暂不支持消耗型商品。
+      // Android 当前实现暂不支持消耗型商品。
       _consumables = Platform.isIOS
           ? await _inappPurchase.getConsumablesProducts()
           : <Product>[];

@@ -1,3 +1,8 @@
+## 1.3.0
+
+* iOS 新增 Swift Package Manager（SPM）支持，同时保留 CocoaPods 兼容性。
+* 将 iOS 原生源码和隐私清单迁移到标准 Swift Package 目录结构。
+
 ## 1.2.2
 
 * iOS 增加 appAccountToken参数，用于指定服务账号密钥。

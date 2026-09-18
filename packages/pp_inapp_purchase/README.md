@@ -31,10 +31,12 @@ Android 使用 Google Play Billing Library 9.1.0。商品配置、接口语义�
 
 ```yaml
 dependencies:
-  pp_inapp_purchase: ^1.2.2
+  pp_inapp_purchase: ^1.3.0
 ```
 
 然后运行 `flutter pub get` 命令安装依赖。
+
+iOS 原生实现同时兼容 Swift Package Manager 和 CocoaPods。Flutter 3.44 及更高版本会默认使用 Swift Package Manager；使用旧版 Flutter 的应用仍可通过 CocoaPods 集成。
 
 ## 使用示例
 
