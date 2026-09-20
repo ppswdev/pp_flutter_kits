@@ -3,7 +3,6 @@ import Foundation
 import ShazamKit
 import UIKit
 
-// MARK: - 音乐识别结果模型
 struct MusicRecognitionResult {
     let title: String?
     let artist: String?
@@ -45,14 +44,12 @@ struct MusicRecognitionResult {
     }
 }
 
-// MARK: - 识别状态枚举
 enum RecognitionState: Equatable {
     case idle
     case listening
     case recognizing
     case error(String)
 
-    // 自定义Equatable实现，因为error case包含关联值
     static func == (lhs: RecognitionState, rhs: RecognitionState) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle):
@@ -69,16 +66,12 @@ enum RecognitionState: Equatable {
     }
 }
 
-// MARK: - ShazamKit 管理器
 class ShazamManager: NSObject {
-
-    // MARK: - 闭包回调
     var onMatchFound: ((MusicRecognitionResult) -> Void)?
     var onMatchNotFound: ((Error?) -> Void)?
     var onStateChanged: ((RecognitionState) -> Void)?
     var onError: ((Error) -> Void)?
 
-    // MARK: - 属性
     private let audioEngine = AVAudioEngine()
     private let session = SHSession()
     private var currentState: RecognitionState = .idle {
@@ -87,18 +80,11 @@ class ShazamManager: NSObject {
         }
     }
 
-    // MARK: - 初始化
     override init() {
         super.init()
-        setupSession()
-    }
-
-    // MARK: - 设置
-    private func setupSession() {
         session.delegate = self
     }
 
-    // MARK: - 权限检查
     func checkMicrophonePermission(completion: @escaping (Bool) -> Void) {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
@@ -116,15 +102,13 @@ class ShazamManager: NSObject {
         }
     }
 
-    // MARK: - 音频会话配置
     func setupAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(
-            .playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+            .playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
         try session.setActive(true)
     }
 
-    // MARK: - 开始识别
     func startRecognition() {
         if currentState != .idle {
             print("识别已在进行中")
@@ -159,14 +143,12 @@ class ShazamManager: NSObject {
         }
     }
 
-    // MARK: - 停止识别
     func stopRecognition() {
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
         currentState = .idle
     }
 
-    // MARK: - 音频设置
     private func setupAudioTap() {
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
@@ -180,7 +162,6 @@ class ShazamManager: NSObject {
         }
     }
 
-    // MARK: - 获取当前状态
     var isListening: Bool {
         return currentState == .listening || currentState == .recognizing
     }
@@ -190,9 +171,7 @@ class ShazamManager: NSObject {
     }
 }
 
-// MARK: - SHSessionDelegate
 extension ShazamManager: SHSessionDelegate {
-
     func session(_ session: SHSession, didFind match: SHMatch) {
         guard let mediaItem = match.mediaItems.first else {
             onMatchNotFound?(nil)
@@ -214,17 +193,13 @@ extension ShazamManager: SHSessionDelegate {
     }
 }
 
-// MARK: - 扩展功能
 extension ShazamManager {
-
-    /// 打开音乐链接
     func openMusicURL(_ url: URL) {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
 
-    /// 获取专辑封面图片
     func loadArtworkImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global().async {
             if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
@@ -239,7 +214,6 @@ extension ShazamManager {
         }
     }
 
-    /// 格式化发行日期
     func formatReleaseDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
