@@ -1,11 +1,11 @@
 name: pp_asa_attribution
-description: "Apple search ads attribution plugin, built on Flutter, for iOS 14.3+"
-version: 1.0.2
+description: "Apple search ads attribution plugin, built on Flutter, for iOS 15.0+"
+version: 1.1.0
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_asa_attribution
 
 environment:
   sdk: ^3.5.0
-  flutter: '>=3.3.0'
+  flutter: '>=3.24.0'
 
 dependencies:
   flutter:

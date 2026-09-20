@@ -1,12 +1,12 @@
 import AdServices
-import AppTrackingTransparency
+import Foundation
 
 class AsaManager {
     static func attributionToken() -> String? {
-        if #available(iOS 14.3, *) {
+        if #available(iOS 15.0, *) {
             do {
                 let attributionToken = try AAAttribution.attributionToken()
-                return attributionToken 
+                return attributionToken
             } catch {
                 print("Failed to get attribution token: \(error.localizedDescription)")
             }
@@ -15,7 +15,7 @@ class AsaManager {
         }
         return nil
     }
-    
+
     static func requestAttribution(withToken token: String, complete: @escaping (([String: Any]?, Error?) -> Void)) {
         let url = "https://api-adservices.apple.com/api/v1/"
         var request = URLRequest(url: URL(string: url)!)
@@ -44,9 +44,9 @@ class AsaManager {
         }
         dataTask.resume()
     }
-    
+
     static func requestAttribution(complete: @escaping (([String: Any]?, Error?) -> Void)) {
-        if #available(iOS 14.3, *) {
+        if #available(iOS 15.0, *) {
             guard let token = attributionToken(), !token.isEmpty else {
                 let error = NSError(domain: "app", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve attribution token"])
                 complete(nil, error)

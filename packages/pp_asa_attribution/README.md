@@ -5,12 +5,13 @@ Apple search ads attribution plugin
 ## Built on
 
 - Flutter 3.24.5+
-- iOS 14.3+
+- iOS 15.0+
 - Swift 5.0+
   
 ## Requirements
 
-- Add iOS Framework: iAd、AdServices、AdSupport、AppTrackingTransparency
+- iOS 15.0+
+- No manual framework configuration is required. The plugin links the system `AdServices` framework when integrated through Swift Package Manager or CocoaPods.
   
 ## Apple Documents
 
