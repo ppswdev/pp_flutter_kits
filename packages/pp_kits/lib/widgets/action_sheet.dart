@@ -16,12 +16,7 @@ class ActionSheetOption {
   final bool isDefault;
 
   /// 构造函数
-  const ActionSheetOption({
-    required this.title,
-    this.value,
-    this.isDestructive = false,
-    this.isDefault = false,
-  });
+  const ActionSheetOption({required this.title, this.value, this.isDestructive = false, this.isDefault = false});
 }
 
 /// 底部操作表
@@ -58,8 +53,12 @@ class PPActionSheet {
     void Function(int index, ActionSheetOption option)? onOptionSelected,
     void Function()? onCancel,
   }) {
+    final context = Get.context;
+    if (context == null || !context.mounted) {
+      return;
+    }
     showCupertinoModalPopup(
-      context: Get.context!,
+      context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
           title: title != null ? Text(title) : null,

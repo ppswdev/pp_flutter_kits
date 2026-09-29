@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -73,10 +74,11 @@ class AnimationButton extends StatefulWidget {
 /// AnimationButton 的State
 ///
 /// 控制动画的执行和Widget的渲染
-class AnimationButtonState extends State<AnimationButton>
-    with SingleTickerProviderStateMixin {
+class AnimationButtonState extends State<AnimationButton> with SingleTickerProviderStateMixin {
   /// 动画控制器
   late AnimationController _controller;
+
+  Timer? _tapTimer;
 
   /// 缩放动画
   Animation<double>? _scaleAnimation;
@@ -96,10 +98,7 @@ class AnimationButtonState extends State<AnimationButton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
 
     switch (widget.type) {
       case 0:
@@ -108,25 +107,16 @@ class AnimationButtonState extends State<AnimationButton>
 
       case 1:
         // 弹跳动画 - 垂直方向
-        _translateAnimation =
-            TweenSequence<Offset>([
-              TweenSequenceItem(
-                tween: Tween<Offset>(
-                  begin: Offset.zero,
-                  end: const Offset(0, -10),
-                ),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<Offset>(
-                  begin: const Offset(0, -10),
-                  end: Offset.zero,
-                ),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.bounceOut),
-            );
+        _translateAnimation = TweenSequence<Offset>([
+          TweenSequenceItem(
+            tween: Tween<Offset>(begin: Offset.zero, end: const Offset(0, -10)),
+            weight: 1.0,
+          ),
+          TweenSequenceItem(
+            tween: Tween<Offset>(begin: const Offset(0, -10), end: Offset.zero),
+            weight: 1.0,
+          ),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.bounceOut));
         break;
 
       case 2:
@@ -136,96 +126,42 @@ class AnimationButtonState extends State<AnimationButton>
 
       case 3:
         // 脉冲动画 - 缩放效果
-        _pulseAnimation =
-            TweenSequence<double>([
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 1.0, end: 1.2),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 1.2, end: 0.8),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.8, end: 1.0),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-            );
+        _pulseAnimation = TweenSequence<double>([
+          TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 1.2), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 1.2, end: 0.8), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 1.0), weight: 1.0),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
         break;
 
       case 4:
         // 抖动动画 - 旋转抖动
-        _shakeAnimation =
-            TweenSequence<double>([
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0, end: 0.1),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.1, end: -0.1),
-                weight: 2.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: -0.1, end: 0.1),
-                weight: 2.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.1, end: 0),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-            );
+        _shakeAnimation = TweenSequence<double>([
+          TweenSequenceItem(tween: Tween<double>(begin: 0, end: 0.1), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.1, end: -0.1), weight: 2.0),
+          TweenSequenceItem(tween: Tween<double>(begin: -0.1, end: 0.1), weight: 2.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.1, end: 0), weight: 1.0),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
         break;
 
       case 5:
         // 缩放动画
-        _scaleAnimation =
-            TweenSequence<double>([
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 1.0, end: 0.8),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.8, end: 1.0),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-            );
+        _scaleAnimation = TweenSequence<double>([
+          TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.8), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 1.0), weight: 1.0),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
         break;
 
       case 6:
         // 组合动画 - 缩放+旋转
-        _scaleAnimation =
-            TweenSequence<double>([
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 1.0, end: 0.8),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.8, end: 1.0),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-            );
+        _scaleAnimation = TweenSequence<double>([
+          TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.8), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 1.0), weight: 1.0),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-        _rotateAnimation =
-            TweenSequence<double>([
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0, end: 0.1),
-                weight: 1.0,
-              ),
-              TweenSequenceItem(
-                tween: Tween<double>(begin: 0.1, end: 0),
-                weight: 1.0,
-              ),
-            ]).animate(
-              CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-            );
+        _rotateAnimation = TweenSequence<double>([
+          TweenSequenceItem(tween: Tween<double>(begin: 0, end: 0.1), weight: 1.0),
+          TweenSequenceItem(tween: Tween<double>(begin: 0.1, end: 0), weight: 1.0),
+        ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
         break;
     }
   }
@@ -242,10 +178,13 @@ class AnimationButtonState extends State<AnimationButton>
   /// 返回值：无返回值
   void _onTapDown(TapDownDetails details) {
     _controller.forward().then((_) {
-      _controller.reset();
+      if (mounted) _controller.reset();
     });
     Future.delayed(widget.delayTap, () {
-      widget.onTap();
+      _tapTimer?.cancel();
+      _tapTimer = Timer(widget.delayTap, () {
+        if (mounted) widget.onTap();
+      });
     });
   }
 
@@ -254,6 +193,7 @@ class AnimationButtonState extends State<AnimationButton>
   /// 返回值：无
   @override
   void dispose() {
+    _tapTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -280,37 +220,19 @@ class AnimationButtonState extends State<AnimationButton>
               return widget.child;
             case 1:
               // 弹跳动画（垂直方向移动）
-              return Transform.translate(
-                offset: _translateAnimation?.value ?? Offset.zero,
-                child: widget.child,
-              );
+              return Transform.translate(offset: _translateAnimation?.value ?? Offset.zero, child: widget.child);
             case 2:
               // 摇摆动画（左右平滑移动）
-              return Transform.translate(
-                offset: Offset(
-                  sin(_controller.value * 2 * pi) * 5,
-                  0,
-                ),
-                child: widget.child,
-              );
+              return Transform.translate(offset: Offset(sin(_controller.value * 2 * pi) * 5, 0), child: widget.child);
             case 3:
               // 脉冲动画（缩放）
-              return Transform.scale(
-                scale: _pulseAnimation?.value ?? 1.0,
-                child: widget.child,
-              );
+              return Transform.scale(scale: _pulseAnimation?.value ?? 1.0, child: widget.child);
             case 4:
               // 抖动动画（旋转抖动）
-              return Transform.rotate(
-                angle: _shakeAnimation?.value ?? 0.0,
-                child: widget.child,
-              );
+              return Transform.rotate(angle: _shakeAnimation?.value ?? 0.0, child: widget.child);
             case 5:
               // 简单缩放动画
-              return Transform.scale(
-                scale: _scaleAnimation?.value ?? 1.0,
-                child: widget.child,
-              );
+              return Transform.scale(scale: _scaleAnimation?.value ?? 1.0, child: widget.child);
             case 6:
               // 组合动画（缩放+旋转）
               return Transform(

@@ -133,7 +133,7 @@ class DeviceUtil {
   /// }
   /// ```
   static bool isPhone() {
-    return Get.context!.isPhone;
+    return Get.context?.isPhone ?? true;
   }
 
   /// 判断当前设备是否为平板
@@ -148,7 +148,7 @@ class DeviceUtil {
   /// }
   /// ```
   static bool isTablet() {
-    return Get.context!.isTablet;
+    return Get.context?.isTablet ?? false;
   }
 
   /// 判断屏幕方向是否为竖屏
@@ -163,7 +163,7 @@ class DeviceUtil {
   /// }
   /// ```
   static bool isPortrait() {
-    return Get.context!.isPortrait;
+    return Get.context?.isPortrait ?? true;
   }
 
   /// 判断屏幕方向是否为横屏
@@ -178,7 +178,7 @@ class DeviceUtil {
   /// }
   /// ```
   static bool isLandscape() {
-    return Get.context!.isLandscape;
+    return Get.context?.isLandscape ?? false;
   }
 
   /// 判断当前运行环境是否为Web

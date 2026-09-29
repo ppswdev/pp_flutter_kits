@@ -39,10 +39,7 @@ class AppUtil {
       try {
         //防止触发安全机制崩溃
         Future.delayed(const Duration(milliseconds: 500));
-        KeychainUtil.write(
-          key: '${appInfo.packageName}.appUUID',
-          value: value,
-        ).then((bool success) {
+        KeychainUtil.write(key: '${appInfo.packageName}.appUUID', value: value).then((bool success) {
           if (success) {
             Logger.trace('Write UUID to keychain success: $value');
           }
@@ -73,10 +70,7 @@ class AppUtil {
   ///   version: "1.0.0",
   ///   buildNumber: "1"
   /// )
-  static Future<
-    ({String appName, String packageName, String version, String buildNumber})
-  >
-  getAppInfo() async {
+  static Future<({String appName, String packageName, String version, String buildNumber})> getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return (
       appName: packageInfo.appName,
@@ -97,16 +91,11 @@ class AppUtil {
   /// // 设置深色且透明状态栏
   /// AppUtil.setStatusBarStyle(isDark: true, isTransparent: true);
   /// ```
-  static void setStatusBarStyle({
-    bool isDark = false,
-    bool isTransparent = true,
-  }) {
+  static void setStatusBarStyle({bool isDark = false, bool isTransparent = true}) {
     if (GetPlatform.isAndroid) {
       if (isTransparent) {
         // 设置状态栏透明
-        SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-        );
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
       }
       // 设置状态栏内容颜色
       SystemChrome.setSystemUIOverlayStyle(
@@ -171,7 +160,8 @@ class AppUtil {
   /// 返回:
   ///   [bool] true表示RTL语言环境，否则为false
   static bool isRTL() {
-    return Directionality.of(Get.context!) == TextDirection.rtl;
+    final context = Get.context;
+    return context != null && Directionality.of(context) == TextDirection.rtl;
   }
 
   /// 分享内容到系统分享面板（文本、链接、图片等）
@@ -220,8 +210,9 @@ class AppUtil {
       shareParams = ShareParams(subject: subject, title: title, text: text);
     }
     // 检查是否是iPad并调整分享浮窗位置
-    if (GetPlatform.isIOS && Get.context?.isTablet == true) {
-      final Size screenSize = MediaQuery.of(Get.context!).size;
+    final context = Get.context;
+    if (GetPlatform.isIOS && context != null && context.mounted && context.isTablet) {
+      final Size screenSize = MediaQuery.of(context).size;
       // 屏幕中心位置的一半宽/高的矩形区域
       final Rect sharePositionOrigin = Rect.fromCenter(
         center: Offset(screenSize.width / 2, screenSize.height / 2),
@@ -231,18 +222,9 @@ class AppUtil {
       if (files.isNotEmpty) {
         shareParams = ShareParams(files: files);
       } else if (url.isNotEmpty) {
-        shareParams = ShareParams(
-          title: title,
-          uri: Uri.parse(url),
-          sharePositionOrigin: sharePositionOrigin,
-        );
+        shareParams = ShareParams(title: title, uri: Uri.parse(url), sharePositionOrigin: sharePositionOrigin);
       } else {
-        shareParams = ShareParams(
-          subject: subject,
-          title: title,
-          text: text,
-          sharePositionOrigin: sharePositionOrigin,
-        );
+        shareParams = ShareParams(subject: subject, title: title, text: text, sharePositionOrigin: sharePositionOrigin);
       }
     }
     shareResult = await SharePlus.instance.share(shareParams);

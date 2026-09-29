@@ -48,17 +48,17 @@ class PPBottomSheet {
     bool enableDrag = true,
     Clip? clipBehavior,
   }) {
+    final context = Get.context;
+    if (context == null || !context.mounted) {
+      return;
+    }
     showModalBottomSheet(
-      context: Get.context!,
+      context: context,
       barrierColor: barrierColor,
       backgroundColor: backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius:
-            borderRadius ??
-            BorderRadius.only(
-              topLeft: Radius.circular(16.0),
-              topRight: Radius.circular(16.0),
-            ),
+            borderRadius ?? BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
       ),
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
@@ -78,11 +78,7 @@ class PPBottomSheet {
                 child ??
                 Text(
                   '这是一个底部弹出框',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
                 ),
           ),
         );
