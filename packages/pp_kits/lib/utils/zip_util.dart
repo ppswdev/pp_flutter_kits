@@ -179,7 +179,7 @@ class ZipUtil {
   static Future<List<String>> unzip(String zipPath, String targetPath) async {
     try {
       final bytes = await File(zipPath).readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
+      final archive = ZipDecoder().decodeBytes(bytes, throwOnError: true);
       final extractedFiles = <String>[];
 
       for (final file in archive) {
@@ -222,7 +222,11 @@ class ZipUtil {
   ) async {
     try {
       final bytes = await File(zipPath).readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes, password: password);
+      final archive = ZipDecoder().decodeBytes(
+        bytes,
+        password: password,
+        throwOnError: true,
+      );
       final extractedFiles = <String>[];
 
       for (final file in archive) {

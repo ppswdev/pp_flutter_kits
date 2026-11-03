@@ -32,7 +32,7 @@ class KeychainUtil {
     var storage = const FlutterSecureStorage();
     if (Platform.isAndroid) {
       storage = const FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
+        aOptions: AndroidOptions(resetOnError: false, migrateWithBackup: true),
       );
     }
     return storage;

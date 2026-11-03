@@ -1,42 +1,42 @@
 name: pp_kits
 description: "pp_kits is a rapid development application library for Flutter, containing essential technical points, practical triplet libraries, etc"
-version: 1.3.2
+version: 1.4.0
 homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_kits
 
 environment:
-  sdk: ^3.11.0
-  flutter: ">=3.41.0"
+  sdk: ^3.13.7
+  flutter: ">=3.47.9"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  dio: ^5.11.0 #网络请求
+  dio: ^5.11.1 #网络请求
   get: ^4.7.3 #状态管理
-  intl: ^0.20.2 #国际化
+  intl: ^0.20.3 #国际化
   path: ^1.9.1 #文件路径处理
   uuid: ^4.6.0 #生成唯一标识符
   hex: ^0.2.0 #十六进制转换
   encrypt: ^5.0.3 #加密
-  archive: ^4.0.9 #压缩和解压缩文件
-  url_launcher: ^6.3.2 #链接启动
-  app_settings: ^7.0.0 #打开系统设置
-  audioplayers: ^6.7.1 #audio播放
-  connectivity_plus: ^7.3.1 #网络连接状态
-  file_picker: ^10.3.10 #文件选择
-  adaptive_dialog: ^2.8.0 #对话框
+  archive: ^4.6.0 #压缩和解压缩文件
+  url_launcher: ^6.3.3 #链接启动
+  app_settings: ^9.0.1 #打开系统设置
+  audioplayers: ^6.8.1 #audio播放
+  connectivity_plus: ^7.3.2 #网络连接状态
+  file_picker: ^13.3.2 #文件选择
+  adaptive_dialog: ^3.0.1 #对话框
   flutter_easyloading: ^4.0.2 #加载动画
   flutter_screenutil: ^5.9.3 #屏幕适配
-  flutter_secure_storage: ^10.3.1 #安全存储
-  flutter_timezone: ^5.1.0 #时区处理
-  get_time_ago: ^2.4.1 #时间处理
-  image_cropper: ^11.0.0 #图片裁剪
-  image_picker: ^1.2.3 #图片选择
-  device_info_plus: ^12.3.0 #设备信息
-  package_info_plus: ^9.0.1 #应用包信息
-  path_provider: ^2.1.5 #文件路径提供
-  share_plus: ^12.0.2 #分享功能
-  shared_preferences: ^2.5.5 #本地存储
+  flutter_secure_storage: ^11.2.0 #安全存储
+  flutter_timezone: ^5.1.1 #时区处理
+  get_time_ago: ^3.0.1 #时间处理
+  image_cropper: ^13.0.0 #图片裁剪
+  image_picker: ^1.2.4 #图片选择
+  device_info_plus: ^13.3.0 #设备信息
+  package_info_plus: ^10.2.2 #应用包信息
+  path_provider: ^2.1.6 #文件路径提供
+  share_plus: ^13.3.1 #分享功能
+  shared_preferences: ^2.5.6 #本地存储
 
 dev_dependencies:
   flutter_test:

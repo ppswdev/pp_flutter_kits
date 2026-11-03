@@ -1,6 +1,43 @@
 import 'package:get_time_ago/get_time_ago.dart';
 
-class FILMessages implements Messages {
+abstract class _LegacyMessages extends TimeAgoMessages {
+  String prefixAgo();
+  String suffixAgo();
+  String justNowText(int seconds);
+  String secsAgo(int seconds);
+  String minAgo(int minutes);
+  String minsAgo(int minutes);
+  String hourAgo(int minutes);
+  String hoursAgo(int hours);
+  String dayAgo(int hours);
+  String daysAgo(int days);
+  String wordSeparator();
+
+  @override
+  String justNow(TimeAgoStyle style) => justNowText(0);
+
+  @override
+  String? relative(TimeUnit unit, int count, {
+    required bool future,
+    required TimeAgoStyle style,
+  }) {
+    final text = switch (unit) {
+      TimeUnit.second => secsAgo(count),
+      TimeUnit.minute => count == 1 ? minAgo(count) : minsAgo(count),
+      TimeUnit.hour => count == 1 ? hourAgo(count * 60) : hoursAgo(count),
+      TimeUnit.day => count == 1 ? dayAgo(count * 24) : daysAgo(count),
+      _ => null,
+    };
+    if (text == null) return null;
+    return [if (future) 'in' else prefixAgo(), text, if (!future) suffixAgo()]
+        .where((part) => part.isNotEmpty)
+        .join(wordSeparator());
+  }
+}
+
+class FILMessages extends _LegacyMessages {
+  @override
+  String get intlLocale => 'fil';
   /// Prefix added before the time message.
   @override
   String prefixAgo() => '';
@@ -11,7 +48,7 @@ class FILMessages implements Messages {
 
   /// Message when the elapsed time is less than 15 seconds.
   @override
-  String justNow(int seconds) => 'ngayon lang';
+  String justNowText(int seconds) => 'ngayon lang';
 
   /// Message for when the elapsed time is less than a minute.
   @override
@@ -46,7 +83,9 @@ class FILMessages implements Messages {
   String wordSeparator() => ' ';
 }
 
-class PLMessages implements Messages {
+class PLMessages extends _LegacyMessages {
+  @override
+  String get intlLocale => 'pl';
   /// Prefix added before the time message.
   @override
   String prefixAgo() => '';
@@ -57,7 +96,7 @@ class PLMessages implements Messages {
 
   /// Message when the elapsed time is less than 15 seconds.
   @override
-  String justNow(int seconds) => 'przed chwilą';
+  String justNowText(int seconds) => 'przed chwilą';
 
   /// Message for when the elapsed time is less than a minute.
   @override
@@ -92,7 +131,9 @@ class PLMessages implements Messages {
   String wordSeparator() => ' ';
 }
 
-class RUMessages implements Messages {
+class RUMessages extends _LegacyMessages {
+  @override
+  String get intlLocale => 'ru';
   /// Prefix added before the time message.
   @override
   String prefixAgo() => '';
@@ -103,7 +144,7 @@ class RUMessages implements Messages {
 
   /// Message when the elapsed time is less than 15 seconds.
   @override
-  String justNow(int seconds) => 'только что';
+  String justNowText(int seconds) => 'только что';
 
   /// Message for when the elapsed time is less than a minute.
   @override
@@ -138,7 +179,9 @@ class RUMessages implements Messages {
   String wordSeparator() => ' ';
 }
 
-class THMessages implements Messages {
+class THMessages extends _LegacyMessages {
+  @override
+  String get intlLocale => 'th';
   /// Prefix added before the time message.
   @override
   String prefixAgo() => '';
@@ -149,7 +192,7 @@ class THMessages implements Messages {
 
   /// Message when the elapsed time is less than 15 seconds.
   @override
-  String justNow(int seconds) => 'เมื่อสักครู่';
+  String justNowText(int seconds) => 'เมื่อสักครู่';
 
   /// Message for when the elapsed time is less than a minute.
   @override

@@ -4,8 +4,8 @@ pp_kits 是一个面向 Flutter 的快速开发应用工具库，集成了常用
 
 ## 环境要求
 
-- Flutter >= 3.41.0
-- Dart >= 3.11.0
+- Flutter >= 3.47.9
+- Dart >= 3.13.7
 
 ## 主要特性
 
@@ -26,7 +26,7 @@ pp_kits 是一个面向 Flutter 的快速开发应用工具库，集成了常用
 
 ```yaml
 dependencies:
-  pp_kits: ^1.3.1
+  pp_kits: ^1.4.0
 ```
 
 导入至 Dart 代码：

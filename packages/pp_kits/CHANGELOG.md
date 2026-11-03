@@ -1,3 +1,10 @@
+## 1.4.0
+
+- Raise the minimum requirements to Flutter 3.47.9 and Dart 3.13.7.
+- Update third-party dependencies and adapt to their latest APIs.
+- Update time formatting, secure storage, and ZIP error handling for upgraded dependencies.
+- Android secure storage: data using legacy encryption must be migrated with `flutter_secure_storage` 10.x before upgrading to 11.x.
+
 ## 1.3.2
 
 - Supplementary optimization and improvement
