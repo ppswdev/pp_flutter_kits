@@ -5,7 +5,7 @@ homepage: https://github.com/ppswdev/pp_flutter_kits/tree/main/packages/pp_kits
 
 environment:
   sdk: ^3.13.7
-  flutter: ">=3.47.9"
+  flutter: ">=3.47.8"
 
 dependencies:
   flutter:
